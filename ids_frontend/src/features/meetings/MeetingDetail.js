@@ -273,6 +273,71 @@ const MeetingDetail = () => {
     </div>
   );
 
+  const renderUnifiedTable = () => {
+    if (!extractions) return null;
+
+    const groupedExtractions = [];
+    
+    // Group extraction data by type
+    Object.entries(extractions).forEach(([type, data]) => {
+      if (Array.isArray(data) && data.length > 0) {
+        groupedExtractions.push({
+          type: type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          items: data
+        });
+      }
+    });
+
+    return (
+      <div className="unified-extractions-table">
+        <table className="extractions-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {groupedExtractions.map((group, groupIndex) => (
+              <tr key={group.type}>
+                <td className="extraction-type">
+                  <span className="type-badge">{group.type}</span>
+                </td>
+                <td className="extraction-details">
+                  <div className="extraction-content">
+                    {group.items.map((item, itemIndex) => (
+                      <div key={itemIndex} className="extraction-item-group">
+                        {Object.entries(item).map(([key, value]) => {
+                          if (!value || key === 'id' || key === 'meeting_id' || key === 'workspace_id' || key === 'org_id' || key === 'status' || key === 'created_at' || key === 'updated_at') return null;
+                          
+                          return (
+                            <div key={key} className="extraction-field">
+                              <strong>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</strong>
+                              {Array.isArray(value) ? (
+                                <ul>
+                                  {value.map((v, idx) => (
+                                    <li key={idx}>{v}</li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <span>{value}</span>
+                              )}
+                            </div>
+                          );
+                        })}
+                        {itemIndex < group.items.length - 1 && <hr className="item-separator" />}
+                      </div>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="meeting-detail-loading">
@@ -306,272 +371,9 @@ const MeetingDetail = () => {
         <h1 className="meeting-detail-title">{meeting.meeting_name}</h1>
       </div>
 
-      <div className="meeting-detail-tabs">
-        <button
-          className={`detail-tab ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          Overview
-        </button>
-        <button
-          className={`detail-tab ${activeTab === 'requirements' ? 'active' : ''}`}
-          onClick={() => setActiveTab('requirements')}
-        >
-          Requirements
-        </button>
-        <button
-          className={`detail-tab ${activeTab === 'actions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('actions')}
-        >
-          Actions
-        </button>
-        <button
-          className={`detail-tab ${activeTab === 'insights' ? 'active' : ''}`}
-          onClick={() => setActiveTab('insights')}
-        >
-          Insights
-        </button>
-        <button
-          className={`detail-tab ${activeTab === 'notes' ? 'active' : ''}`}
-          onClick={() => setActiveTab('notes')}
-        >
-          Notes
-        </button>
-      </div>
-
       <div className="meeting-detail-content">
-        {activeTab === 'overview' && renderOverview()}
-
-        {activeTab === 'requirements' && extractions && (
-          <div className="extractions-container">
-            {renderSection(
-              'Requirements',
-              extractions.requirements || [],
-              renderRequirements,
-              'assignment',
-              'purple'
-            )}
-            {renderSection(
-              'Modules & Processes',
-              extractions.modules_processes || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'module_name', label: 'Module' },
-                  { key: 'processes', label: 'Processes' },
-                  { key: 'scope_tag', label: 'Scope' },
-                  { key: 'notes_md', label: 'Notes' },
-                ]),
-              'widgets',
-              'blue'
-            )}
-            {renderSection(
-              'Personas',
-              extractions.personas || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'persona_name', label: 'Persona' },
-                  { key: 'responsibilities', label: 'Responsibilities' },
-                  { key: 'primary_modules', label: 'Primary Modules' },
-                ]),
-              'account_circle',
-              'green'
-            )}
-          </div>
-        )}
-
-        {activeTab === 'actions' && extractions && (
-          <div className="extractions-container">
-            {renderSection(
-              'Action Items',
-              extractions.action_items || [],
-              renderActionItems,
-              'task_alt',
-              'orange'
-            )}
-            {renderSection(
-              'Decisions',
-              extractions.decisions || [],
-              renderDecisions,
-              'gavel',
-              'green'
-            )}
-            {renderSection(
-              'Dependencies',
-              extractions.dependencies || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'description_md', label: 'Description' },
-                  { key: 'type', label: 'Type' },
-                  { key: 'depends_on_md', label: 'Depends On' },
-                  { key: 'owner_md', label: 'Owner' },
-                ]),
-              'link',
-              'blue'
-            )}
-          </div>
-        )}
-
-        {activeTab === 'insights' && extractions && (
-          <div className="extractions-container">
-            {renderSection(
-              'Risks & Issues',
-              extractions.risks_issues || [],
-              renderRisksIssues,
-              'warning',
-              'red'
-            )}
-            {renderSection(
-              'Pain Points',
-              extractions.pain_points || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'pain_point_md', label: 'Pain Point' },
-                  { key: 'affected_bu_md', label: 'Affected BU' },
-                  { key: 'impact_md', label: 'Impact' },
-                ]),
-              'error',
-              'orange'
-            )}
-            {renderSection(
-              'Business Units & Teams',
-              extractions.bu_teams || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'business_unit', label: 'Business Unit' },
-                  { key: 'teams', label: 'Teams' },
-                  { key: 'notes_md', label: 'Notes' },
-                ]),
-              'corporate_fare',
-              'purple'
-            )}
-            {renderSection(
-              'Licenses',
-              extractions.licenses || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'license_type', label: 'License Type' },
-                  { key: 'count', label: 'Count' },
-                  { key: 'allocation_md', label: 'Allocation' },
-                  { key: 'notes_md', label: 'Notes' },
-                ]),
-              'license',
-              'blue'
-            )}
-          </div>
-        )}
-
-        {activeTab === 'notes' && extractions && (
-          <div className="extractions-container">
-            {renderSection(
-              'Current State (As-Is)',
-              extractions.current_state || [],
-              (data) =>
-                renderGenericList(data, [{ key: 'description_md', label: 'Description' }]),
-              'history',
-              'orange'
-            )}
-            {renderSection(
-              'Target State (To-Be)',
-              extractions.target_state || [],
-              (data) =>
-                renderGenericList(data, [{ key: 'description_md', label: 'Description' }]),
-              'flag',
-              'green'
-            )}
-            {renderSection(
-              'Applications to Integrate',
-              extractions.integrations || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'application_name', label: 'Application' },
-                  { key: 'purpose_md', label: 'Purpose' },
-                  { key: 'integration_type', label: 'Type' },
-                  { key: 'directionality', label: 'Directionality' },
-                  { key: 'notes_md', label: 'Notes' },
-                ]),
-              'hub',
-              'blue'
-            )}
-            {renderSection(
-              'Data Migration',
-              extractions.data_migration || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'source_md', label: 'Source' },
-                  { key: 'mapping_notes_md', label: 'Mapping Notes' },
-                  { key: 'cleansing_rules_md', label: 'Cleansing Rules' },
-                  { key: 'tools_md', label: 'Tools' },
-                ]),
-              'cloud_sync',
-              'purple'
-            )}
-            {renderSection(
-              'Data Model',
-              extractions.data_model || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'entity_name', label: 'Entity' },
-                  { key: 'entity_type', label: 'Type' },
-                  { key: 'key_fields', label: 'Key Fields' },
-                  { key: 'relationships_md', label: 'Relationships' },
-                ]),
-              'table_chart',
-              'blue'
-            )}
-            {renderSection(
-              'Metadata Updates',
-              extractions.metadata_updates || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'component_type', label: 'Component Type' },
-                  { key: 'api_name_md', label: 'API Name' },
-                  { key: 'change_type', label: 'Change Type' },
-                  { key: 'scope_md', label: 'Scope' },
-                ]),
-              'code',
-              'purple'
-            )}
-            {renderSection(
-              'Scope Summary',
-              extractions.scope_summary || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'in_scope_md', label: 'In Scope' },
-                  { key: 'out_of_scope_md', label: 'Out of Scope' },
-                  { key: 'future_phase_md', label: 'Future Phase' },
-                ]),
-              'checklist',
-              'green'
-            )}
-            {renderSection(
-              'Assumptions & Gaps',
-              extractions.assumptions_gaps || [],
-              (data) =>
-                renderGenericList(data, [{ key: 'note_md', label: 'Note' }]),
-              'help_outline',
-              'orange'
-            )}
-            {renderSection(
-              'Source References',
-              extractions.source_references || [],
-              (data) =>
-                renderGenericList(data, [{ key: 'reference_md', label: 'Reference' }]),
-              'source_notes',
-              'blue'
-            )}
-            {renderSection(
-              'Validation Summary',
-              extractions.validation_summary || [],
-              (data) =>
-                renderGenericList(data, [
-                  { key: 'json_validity', label: 'JSON Valid' },
-                  { key: 'issues_detected', label: 'Issues Detected' },
-                ]),
-              'verified',
-              'green'
-            )}
-          </div>
-        )}
+        {renderOverview()}
+        {extractions && renderUnifiedTable()}
       </div>
     </div>
   );

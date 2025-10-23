@@ -11,7 +11,7 @@ import './MeetingList.css';
 const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
   const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('scheduled');
+  const [activeTab, setActiveTab] = useState('all');
   const [showForm, setShowForm] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState(null);
   const [deletingMeeting, setDeletingMeeting] = useState(null);
@@ -20,13 +20,12 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
 
   useEffect(() => {
     fetchMeetings();
-  }, [workspaceId, activeTab]);
+  }, [workspaceId]);
 
   const fetchMeetings = async () => {
     try {
       setLoading(true);
-      const status = activeTab === 'scheduled' ? 'scheduled' : activeTab === 'completed' ? 'completed' : null;
-      const response = await meetingAPI.getAll(workspaceId, orgId, status);
+      const response = await meetingAPI.getAll(workspaceId, orgId);
       setMeetings(response.data);
     } catch (error) {
       console.error('Error fetching meetings:', error);
@@ -92,12 +91,7 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
     });
   };
 
-  const getFilteredMeetings = () => {
-    if (activeTab === 'all') return meetings;
-    return meetings;
-  };
-
-  const filteredMeetings = getFilteredMeetings();
+  const filteredMeetings = meetings;
 
   return (
     <div className="meeting-list-container">
@@ -114,26 +108,6 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
         </Button>
       </div>
 
-      <div className="meeting-tabs">
-        <button
-          className={`meeting-tab ${activeTab === 'scheduled' ? 'active' : ''}`}
-          onClick={() => setActiveTab('scheduled')}
-        >
-          Scheduled Meetings
-        </button>
-        <button
-          className={`meeting-tab ${activeTab === 'completed' ? 'active' : ''}`}
-          onClick={() => setActiveTab('completed')}
-        >
-          Completed Meetings
-        </button>
-        <button
-          className={`meeting-tab ${activeTab === 'all' ? 'active' : ''}`}
-          onClick={() => setActiveTab('all')}
-        >
-          Extended Insights
-        </button>
-      </div>
 
       {loading ? (
         <div className="meeting-list-loading">
