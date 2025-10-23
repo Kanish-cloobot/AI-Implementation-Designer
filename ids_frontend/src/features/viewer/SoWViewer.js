@@ -6,55 +6,9 @@ import DocumentationNavigation from './components/DocumentationNavigation';
 import DocumentationDetails from './components/DocumentationDetails';
 import { generateDocumentationSections } from './utils/documentationSections';
 
-const AssumptionsSection = ({ assumptions }) => (
-  assumptions && assumptions.length > 0 && (
-    <div className="sow-viewer-section">
-      <div className="sow-viewer-card">
-        <h2 className="sow-viewer-section-title">
-          <span className="material-symbols-outlined">info</span>
-          Assumptions
-        </h2>
-        <ul className="sow-viewer-assumptions-list">
-          {assumptions.map((assumption, index) => (
-            <li key={index} className="sow-viewer-assumption-item">{assumption}</li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  )
-);
-
-const ValidationSection = ({ validation }) => (
-  validation && (
-    <div className="sow-viewer-section">
-      <div className="sow-viewer-card sow-viewer-validation">
-        <h2 className="sow-viewer-section-title">
-          <span className="material-symbols-outlined">verified</span>
-          Validation Summary
-        </h2>
-        <div className="sow-viewer-validation-content">
-          <div className="sow-viewer-validation-item">
-            <span className="sow-viewer-validation-label">JSON Validity:</span>
-            <span className={`sow-viewer-validation-badge ${validation.json_validity ? 'valid' : 'invalid'}`}>
-              {validation.json_validity ? 'Valid' : 'Invalid'}
-            </span>
-          </div>
-          {validation.issues_detected && validation.issues_detected.length > 0 && (
-            <div className="sow-viewer-validation-issues">
-              <span className="sow-viewer-validation-label">Issues:</span>
-              <ul>
-                {validation.issues_detected.map((issue, index) => (<li key={index}>{issue}</li>))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-);
 
 const SoWViewer = ({ onBack }) => {
-  const { sowData, currentWorkspace, currentDocument } = useWorkspace();
+  const { sowData, currentWorkspace, currentDocument, expandSidebar } = useWorkspace();
   const [activeSection, setActiveSection] = useState('project-overview');
 
   console.log('SoWViewer - Current workspace:', currentWorkspace);
@@ -78,7 +32,7 @@ const SoWViewer = ({ onBack }) => {
     <div className="sow-viewer-container">
       <div className="sow-viewer-header">
         <div className="sow-viewer-header-left">
-          <Button onClick={onBack} variant="secondary" icon="arrow_back" size="small">Back</Button>
+          <Button onClick={() => { expandSidebar(); onBack(); }} variant="secondary" icon="arrow_back" size="small">Back</Button>
           <div className="sow-viewer-header-info">
             <h1 className="sow-viewer-title">Statement of Work</h1>
             {currentWorkspace && <p className="sow-viewer-workspace">{currentWorkspace.name}</p>}

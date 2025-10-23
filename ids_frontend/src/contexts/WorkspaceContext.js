@@ -173,6 +173,7 @@ export const WorkspaceProvider = ({ children }) => {
   const [sowData, setSowData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const fetchWorkspaces = useFetchWorkspaces(setWorkspaces, setLoading, setError);
   const createWorkspace = useCreateWorkspace(setWorkspaces, setCurrentWorkspace, setLoading, setError);
@@ -188,11 +189,24 @@ export const WorkspaceProvider = ({ children }) => {
     setSowData(null);
   }, []);
 
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed(prev => !prev);
+  }, []);
+
+  const collapseSidebar = useCallback(() => {
+    setSidebarCollapsed(true);
+  }, []);
+
+  const expandSidebar = useCallback(() => {
+    setSidebarCollapsed(false);
+  }, []);
+
   const value = {
     workspaces, currentWorkspace, currentDocument, sowData, loading, error,
     fetchWorkspaces, createWorkspace, updateWorkspace, deleteWorkspace,
     uploadAndProcessDocument, loadSowData, loadWorkspaceData, clearWorkspaceData,
     setCurrentWorkspace, setSowData,
+    sidebarCollapsed, toggleSidebar, collapseSidebar, expandSidebar,
   };
 
   return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;

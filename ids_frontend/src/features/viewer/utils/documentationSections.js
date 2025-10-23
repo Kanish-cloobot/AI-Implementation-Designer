@@ -2,25 +2,35 @@ import React from 'react';
 
 const createProjectOverviewContent = (scopeSummary) => (
   <div className="doc-details-content-section">
-    <h3 className="doc-details-content-title">Company Background</h3>
+    <h3 className="doc-details-content-title">Project Overview</h3>
     <p className="doc-details-content-text">
-      {scopeSummary?.company_background || 'Company background information not available.'}
+      This project involves implementing Salesforce CRM to manage all client relationships and 
+      service workflows for Horizon Travel Group (HTG). The implementation will support customer 
+      lifecycle management, automate manual processes, and provide data-driven insights to improve 
+      client service quality and operational visibility.
     </p>
     
-    <h3 className="doc-details-content-title">Project Purpose & Business Need</h3>
-    <p className="doc-details-content-text">
-      {scopeSummary?.project_purpose || 'Project purpose information not available.'}
-    </p>
+    <h3 className="doc-details-content-title">In Scope</h3>
+    {scopeSummary?.in_scope && scopeSummary.in_scope.length > 0 ? (
+      <ul className="doc-details-list">
+        {scopeSummary.in_scope.map((item, index) => (
+          <li key={index} className="doc-details-list-item">{item}</li>
+        ))}
+      </ul>
+    ) : (
+      <p className="doc-details-content-text">No in-scope items defined.</p>
+    )}
     
-    <h3 className="doc-details-content-title">Scope of Implementation</h3>
-    <p className="doc-details-content-text">
-      {scopeSummary?.scope_of_implementation || 'Scope of implementation details not available.'}
-    </p>
-    
-    <h3 className="doc-details-content-title">Expected Outcomes & Benefits</h3>
-    <p className="doc-details-content-text">
-      {scopeSummary?.expected_outcomes || 'Expected outcomes information not available.'}
-    </p>
+    <h3 className="doc-details-content-title">Out of Scope</h3>
+    {scopeSummary?.out_of_scope && scopeSummary.out_of_scope.length > 0 ? (
+      <ul className="doc-details-list">
+        {scopeSummary.out_of_scope.map((item, index) => (
+          <li key={index} className="doc-details-list-item">{item}</li>
+        ))}
+      </ul>
+    ) : (
+      <p className="doc-details-content-text">No out-of-scope items defined.</p>
+    )}
   </div>
 );
 
@@ -49,7 +59,7 @@ const createModulesContent = (modules) => (
       <div className="doc-details-content-section">
         {modules.map((module, index) => (
           <div key={index} className="doc-details-content-section">
-            <h3 className="doc-details-content-title">{module.name}</h3>
+            <h3 className="doc-details-content-title">{module.module_name}</h3>
             <p className="doc-details-content-text">{module.description}</p>
             {module.processes && module.processes.length > 0 && (
               <div>
@@ -90,6 +100,37 @@ const createLicensesContent = (licenses) => (
       </ul>
     ) : (
       <p className="doc-details-content-text">No Salesforce licenses defined.</p>
+    )}
+  </div>
+);
+
+const createBusinessUnitsContent = (businessUnits) => (
+  <div className="doc-details-content-section">
+    {businessUnits && businessUnits.length > 0 ? (
+      <div className="doc-details-content-section">
+        {businessUnits.map((unit, index) => (
+          <div key={index} className="doc-details-content-section">
+            <h3 className="doc-details-content-title">{unit.business_unit_name}</h3>
+            {unit.stakeholders && unit.stakeholders.length > 0 ? (
+              <div>
+                <h4 className="doc-details-content-title">Stakeholders:</h4>
+                <ul className="doc-details-list">
+                  {unit.stakeholders.map((stakeholder, sIndex) => (
+                    <li key={sIndex} className="doc-details-list-item">
+                      <strong>{stakeholder.name}</strong> - {stakeholder.designation}
+                      {stakeholder.email && <span> ({stakeholder.email})</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="doc-details-content-text">No stakeholders defined for this business unit.</p>
+            )}
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p className="doc-details-content-text">No business units defined.</p>
     )}
   </div>
 );
@@ -148,16 +189,10 @@ const createOverviewSection = (sowData) => ({
       )
     },
     {
-      id: 'out-of-scope',
-      title: 'Out of scope',
-      icon: 'block',
-      content: (
-        <div className="doc-details-content-section">
-          <p className="doc-details-content-text">
-            {sowData.scope_summary?.out_of_scope || 'Out of scope items not defined.'}
-          </p>
-        </div>
-      )
+      id: 'business-units',
+      title: 'Business Units & Stakeholders',
+      icon: 'groups',
+      content: createBusinessUnitsContent(sowData.business_units)
     },
     {
       id: 'assumptions',
@@ -202,87 +237,21 @@ const createLicensesSection = (sowData) => ({
   content: createLicensesContent(sowData.salesforce_licenses)
 });
 
-// const createValidationSection = (sowData) => ({
-//   id: 'validation',
-//   title: 'Validation Summary',
-//   icon: 'verified',
-//   content: createValidationContent(sowData.validation_summary)
-// });
+const createValidationSection = (sowData) => ({
+  id: 'validation',
+  title: 'Validation Summary',
+  icon: 'verified',
+  content: createValidationContent(sowData.validation_summary)
+});
 
 export const generateDocumentationSections = (sowData) => {
   if (!sowData) return [];
 
   return [
     createOverviewSection(sowData),
-    // createStructureSection(sowData),
     createModulesSection(sowData),
     createLicensesSection(sowData),
-    // createValidationSection(sowData)
+    createValidationSection(sowData)
   ];
 };
 
-const generatePersonaSections = (businessUnits) => {
-  if (!businessUnits || businessUnits.length === 0) {
-    return [{
-      id: 'no-personas',
-      title: 'No personas defined',
-      icon: 'person_off',
-      content: (
-        <div className="doc-details-content-section">
-          <p className="doc-details-content-text">No business units or personas defined.</p>
-        </div>
-      )
-    }];
-  }
-
-  return businessUnits.map((unit, index) => ({
-    id: `persona-${index + 1}`,
-    title: `P${index + 1} - ${unit.name}`,
-    icon: 'person',
-    content: (
-      <div className="doc-details-content-section">
-        <h3 className="doc-details-content-title">{unit.name}</h3>
-        <p className="doc-details-content-text">{unit.description || 'No description available.'}</p>
-        {unit.responsibilities && unit.responsibilities.length > 0 && (
-          <div>
-            <h4 className="doc-details-content-title">Responsibilities:</h4>
-            <ul className="doc-details-list">
-              {unit.responsibilities.map((responsibility, rIndex) => (
-                <li key={rIndex} className="doc-details-list-item">
-                  {responsibility}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    )
-  }));
-};
-
-const generateDataModelSections = (sowData) => {
-  // This would typically come from the SoW data structure
-  // For now, we'll create some placeholder sections
-  return [
-    {
-      id: 'data-model-1',
-      title: 'D1 - Account',
-      icon: 'business',
-      content: (
-        <div className="doc-details-content-section">
-          <p className="doc-details-content-text">Account data model information would be displayed here.</p>
-        </div>
-      )
-    },
-    {
-      id: 'data-model-2',
-      title: 'D2 - Contact',
-      icon: 'contact_page',
-      content: (
-        <div className="doc-details-content-section">
-          <p className="doc-details-content-text">Contact data model information would be displayed here.</p>
-        </div>
-      )
-    }
-  ];
-};

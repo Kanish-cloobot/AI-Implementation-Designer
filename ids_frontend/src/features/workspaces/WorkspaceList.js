@@ -18,7 +18,7 @@ const EmptyState = ({ onCreate }) => (
 );
 
 const WorkspaceList = () => {
-  const { workspaces, loading, error, fetchWorkspaces, deleteWorkspace, currentWorkspace, sowData, loadWorkspaceData } = useWorkspace();
+  const { workspaces, loading, error, fetchWorkspaces, deleteWorkspace, currentWorkspace, sowData, loadWorkspaceData, collapseSidebar } = useWorkspace();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState(null);
@@ -45,10 +45,12 @@ const WorkspaceList = () => {
   };
 
   const handleUploadSuccess = () => { setIsUploadModalOpen(false); setShowSoWViewer(true); };
-  const handleViewSoW = async (workspace) => { 
+  const handleViewSoW = async (workspace) => {
     try {
       await loadWorkspaceData(workspace);
       setShowSoWViewer(true);
+      // Collapse sidebar when viewing workspace
+      collapseSidebar();
     } catch (err) {
       console.error('Failed to load workspace data:', err);
     }
