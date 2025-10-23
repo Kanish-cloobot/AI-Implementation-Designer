@@ -1,40 +1,105 @@
-import os
+import openai
 import json
-from openai import OpenAI
+import time
+import traceback
+from config import OPENAI_CONFIG
+
+# Configure OpenAI for Azure
+openai.api_type = "azure"
+openai.api_base = OPENAI_CONFIG['azure_endpoint']
+openai.api_version = OPENAI_CONFIG['api_version']
+openai.api_key = OPENAI_CONFIG['api_key']
 
 
 class LLMService:
     def __init__(self):
-        api_key = os.getenv('OPENAI_API_KEY')
-        if not api_key:
-            raise ValueError('OPENAI_API_KEY not found in environment variables')
-        self.client = OpenAI(api_key=api_key)
-        self.model = "gpt-4"
+        if not OPENAI_CONFIG['api_key']:
+            raise ValueError('AZURE_OPENAI_API_KEY not found in configuration')
+        self.deployment = OPENAI_CONFIG['deployment']
+        self.max_tokens = OPENAI_CONFIG['max_tokens']
+        self.temperature = OPENAI_CONFIG['temperature']
+        self.top_p = OPENAI_CONFIG['top_p']
 
     def extract_sow_insights(self, document_text):
+        """
+        Extract SoW insights from document using Azure OpenAI.
+        
+        Args:
+            document_text (str): Extracted text from document
+            
+        Returns:
+            str: JSON string with extracted data
+        """
         prompt = self._build_sow_extraction_prompt()
         
         try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": prompt},
-                    {"role": "user", "content": document_text}
-                ],
-                temperature=0.3,
-                max_tokens=4000
+            start_time = time.time()
+            
+            # Prepare messages for API call
+            messages = [
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": document_text}
+            ]
+            
+            # Create request content for logging
+            request_data = {
+                "messages": messages,
+                "deployment": self.deployment,
+                "max_tokens": self.max_tokens,
+                "temperature": self.temperature,
+                "top_p": self.top_p
+            }
+            
+            # Call Azure OpenAI API
+            response = openai.ChatCompletion.create(
+                engine=self.deployment,
+                messages=messages,
+                max_tokens=self.max_tokens,
+                temperature=self.temperature,
+                top_p=self.top_p
             )
             
+            # Calculate latency
+            latency_ms = int((time.time() - start_time) * 1000)
+            
+            # Extract the response content
             content = response.choices[0].message.content
             
-            json_str = self._extract_json_from_response(content)
+            # Get token usage
+            tokens_used = response.get('usage', {}).get('total_tokens', 0)
             
+            print(f"Azure OpenAI call successful - Tokens: {tokens_used}, Latency: {latency_ms}ms")
+            
+            # Extract and parse JSON from response
+            json_str = self._extract_json_from_response(content)
             parsed_data = json.loads(json_str)
             
             return json.dumps(parsed_data, indent=2)
         
+        except openai.error.InvalidRequestError as e:
+            print(f"Invalid request to Azure OpenAI: {str(e)}")
+            traceback.print_exc()
+            return json.dumps(self._get_default_response(
+                f"Invalid request: {str(e)}"
+            ))
+        
+        except openai.error.AuthenticationError as e:
+            print(f"Authentication error with Azure OpenAI: {str(e)}")
+            traceback.print_exc()
+            return json.dumps(self._get_default_response(
+                f"Authentication error: {str(e)}"
+            ))
+        
+        except json.JSONDecodeError as e:
+            print(f"Error parsing JSON from LLM response: {str(e)}")
+            traceback.print_exc()
+            return json.dumps(self._get_default_response(
+                f"JSON parsing error: {str(e)}"
+            ))
+        
         except Exception as e:
             print(f"Error in LLM extraction: {str(e)}")
+            traceback.print_exc()
             return json.dumps(self._get_default_response(str(e)))
 
     def _build_sow_extraction_prompt(self):

@@ -60,12 +60,12 @@
               │                            │
               ▼                            ▼
     ┌──────────────────┐       ┌──────────────────────┐
-    │  SQLite Database │       │   OpenAI API         │
-    │                  │       │   (GPT-4)            │
+    │  SQLite Database │       │  Azure OpenAI API    │
+    │                  │       │  (GPT-4)             │
     │  Tables:         │       │                      │
     │  - workspaces    │       │  - Chat Completions  │
     │  - documents     │       │  - Structured Output │
-    │  - llm_streams   │       │                      │
+    │  - llm_streams   │       │  - Token Tracking    │
     └──────────────────┘       └──────────────────────┘
               │
               ▼
@@ -330,7 +330,7 @@ POST /api/documents/987e6543.../process
 | React | Modern, component-based, large ecosystem |
 | Flask | Lightweight, flexible, Python ecosystem |
 | SQLite | Simple, embedded, no separate server needed |
-| OpenAI GPT-4 | Best-in-class LLM, structured outputs |
+| Azure OpenAI GPT-4 | Enterprise-grade LLM, structured outputs, Azure integration |
 | Material Design 3 | Modern, accessible, consistent |
 | Axios | Promise-based, interceptors, wide adoption |
 | Context API | Built-in state management, no extra deps |

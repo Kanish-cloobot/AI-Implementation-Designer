@@ -6,7 +6,7 @@ Get the AI Implementation Designer up and running in minutes!
 
 - **Node.js 16+** - [Download](https://nodejs.org/)
 - **Python 3.8+** - [Download](https://www.python.org/)
-- **OpenAI API Key** - [Get one here](https://platform.openai.com/api-keys)
+- **Azure OpenAI API Key** - Get from your Azure portal
 
 ## Step 1: Clone and Setup Backend
 
@@ -27,10 +27,13 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Create .env file (copy from .env.example)
-# Add your OpenAI API key
+# Add your Azure OpenAI configuration
 echo "FLASK_APP=server.py" > .env
 echo "FLASK_ENV=development" >> .env
-echo "OPENAI_API_KEY=your_key_here" >> .env
+echo "AZURE_OPENAI_ENDPOINT=https://idsgpt4o.openai.azure.com/" >> .env
+echo "AZURE_OPENAI_API_VERSION=2024-08-01-preview" >> .env
+echo "AZURE_OPENAI_API_KEY=your_key_here" >> .env
+echo "AZURE_OPENAI_DEPLOYMENT=GPT4o" >> .env
 echo "DATABASE_PATH=./database/ids.db" >> .env
 echo "UPLOAD_FOLDER=./uploads" >> .env
 
@@ -96,9 +99,9 @@ Frontend will open automatically at `http://localhost:3000`
 - **Issue**: API calls failing
 - **Solution**: Ensure backend is running on port 5000 and check `.env` file
 
-### OpenAI API errors
+### Azure OpenAI API errors
 - **Issue**: Authentication error
-- **Solution**: Verify your OpenAI API key is valid and has sufficient credits
+- **Solution**: Verify your Azure OpenAI API key, endpoint, and deployment name are correct
 
 ### Database errors
 - **Issue**: Database file not found

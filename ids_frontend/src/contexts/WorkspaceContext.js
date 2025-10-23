@@ -11,15 +11,8 @@ export const useWorkspace = () => {
   return context;
 };
 
-export const WorkspaceProvider = ({ children }) => {
-  const [workspaces, setWorkspaces] = useState([]);
-  const [currentWorkspace, setCurrentWorkspace] = useState(null);
-  const [currentDocument, setCurrentDocument] = useState(null);
-  const [sowData, setSowData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const fetchWorkspaces = useCallback(async () => {
+const useFetchWorkspaces = (setWorkspaces, setLoading, setError) => {
+  return useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -30,9 +23,11 @@ export const WorkspaceProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setWorkspaces, setLoading, setError]);
+};
 
-  const createWorkspace = useCallback(async (workspaceData) => {
+const useCreateWorkspace = (setWorkspaces, setCurrentWorkspace, setLoading, setError) => {
+  return useCallback(async (workspaceData) => {
     try {
       setLoading(true);
       setError(null);
@@ -46,9 +41,11 @@ export const WorkspaceProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setWorkspaces, setCurrentWorkspace, setLoading, setError]);
+};
 
-  const updateWorkspace = useCallback(async (id, workspaceData) => {
+const useUpdateWorkspace = (setWorkspaces, setLoading, setError) => {
+  return useCallback(async (id, workspaceData) => {
     try {
       setLoading(true);
       setError(null);
@@ -63,9 +60,11 @@ export const WorkspaceProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setWorkspaces, setLoading, setError]);
+};
 
-  const deleteWorkspace = useCallback(async (id) => {
+const useDeleteWorkspace = (setWorkspaces, setLoading, setError) => {
+  return useCallback(async (id) => {
     try {
       setLoading(true);
       setError(null);
@@ -77,29 +76,25 @@ export const WorkspaceProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setWorkspaces, setLoading, setError]);
+};
 
-  const uploadAndProcessDocument = useCallback(async (workspaceId, file) => {
+const useUploadAndProcess = (setCurrentDocument, setSowData, setLoading, setError) => {
+  return useCallback(async (workspaceId, file) => {
     try {
       setLoading(true);
       setError(null);
-      
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'SOW');
-      
       const uploadResponse = await documentAPI.upload(workspaceId, formData);
       const document = uploadResponse.data;
       setCurrentDocument(document);
-      
       const processResponse = await documentAPI.process(document.document_id);
       const streamData = processResponse.data;
-      
       if (streamData.response_payload) {
-        const parsedData = JSON.parse(streamData.response_payload);
-        setSowData(parsedData);
+        setSowData(JSON.parse(streamData.response_payload));
       }
-      
       return { document, streamData };
     } catch (err) {
       setError(err.message || 'Failed to process document');
@@ -107,16 +102,17 @@ export const WorkspaceProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setCurrentDocument, setSowData, setLoading, setError]);
+};
 
-  const loadSowData = useCallback(async (documentId) => {
+const useLoadSowData = (setSowData, setLoading, setError) => {
+  return useCallback(async (documentId) => {
     try {
       setLoading(true);
       setError(null);
       const response = await llmAPI.getLatestStream(documentId);
       if (response.data.response_payload) {
-        const parsedData = JSON.parse(response.data.response_payload);
-        setSowData(parsedData);
+        setSowData(JSON.parse(response.data.response_payload));
       }
     } catch (err) {
       setError(err.message || 'Failed to load SoW data');
@@ -124,29 +120,81 @@ export const WorkspaceProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
+  }, [setSowData, setLoading, setError]);
+};
+
+const useLoadWorkspaceData = (setCurrentWorkspace, setSowData, setCurrentDocument, setLoading, setError) => {
+  return useCallback(async (workspace) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Clear previous data first
+      setSowData(null);
+      setCurrentDocument(null);
+      
+      console.log(`Loading workspace data for ${workspace.workspace_id}:`, workspace);
+      
+      // Use the new API endpoint that gets all data in one call
+      const response = await workspaceAPI.getData(workspace.workspace_id);
+      const data = response.data;
+      
+      console.log(`Workspace data response for ${workspace.workspace_id}:`, data);
+      
+      // Set the workspace (use the one from response to ensure it's fresh)
+      setCurrentWorkspace(data.workspace);
+      
+      if (data.document && data.sow_data) {
+        console.log(`Setting document and SoW data for workspace ${workspace.workspace_id}:`, {
+          document: data.document,
+          sowData: data.sow_data
+        });
+        setCurrentDocument(data.document);
+        setSowData(data.sow_data);
+      } else {
+        console.log(`No document or SoW data found for workspace ${workspace.workspace_id}`);
+        setCurrentDocument(null);
+        setSowData(null);
+      }
+    } catch (err) {
+      console.error('Error loading workspace data:', err);
+      setError(err.message || 'Failed to load workspace data');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [setCurrentWorkspace, setSowData, setCurrentDocument, setLoading, setError]);
+};
+
+export const WorkspaceProvider = ({ children }) => {
+  const [workspaces, setWorkspaces] = useState([]);
+  const [currentWorkspace, setCurrentWorkspace] = useState(null);
+  const [currentDocument, setCurrentDocument] = useState(null);
+  const [sowData, setSowData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchWorkspaces = useFetchWorkspaces(setWorkspaces, setLoading, setError);
+  const createWorkspace = useCreateWorkspace(setWorkspaces, setCurrentWorkspace, setLoading, setError);
+  const updateWorkspace = useUpdateWorkspace(setWorkspaces, setLoading, setError);
+  const deleteWorkspace = useDeleteWorkspace(setWorkspaces, setLoading, setError);
+  const uploadAndProcessDocument = useUploadAndProcess(setCurrentDocument, setSowData, setLoading, setError);
+  const loadSowData = useLoadSowData(setSowData, setLoading, setError);
+  const loadWorkspaceData = useLoadWorkspaceData(setCurrentWorkspace, setSowData, setCurrentDocument, setLoading, setError);
+
+  const clearWorkspaceData = useCallback(() => {
+    setCurrentWorkspace(null);
+    setCurrentDocument(null);
+    setSowData(null);
   }, []);
 
   const value = {
-    workspaces,
-    currentWorkspace,
-    currentDocument,
-    sowData,
-    loading,
-    error,
-    fetchWorkspaces,
-    createWorkspace,
-    updateWorkspace,
-    deleteWorkspace,
-    uploadAndProcessDocument,
-    loadSowData,
-    setCurrentWorkspace,
-    setSowData,
+    workspaces, currentWorkspace, currentDocument, sowData, loading, error,
+    fetchWorkspaces, createWorkspace, updateWorkspace, deleteWorkspace,
+    uploadAndProcessDocument, loadSowData, loadWorkspaceData, clearWorkspaceData,
+    setCurrentWorkspace, setSowData,
   };
 
-  return (
-    <WorkspaceContext.Provider value={value}>
-      {children}
-    </WorkspaceContext.Provider>
-  );
+  return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;
 };
 

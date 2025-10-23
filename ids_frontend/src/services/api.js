@@ -11,6 +11,7 @@ const api = axios.create({
 export const workspaceAPI = {
   getAll: () => api.get('/workspaces'),
   getById: (id) => api.get(`/workspaces/${id}`),
+  getData: (id) => api.get(`/workspaces/${id}/data`),
   create: (data) => api.post('/workspaces', data),
   update: (id, data) => api.put(`/workspaces/${id}`, data),
   delete: (id) => api.delete(`/workspaces/${id}`),

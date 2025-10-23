@@ -100,10 +100,11 @@ A complete full-stack application built with React (frontend) and Flask (backend
 #### Services
 
 **LLMService** (`services/llm_service.py`):
-- OpenAI GPT-4 integration
+- Azure OpenAI GPT-4 integration
 - Structured prompt for SoW extraction
 - JSON validation and parsing
 - Error handling with default responses
+- Token tracking and latency measurement
 
 **DocumentProcessor** (`services/document_processor.py`):
 - PDF text extraction (PyPDF2)
@@ -266,7 +267,7 @@ A complete full-stack application built with React (frontend) and Flask (backend
 ### Backend
 - Flask: 2.3.2
 - Flask-CORS: 4.0.0
-- openai: 1.3.0
+- openai: 0.28.1 (Azure OpenAI compatible)
 - PyPDF2: 3.0.1
 - python-docx: 0.8.11
 

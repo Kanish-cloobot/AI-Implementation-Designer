@@ -7,7 +7,7 @@ Flask backend for the AI Implementation Designer application.
 ### Prerequisites
 - Python 3.8+
 - pip
-- OpenAI API key
+- Azure OpenAI API key and endpoint
 
 ### Installation
 
@@ -26,7 +26,10 @@ pip install -r requirements.txt
 ```bash
 FLASK_APP=server.py
 FLASK_ENV=development
-OPENAI_API_KEY=your_openai_api_key_here
+AZURE_OPENAI_ENDPOINT=https://idsgpt4o.openai.azure.com/
+AZURE_OPENAI_API_VERSION=2024-08-01-preview
+AZURE_OPENAI_API_KEY=your_azure_openai_api_key_here
+AZURE_OPENAI_DEPLOYMENT=GPT4o
 DATABASE_PATH=./database/ids.db
 UPLOAD_FOLDER=./uploads
 ```
@@ -135,12 +138,22 @@ Follow PEP 8 guidelines:
 
 ## LLM Integration
 
-The application uses OpenAI's GPT-4 to extract insights from SoW documents. The extraction follows a structured prompt that identifies:
+The application uses Azure OpenAI's GPT-4 to extract insights from SoW documents. The extraction follows a structured prompt that identifies:
 - Project scope (in/out of scope)
 - Modules and processes
 - Business units and stakeholders
 - Salesforce licenses
 - Assumptions
+
+### Azure OpenAI Configuration
+
+The application uses Azure OpenAI service with the following configurable parameters:
+- **Endpoint**: Your Azure OpenAI endpoint URL
+- **API Version**: API version (default: 2024-08-01-preview)
+- **Deployment**: Your GPT-4 deployment name
+- **Temperature**: 0.7 (balanced creativity)
+- **Max Tokens**: 4000 (for comprehensive responses)
+- **Top P**: 0.9 (nucleus sampling)
 
 ## Development
 

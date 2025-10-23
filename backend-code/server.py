@@ -12,7 +12,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-app.config['DATABASE_PATH'] = os.getenv('DATABASE_PATH', './database/ids.db')
+app.config['DATABASE_PATH'] = os.getenv('DATABASE_PATH', os.path.join(os.path.dirname(__file__), 'database', 'ids.db'))
 app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER', './uploads')
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
 

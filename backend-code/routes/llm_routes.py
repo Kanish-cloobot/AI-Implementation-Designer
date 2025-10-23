@@ -6,7 +6,7 @@ llm_bp = Blueprint('llm', __name__)
 
 
 def get_db():
-    db_path = os.getenv('DATABASE_PATH', './database/ids.db')
+    db_path = os.getenv('DATABASE_PATH', os.path.join(os.path.dirname(__file__), '..', 'database', 'ids.db'))
     return DatabaseManager(db_path)
 
 

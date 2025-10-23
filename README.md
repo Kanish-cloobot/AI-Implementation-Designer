@@ -22,7 +22,7 @@ This application helps Salesforce implementation consultants by:
 ### Backend
 - **Flask 2.3.2** - Python web framework
 - **SQLite** - Embedded database
-- **OpenAI GPT-4** - AI-powered document analysis
+- **Azure OpenAI GPT-4** - AI-powered document analysis
 - **PyPDF2** - PDF text extraction
 - **python-docx** - Word document processing
 
@@ -79,7 +79,7 @@ AI-Implementation-Designer/
 ### Prerequisites
 - Node.js 16+ and npm
 - Python 3.8+
-- OpenAI API key
+- Azure OpenAI API key and endpoint
 
 ### Frontend Setup
 
@@ -109,7 +109,10 @@ pip install -r requirements.txt
 ```bash
 FLASK_APP=server.py
 FLASK_ENV=development
-OPENAI_API_KEY=your_openai_api_key_here
+AZURE_OPENAI_ENDPOINT=https://idsgpt4o.openai.azure.com/
+AZURE_OPENAI_API_VERSION=2024-08-01-preview
+AZURE_OPENAI_API_KEY=your_azure_openai_api_key_here
+AZURE_OPENAI_DEPLOYMENT=GPT4o
 DATABASE_PATH=./database/ids.db
 UPLOAD_FOLDER=./uploads
 ```
