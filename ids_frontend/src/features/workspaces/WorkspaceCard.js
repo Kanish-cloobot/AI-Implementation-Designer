@@ -2,7 +2,7 @@ import React from 'react';
 import './WorkspaceList.css';
 import Button from '../../components/common/Button';
 
-const WorkspaceCard = ({ workspace, onView, onEdit, onDelete }) => {
+const WorkspaceCard = ({ workspace, onView, onEdit, onDelete, onMeetings }) => {
   return (
     <div className="workspace-card">
       <div className="workspace-card-header">
@@ -31,6 +31,7 @@ const WorkspaceCard = ({ workspace, onView, onEdit, onDelete }) => {
       </div>
       <div className="workspace-card-actions">
         <Button onClick={onView} variant="secondary" size="small" icon="visibility">View</Button>
+        <Button onClick={onMeetings} variant="secondary" size="small" icon="event">Meetings</Button>
         <Button onClick={() => onEdit(workspace)} variant="secondary" size="small" icon="edit">Edit</Button>
         <Button onClick={() => onDelete(workspace.workspace_id)} variant="danger" size="small" icon="delete">
           Delete

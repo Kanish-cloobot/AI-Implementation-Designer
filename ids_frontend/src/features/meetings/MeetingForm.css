@@ -1,0 +1,259 @@
+.meeting-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.meeting-form-processing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: #1A1A1A;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  gap: 16px;
+}
+
+.meeting-form-processing p {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #FFFFFF;
+  margin: 0;
+  text-align: center;
+}
+
+.meeting-form-processing .processing-note {
+  font-weight: 400;
+  font-size: 12px;
+  color: #A8A8A8;
+}
+
+.meeting-form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.meeting-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meeting-form-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #FFFFFF;
+}
+
+.meeting-form-label .required {
+  color: #FF6B6B;
+}
+
+.meeting-form-hint {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #A8A8A8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.meeting-form-select {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #FFFFFF;
+  background: #262626;
+  border: 1px solid #A8A8A8;
+  border-radius: 4px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.meeting-form-select:hover {
+  background: #333333;
+  border-color: #C82FFF;
+}
+
+.meeting-form-select:focus {
+  background: #333333;
+  border-color: #C82FFF;
+}
+
+.meeting-form-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.meeting-form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #FFFFFF;
+  background: #262626;
+  border: 1px solid #A8A8A8;
+  border-radius: 4px;
+  outline: none;
+  resize: vertical;
+  min-height: 100px;
+  transition: all 0.2s ease;
+}
+
+.meeting-form-textarea::placeholder {
+  color: #A8A8A8;
+}
+
+.meeting-form-textarea:hover {
+  background: #333333;
+  border-color: #C82FFF;
+}
+
+.meeting-form-textarea:focus {
+  background: #333333;
+  border-color: #C82FFF;
+}
+
+.meeting-form-textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.meeting-file-upload {
+  position: relative;
+}
+
+.meeting-file-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.meeting-file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #FFFFFF;
+  background: #262626;
+  border: 1px solid #A8A8A8;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.meeting-file-label:hover {
+  background: #333333;
+  border-color: #C82FFF;
+}
+
+.meeting-file-label .material-symbols-outlined {
+  font-size: 20px;
+  font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 20;
+}
+
+.meeting-files-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.meeting-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #1A1A1A;
+  border: 1px solid #333333;
+  border-radius: 4px;
+}
+
+.meeting-file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.meeting-file-info .material-symbols-outlined {
+  font-size: 24px;
+  color: #C82FFF;
+  font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+}
+
+.meeting-file-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meeting-file-name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: #FFFFFF;
+}
+
+.meeting-file-size {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #A8A8A8;
+}
+
+.meeting-file-remove {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.meeting-file-remove .material-symbols-outlined {
+  font-size: 20px;
+  color: #A8A8A8;
+  font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 20;
+}
+
+.meeting-file-remove:hover {
+  background: #262626;
+}
+
+.meeting-file-remove:hover .material-symbols-outlined {
+  color: #FF6B6B;
+}
+
+.meeting-file-remove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.meeting-form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.meeting-form-actions button {
+  min-width: 120px;
+}
+

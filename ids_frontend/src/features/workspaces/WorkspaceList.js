@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './WorkspaceList.css';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 import Button from '../../components/common/Button';
@@ -90,6 +91,7 @@ const useWorkspaceHandlers = (workspaces, loading, error, fetchWorkspaces, delet
 };
 
 const WorkspaceList = () => {
+  const navigate = useNavigate();
   const { workspaces, loading, error, fetchWorkspaces, deleteWorkspace, 
     currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar } = useWorkspace();
   
@@ -104,6 +106,10 @@ const WorkspaceList = () => {
     handleFormSuccess, handleUploadSuccess, handleViewSoW
   } = useWorkspaceHandlers(workspaces, loading, error, fetchWorkspaces, deleteWorkspace, 
     currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar);
+
+  const handleMeetings = (workspace) => {
+    navigate(`/workspace/${workspace.workspace_id}/meetings`);
+  };
 
   if (showSoWViewer && sowData) {
     return <SoWViewer onBack={() => setShowSoWViewer(false)} />;
@@ -121,8 +127,14 @@ const WorkspaceList = () => {
       ) : (
         <div className="workspace-grid">
           {workspaces.map((workspace) => (
-            <WorkspaceCard key={workspace.workspace_id} workspace={workspace}
-              onView={() => handleViewSoW(workspace)} onEdit={handleEdit} onDelete={() => handleDelete(workspace)} />
+            <WorkspaceCard
+              key={workspace.workspace_id}
+              workspace={workspace}
+              onView={() => handleViewSoW(workspace)}
+              onMeetings={() => handleMeetings(workspace)}
+              onEdit={handleEdit}
+              onDelete={() => handleDelete(workspace)}
+            />
           ))}
         </div>
       )}

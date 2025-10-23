@@ -6,6 +6,7 @@ from database.db_manager import DatabaseManager
 from routes.workspace_routes import workspace_bp
 from routes.document_routes import document_bp
 from routes.llm_routes import llm_bp
+from routes.meeting_routes import meeting_routes
 
 load_dotenv()
 
@@ -24,6 +25,7 @@ db_manager.initialize_database()
 app.register_blueprint(workspace_bp, url_prefix='/api')
 app.register_blueprint(document_bp, url_prefix='/api')
 app.register_blueprint(llm_bp, url_prefix='/api')
+app.register_blueprint(meeting_routes, url_prefix='/api')
 
 
 @app.route('/api/health', methods=['GET'])

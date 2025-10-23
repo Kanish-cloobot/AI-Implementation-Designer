@@ -35,5 +35,33 @@ export const llmAPI = {
   getLatestStream: (documentId) => api.get(`/llm-streams/document/${documentId}/latest`),
 };
 
+export const meetingAPI = {
+  create: (formData) => {
+    return api.post('/meetings', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  getAll: (workspaceId, orgId = 'default_org', status = null) => {
+    const params = { org_id: orgId };
+    if (status) {
+      params.status = status;
+    }
+    return api.get(`/meetings/${workspaceId}`, { params });
+  },
+  getDetail: (meetingId, orgId = 'default_org') => {
+    return api.get(`/meetings/${meetingId}/detail`, {
+      params: { org_id: orgId },
+    });
+  },
+  update: (meetingId, data) => api.put(`/meetings/${meetingId}`, data),
+  delete: (meetingId, orgId = 'default_org') => {
+    return api.delete(`/meetings/${meetingId}`, {
+      params: { org_id: orgId },
+    });
+  },
+};
+
 export default api;
 

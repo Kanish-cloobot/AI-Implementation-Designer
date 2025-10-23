@@ -1,38 +1,36 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { WorkspaceProvider, useWorkspace } from './contexts/WorkspaceContext';
 import PageWrapper from './components/layout/PageWrapper';
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import WorkspaceList from './features/workspaces/WorkspaceList';
+import MeetingList from './features/meetings/MeetingList';
+import MeetingDetail from './features/meetings/MeetingDetail';
 import Snackbar from './components/common/Snackbar';
 
 const AppContent = () => {
-  const [currentView, setCurrentView] = useState('workspace-list');
   const { snackbar, hideSnackbar } = useWorkspace();
-
-  const handleSidebarNavigation = () => {
-    setCurrentView('workspace-list');
-  };
-
-  const renderCurrentView = () => {
-    switch (currentView) {
-      case 'workspace-list':
-        return <WorkspaceList onNavigateToViewer={() => setCurrentView('sow-viewer')} />;
-      case 'sow-viewer':
-        return <WorkspaceList onNavigateToViewer={() => setCurrentView('sow-viewer')} />;
-      default:
-        return <WorkspaceList onNavigateToViewer={() => setCurrentView('sow-viewer')} />;
-    }
-  };
 
   return (
     <div className="app">
       <Header />
       <div className="app-body">
-        <Sidebar onNavigate={handleSidebarNavigation} />
+        <Sidebar />
         <PageWrapper>
-          {renderCurrentView()}
+          <Routes>
+            <Route path="/" element={<Navigate to="/workspaces" replace />} />
+            <Route path="/workspaces" element={<WorkspaceList />} />
+            <Route
+              path="/workspace/:workspaceId/meetings"
+              element={<WorkspaceWithMeetings />}
+            />
+            <Route
+              path="/workspace/:workspaceId/meeting/:meetingId"
+              element={<MeetingDetail />}
+            />
+          </Routes>
         </PageWrapper>
       </div>
       <Snackbar
@@ -46,11 +44,18 @@ const AppContent = () => {
   );
 };
 
+const WorkspaceWithMeetings = () => {
+  const { workspaceId } = useParams();
+  return <MeetingList workspaceId={workspaceId} />;
+};
+
 function App() {
   return (
-    <WorkspaceProvider>
-      <AppContent />
-    </WorkspaceProvider>
+    <BrowserRouter>
+      <WorkspaceProvider>
+        <AppContent />
+      </WorkspaceProvider>
+    </BrowserRouter>
   );
 }
 

@@ -1,24 +1,26 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 
-const Sidebar = ({ onNavigate }) => {
+const Sidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { sidebarCollapsed, toggleSidebar, expandSidebar } = useWorkspace();
   
   const menuItems = [
-    { icon: 'folder', label: 'Workspaces', active: true },
-    // { icon: 'description', label: 'Documents', active: false },
-    // { icon: 'settings', label: 'Settings', active: false }
+    { icon: 'folder', label: 'Workspaces', path: '/workspaces' },
   ];
 
-  const handleSidebarClick = () => {
+  const isActive = (path) => {
+    return location.pathname === path || location.pathname.startsWith(path);
+  };
+
+  const handleItemClick = (path) => {
     if (sidebarCollapsed) {
       expandSidebar();
     } else {
-      // When clicking on workspace item, navigate to workspace list
-      if (onNavigate) {
-        onNavigate();
-      }
+      navigate(path);
       toggleSidebar();
     }
   };
@@ -29,8 +31,8 @@ const Sidebar = ({ onNavigate }) => {
         {menuItems.map((item, index) => (
           <div
             key={index}
-            className={`sidebar-item ${item.active ? 'sidebar-item-active' : ''}`}
-            onClick={handleSidebarClick}
+            className={`sidebar-item ${isActive(item.path) ? 'sidebar-item-active' : ''}`}
+            onClick={() => handleItemClick(item.path)}
           >
             <span className="material-symbols-outlined sidebar-icon">
               {item.icon}

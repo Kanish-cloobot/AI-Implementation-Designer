@@ -1,0 +1,50 @@
+Requirements Gathering Session - Salesforce Implementation
+Date: October 23, 2025
+Attendees: Sarah Chen (Project Manager), Mike Johnson (Sales Director), Alex Kim (IT Director), Jennifer Lee (Service Manager)
+
+Meeting Summary:
+
+Sarah Chen: Thank you all for joining today's requirements gathering session for our Salesforce implementation project. Let's start by discussing the current state of our systems and the challenges we're facing.
+
+Mike Johnson: Currently, our Sales team is using a combination of Excel spreadsheets and legacy CRM system from 2015. We're facing significant delays in lead tracking and opportunity management. It takes an average of 48 hours to get updated reports, which impacts our ability to respond quickly to market changes.
+
+Jennifer Lee: The Service team has similar issues. We're using a custom-built ticketing system that doesn't integrate with Sales. When customers call with issues, we have no visibility into their purchase history or ongoing deals. This leads to a poor customer experience and duplicated efforts.
+
+Alex Kim: From an IT perspective, we're maintaining three separate systems - the legacy CRM, the ticketing system, and our ERP. Data inconsistency is a major problem. We need a unified platform that can integrate with our existing QuickBooks accounting system and DocuSign for contract management.
+
+Sarah Chen: Great context. Let's talk about the target state. What are we hoping to achieve with Salesforce?
+
+Mike Johnson: We need Sales Cloud with at least 50 licenses for the sales team. Key requirements include:
+- Automated lead routing based on territory and product line
+- Real-time dashboard showing pipeline and forecasts
+- Mobile app access for field sales reps
+- Integration with our email marketing platform (Mailchimp)
+
+Jennifer Lee: For Service Cloud, we need 30 licenses. Critical requirements:
+- Case management with automatic escalation rules
+- Knowledge base for common issues
+- Customer portal for self-service
+- SLA tracking and reporting
+
+Alex Kim: We'll need 5 Platform licenses for custom application development. We have a unique inventory tracking requirement that will need custom objects and workflows. We also need to migrate approximately 50,000 customer records and 200,000 transaction records from the legacy system.
+
+Sarah Chen: What are the main risks and dependencies we should be aware of?
+
+Alex Kim: Data quality is a major concern. The legacy system has inconsistent data formats and duplicates. We'll need at least 2 months for data cleansing before migration. Also, we depend on getting API access from our ERP vendor for the integration - they've been unresponsive so far.
+
+Mike Johnson: Sales team bandwidth is a risk. We're heading into Q4, which is our busiest quarter. Training should ideally happen in January or February.
+
+Sarah Chen: Let me document the action items. Mike, can you provide the detailed territory mapping by next Friday? Alex, please reach out to the ERP vendor by end of this week and escalate if needed. Jennifer, can you compile the list of standard case categories we need to migrate?
+
+Mike Johnson: Yes, I'll have that ready by October 30th.
+Alex Kim: I'll escalate to the VP level if needed. The ERP integration is critical for Phase 1.
+Jennifer Lee: I'll work with my team and have the case categories documented by next Wednesday.
+
+Sarah Chen: One more thing - we agreed that custom development for the inventory module will be in Phase 2, correct?
+
+All: Agreed.
+
+Sarah Chen: Perfect. We've decided to proceed with a two-phase approach. Phase 1 will focus on Sales Cloud and Service Cloud core functionality with QuickBooks and DocuSign integrations. Phase 2 will include the custom inventory module and advanced analytics. Let's target January 15th for Phase 1 go-live.
+
+Meeting adjourned at 2:30 PM.
+
