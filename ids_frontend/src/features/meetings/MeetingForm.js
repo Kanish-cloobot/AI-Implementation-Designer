@@ -78,7 +78,13 @@ const MeetingForm = ({ workspaceId, orgId = 'default_org', meeting, onClose, onS
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log('Form submission started');
+    console.log('Form data:', formData);
+    console.log('Workspace ID:', workspaceId);
+    console.log('Org ID:', orgId);
+
     if (!validateForm()) {
+      console.log('Form validation failed');
       return;
     }
 
@@ -86,11 +92,13 @@ const MeetingForm = ({ workspaceId, orgId = 'default_org', meeting, onClose, onS
       setLoading(true);
 
       if (meeting) {
+        console.log('Updating existing meeting');
         await meetingAPI.update(meeting.meeting_id, {
           ...formData,
           org_id: orgId,
         });
       } else {
+        console.log('Creating new meeting');
         setProcessingFiles(files.length > 0);
         const formDataToSend = new FormData();
         formDataToSend.append('workspace_id', workspaceId);
@@ -105,12 +113,24 @@ const MeetingForm = ({ workspaceId, orgId = 'default_org', meeting, onClose, onS
           formDataToSend.append('files', file);
         });
 
-        await meetingAPI.create(formDataToSend);
+        console.log('Sending form data to API');
+        console.log('Form data values:');
+        console.log('- workspace_id:', workspaceId);
+        console.log('- meeting_name:', formData.meeting_name);
+        console.log('- stakeholders:', formData.stakeholders);
+        console.log('- meeting_datetime:', formData.meeting_datetime);
+        console.log('- meeting_details:', formData.meeting_details);
+        console.log('- status:', formData.status);
+        
+        const response = await meetingAPI.create(formDataToSend);
+        console.log('API response:', response);
       }
 
+      console.log('Meeting saved successfully');
       onSuccess();
     } catch (error) {
       console.error('Error saving meeting:', error);
+      console.error('Error details:', error.response?.data);
       alert('Failed to save meeting. Please try again.');
     } finally {
       setLoading(false);
@@ -127,7 +147,7 @@ const MeetingForm = ({ workspaceId, orgId = 'default_org', meeting, onClose, onS
   };
 
   return (
-    <Modal onClose={onClose} title={meeting ? 'Edit Meeting' : 'Schedule New Meeting'}>
+    <Modal isOpen={true} onClose={onClose} title={meeting ? 'Edit Meeting' : 'Create New Meeting'}>
       <form onSubmit={handleSubmit} className="meeting-form">
         {processingFiles && (
           <div className="meeting-form-processing">

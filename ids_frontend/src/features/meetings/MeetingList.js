@@ -110,7 +110,7 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
         </div>
         <Button variant="primary" onClick={handleCreateMeeting}>
           <span className="material-symbols-outlined">add</span>
-          Schedule Meeting
+          Create Meeting
         </Button>
       </div>
 
@@ -144,7 +144,7 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
           <span className="material-symbols-outlined">event_available</span>
           <p>No meetings found</p>
           <Button variant="secondary" onClick={handleCreateMeeting}>
-            Schedule Your First Meeting
+            Create Your First Meeting
           </Button>
         </div>
       ) : (

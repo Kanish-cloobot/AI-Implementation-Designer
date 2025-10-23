@@ -37,6 +37,15 @@ export const llmAPI = {
 
 export const meetingAPI = {
   create: (formData) => {
+    console.log('API: Creating meeting with form data:', formData);
+    console.log('API: Base URL:', api.defaults.baseURL);
+    
+    // Debug: Log FormData contents
+    console.log('API: FormData entries:');
+    for (let [key, value] of formData.entries()) {
+      console.log(`API: ${key}:`, value);
+    }
+    
     return api.post('/meetings', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
