@@ -251,7 +251,7 @@ export const generateDocumentationSections = (sowData) => {
     createOverviewSection(sowData),
     createModulesSection(sowData),
     createLicensesSection(sowData),
-    createValidationSection(sowData)
+    // createValidationSection(sowData)
   ];
 };
 

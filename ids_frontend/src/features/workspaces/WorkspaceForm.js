@@ -31,7 +31,7 @@ const validateForm = (formData) => {
 };
 
 const WorkspaceForm = ({ isOpen, onClose, onSuccess, workspace }) => {
-  const { createWorkspace, updateWorkspace, loading } = useWorkspace();
+  const { createWorkspace, updateWorkspace, loading, showSnackbar } = useWorkspace();
   const [formData, setFormData] = useState({ name: '', project_type: '', licenses: [] });
   const [errors, setErrors] = useState({});
 
@@ -59,9 +59,11 @@ const WorkspaceForm = ({ isOpen, onClose, onSuccess, workspace }) => {
     try {
       const result = workspace ? await updateWorkspace(workspace.workspace_id, formData)
         : await createWorkspace(formData);
+      showSnackbar(workspace ? 'Workspace updated successfully' : 'Workspace created successfully', 'success');
       onSuccess(result);
     } catch (err) {
       console.error('Failed to save workspace:', err);
+      showSnackbar('Failed to save workspace', 'error');
     }
   };
 

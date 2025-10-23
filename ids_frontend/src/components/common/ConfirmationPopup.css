@@ -1,0 +1,133 @@
+.confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.confirmation-popup {
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: confirmationSlideIn 0.3s ease;
+}
+
+@keyframes confirmationSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.confirmation-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.confirmation-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.confirmation-icon.warning {
+  background-color: rgba(255, 183, 77, 0.2);
+  color: #FFB74D;
+}
+
+.confirmation-icon.danger {
+  background-color: rgba(211, 47, 47, 0.2);
+  color: #D32F2F;
+}
+
+.confirmation-icon.info {
+  background-color: rgba(100, 181, 246, 0.2);
+  color: #64B5F6;
+}
+
+.confirmation-icon .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.confirmation-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0;
+  flex: 1;
+}
+
+.confirmation-content {
+  margin-bottom: 24px;
+}
+
+.confirmation-message {
+  font-size: 14px;
+  color: #A8A8A8;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.confirmation-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.confirmation-actions .button {
+  min-width: 80px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .confirmation-popup {
+    margin: 0 16px;
+    padding: 20px;
+  }
+  
+  .confirmation-header {
+    gap: 12px;
+  }
+  
+  .confirmation-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .confirmation-icon .material-symbols-outlined {
+    font-size: 20px;
+  }
+  
+  .confirmation-title {
+    font-size: 18px;
+  }
+  
+  .confirmation-actions {
+    flex-direction: column;
+  }
+  
+  .confirmation-actions .button {
+    width: 100%;
+  }
+}

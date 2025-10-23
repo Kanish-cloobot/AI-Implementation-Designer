@@ -1,0 +1,144 @@
+.snackbar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 8px;
+  padding: 16px 20px;
+  min-width: 300px;
+  max-width: 500px;
+  z-index: 1000;
+  opacity: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.snackbar-visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.snackbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.snackbar-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.snackbar-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.snackbar-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 1.4;
+}
+
+.snackbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.snackbar-action-button {
+  background-color: transparent;
+  border: 1px solid #C82FFF;
+  color: #C82FFF;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.snackbar-action-button:hover {
+  background-color: #C82FFF;
+  color: #FFFFFF;
+}
+
+.snackbar-close-button {
+  background-color: transparent;
+  border: none;
+  color: #A8A8A8;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.snackbar-close-button:hover {
+  background-color: #404040;
+  color: #FFFFFF;
+}
+
+.snackbar-close-button .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* Snackbar types */
+.snackbar-success .snackbar-icon {
+  color: #81C784;
+}
+
+.snackbar-error .snackbar-icon {
+  color: #D32F2F;
+}
+
+.snackbar-warning .snackbar-icon {
+  color: #FFB74D;
+}
+
+.snackbar-info .snackbar-icon {
+  color: #64B5F6;
+}
+
+/* Multiple snackbars */
+.snackbar + .snackbar {
+  bottom: 80px;
+}
+
+.snackbar + .snackbar + .snackbar {
+  bottom: 140px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .snackbar {
+    left: 16px;
+    right: 16px;
+    transform: translateY(100px);
+    min-width: auto;
+    max-width: none;
+  }
+  
+  .snackbar-visible {
+    transform: translateY(0);
+  }
+  
+  .snackbar-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .snackbar-actions {
+    align-self: flex-end;
+  }
+}

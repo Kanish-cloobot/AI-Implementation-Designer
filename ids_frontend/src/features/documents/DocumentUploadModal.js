@@ -57,8 +57,8 @@ const useDragAndDrop = (onFileDrop) => {
   return { dragActive, handleDrag, handleDrop };
 };
 
-const DocumentUploadModal = ({ isOpen, onClose, onSuccess, workspace }) => {
-  const { uploadAndProcessDocument, loading } = useWorkspace();
+const useDocumentUpload = (workspace, onSuccess) => {
+  const { uploadAndProcessDocument, loading, showSnackbar } = useWorkspace();
   const [selectedFile, setSelectedFile] = useState(null);
   const [error, setError] = useState('');
   const [processingStatus, setProcessingStatus] = useState('');
@@ -74,30 +74,66 @@ const DocumentUploadModal = ({ isOpen, onClose, onSuccess, workspace }) => {
     setError('');
   };
 
-  const { dragActive, handleDrag, handleDrop } = useDragAndDrop(handleFile);
-
   const handleSubmit = async () => {
     if (!selectedFile) return setError('Please select a file to upload');
     if (!workspace) return setError('No workspace selected');
     try {
       setProcessingStatus('Uploading document...');
+      showSnackbar('Uploading document...', 'info', 2000);
       await new Promise(resolve => setTimeout(resolve, 500));
       setProcessingStatus('Processing with AI...');
+      showSnackbar('Processing document with AI...', 'info', 3000);
       await uploadAndProcessDocument(workspace.workspace_id, selectedFile);
       setProcessingStatus('Extraction complete!');
+      showSnackbar('Document processed successfully!', 'success');
       await new Promise(resolve => setTimeout(resolve, 1000));
       onSuccess();
     } catch (err) {
       setError(err.message || 'Failed to process document');
       setProcessingStatus('');
+      showSnackbar('Failed to process document', 'error');
     }
   };
 
+  const resetState = () => {
+    setSelectedFile(null);
+    setError('');
+    setProcessingStatus('');
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+  };
+
+  return {
+    selectedFile,
+    error,
+    processingStatus,
+    loading,
+    handleFile,
+    handleSubmit,
+    resetState,
+    removeFile
+  };
+};
+
+const DocumentUploadModal = ({ isOpen, onClose, onSuccess, workspace }) => {
+  const {
+    selectedFile,
+    error,
+    processingStatus,
+    loading,
+    handleFile,
+    handleSubmit,
+    resetState,
+    removeFile
+  } = useDocumentUpload(workspace, onSuccess);
+
+  const { dragActive, handleDrag, handleDrop } = useDragAndDrop(handleFile);
+
   const handleClose = () => {
     if (!loading) {
-      setSelectedFile(null);
-      setError('');
-      setProcessingStatus('');
+      resetState();
       onClose();
     }
   };
@@ -123,7 +159,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onSuccess, workspace }) => {
           onClick={() => !loading && document.getElementById('file-input').click()}>
           <input id="file-input" type="file" accept=".pdf,.doc,.docx,.txt"
             onChange={(e) => handleFile(e.target.files[0])} style={{ display: 'none' }} disabled={loading} />
-          {selectedFile ? <FileInfo file={selectedFile} loading={loading} onRemove={() => setSelectedFile(null)} /> 
+          {selectedFile ? <FileInfo file={selectedFile} loading={loading} onRemove={removeFile} /> 
             : <EmptyDropzone />}
         </div>
         {error && <div className="document-upload-error">{error}</div>}

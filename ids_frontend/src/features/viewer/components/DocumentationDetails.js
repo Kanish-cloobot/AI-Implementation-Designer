@@ -43,7 +43,7 @@ const DocumentationDetails = ({
             </div>
           </div>
         </div>
-        <div className="doc-details-header-right">
+        {/* <div className="doc-details-header-right">
           <Button 
             variant="secondary" 
             size="small" 
@@ -55,7 +55,7 @@ const DocumentationDetails = ({
           >
             Open in SDLC
           </Button>
-        </div>
+        </div> */}
       </div>
       
       <div className="doc-details-content">

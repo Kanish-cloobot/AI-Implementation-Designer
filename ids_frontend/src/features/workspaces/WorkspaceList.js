@@ -7,6 +7,7 @@ import WorkspaceForm from './WorkspaceForm';
 import DocumentUploadModal from '../documents/DocumentUploadModal';
 import SoWViewer from '../viewer/SoWViewer';
 import WorkspaceCard from './WorkspaceCard';
+import ConfirmationPopup from '../../components/common/ConfirmationPopup';
 
 const EmptyState = ({ onCreate }) => (
   <div className="workspace-list-empty">
@@ -17,26 +18,44 @@ const EmptyState = ({ onCreate }) => (
   </div>
 );
 
-const WorkspaceList = () => {
-  const { workspaces, loading, error, fetchWorkspaces, deleteWorkspace, currentWorkspace, sowData, loadWorkspaceData, collapseSidebar } = useWorkspace();
+const useWorkspaceHandlers = (workspaces, loading, error, fetchWorkspaces, deleteWorkspace, 
+  currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState(null);
   const [showSoWViewer, setShowSoWViewer] = useState(false);
+  const [confirmationPopup, setConfirmationPopup] = useState({
+    isOpen: false,
+    workspaceId: null,
+    workspaceName: ''
+  });
 
   useEffect(() => { fetchWorkspaces(); }, [fetchWorkspaces]);
 
   const handleCreateNew = () => { setEditingWorkspace(null); setIsFormOpen(true); };
   const handleEdit = (workspace) => { setEditingWorkspace(workspace); setIsFormOpen(true); };
   
-  const handleDelete = async (workspaceId) => {
-    if (window.confirm('Are you sure you want to delete this workspace?')) {
-      try {
-        await deleteWorkspace(workspaceId);
-      } catch (err) {
-        console.error('Failed to delete workspace:', err);
-      }
+  const handleDelete = (workspace) => {
+    setConfirmationPopup({
+      isOpen: true,
+      workspaceId: workspace.workspace_id,
+      workspaceName: workspace.name
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteWorkspace(confirmationPopup.workspaceId);
+      showSnackbar('Workspace deleted successfully', 'success');
+      setConfirmationPopup({ isOpen: false, workspaceId: null, workspaceName: '' });
+    } catch (err) {
+      console.error('Failed to delete workspace:', err);
+      showSnackbar('Failed to delete workspace', 'error');
     }
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmationPopup({ isOpen: false, workspaceId: null, workspaceName: '' });
   };
 
   const handleFormSuccess = () => {
@@ -45,16 +64,46 @@ const WorkspaceList = () => {
   };
 
   const handleUploadSuccess = () => { setIsUploadModalOpen(false); setShowSoWViewer(true); };
+  
   const handleViewSoW = async (workspace) => {
     try {
       await loadWorkspaceData(workspace);
       setShowSoWViewer(true);
-      // Collapse sidebar when viewing workspace
       collapseSidebar();
+      showSnackbar('Workspace data loaded successfully', 'success');
     } catch (err) {
       console.error('Failed to load workspace data:', err);
+      showSnackbar('Failed to load workspace data', 'error');
     }
   };
+
+  return {
+    isFormOpen, setIsFormOpen,
+    isUploadModalOpen, setIsUploadModalOpen,
+    editingWorkspace, setEditingWorkspace,
+    showSoWViewer, setShowSoWViewer,
+    confirmationPopup, setConfirmationPopup,
+    handleCreateNew, handleEdit, handleDelete,
+    handleConfirmDelete, handleCancelDelete,
+    handleFormSuccess, handleUploadSuccess, handleViewSoW
+  };
+};
+
+const WorkspaceList = () => {
+  const { workspaces, loading, error, fetchWorkspaces, deleteWorkspace, 
+    currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar } = useWorkspace();
+  
+  const {
+    isFormOpen, setIsFormOpen,
+    isUploadModalOpen, setIsUploadModalOpen,
+    editingWorkspace,
+    showSoWViewer, setShowSoWViewer,
+    confirmationPopup,
+    handleCreateNew, handleEdit, handleDelete,
+    handleConfirmDelete, handleCancelDelete,
+    handleFormSuccess, handleUploadSuccess, handleViewSoW
+  } = useWorkspaceHandlers(workspaces, loading, error, fetchWorkspaces, deleteWorkspace, 
+    currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar);
 
   if (showSoWViewer && sowData) {
     return <SoWViewer onBack={() => setShowSoWViewer(false)} />;
@@ -73,7 +122,7 @@ const WorkspaceList = () => {
         <div className="workspace-grid">
           {workspaces.map((workspace) => (
             <WorkspaceCard key={workspace.workspace_id} workspace={workspace}
-              onView={() => handleViewSoW(workspace)} onEdit={handleEdit} onDelete={handleDelete} />
+              onView={() => handleViewSoW(workspace)} onEdit={handleEdit} onDelete={() => handleDelete(workspace)} />
           ))}
         </div>
       )}
@@ -82,6 +131,17 @@ const WorkspaceList = () => {
         onSuccess={handleFormSuccess} workspace={editingWorkspace} />
       <DocumentUploadModal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)}
         onSuccess={handleUploadSuccess} workspace={currentWorkspace} />
+      <ConfirmationPopup
+        isOpen={confirmationPopup.isOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Workspace"
+        message={`Are you sure you want to delete "${confirmationPopup.workspaceName}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        loading={loading}
+      />
     </div>
   );
 };
