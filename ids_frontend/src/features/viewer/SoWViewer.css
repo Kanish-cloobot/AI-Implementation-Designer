@@ -1,6 +1,8 @@
 .sow-viewer-container {
   width: 100%;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .sow-viewer-empty {
@@ -13,9 +15,10 @@
 }
 
 .sow-viewer-header {
-  margin-bottom: 32px;
-  padding-bottom: 20px;
+  padding: 20px 24px;
   border-bottom: 0.5px solid #A8A8A8;
+  background-color: #0D0D0D;
+  flex-shrink: 0;
 }
 
 .sow-viewer-header-left {
@@ -41,6 +44,24 @@
   font-size: 14px;
   color: #A8A8A8;
   margin: 0;
+}
+
+.sow-viewer-documentation {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.sow-viewer-navigation {
+  width: 25%;
+  min-width: 300px;
+  max-width: 400px;
+  flex-shrink: 0;
+}
+
+.sow-viewer-details {
+  flex: 1;
+  min-width: 0;
 }
 
 .sow-viewer-content {
@@ -154,5 +175,23 @@
 
 .sow-viewer-validation-issues li {
   margin-bottom: 4px;
+}
+
+.doc-details-validation-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.doc-details-validation-badge.valid {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #81C784;
+}
+
+.doc-details-validation-badge.invalid {
+  background-color: rgba(211, 47, 47, 0.2);
+  color: #D32F2F;
 }
 

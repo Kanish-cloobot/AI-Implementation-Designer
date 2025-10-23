@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './SoWViewer.css';
 import Button from '../../components/common/Button';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
-import ScopeSummary from './components/ScopeSummary';
-import ModulesAndProcesses from './components/ModulesAndProcesses';
-import Stakeholders from './components/Stakeholders';
-import LicenseList from './components/LicenseList';
+import DocumentationNavigation from './components/DocumentationNavigation';
+import DocumentationDetails from './components/DocumentationDetails';
+import { generateDocumentationSections } from './utils/documentationSections';
 
 const AssumptionsSection = ({ assumptions }) => (
   assumptions && assumptions.length > 0 && (
@@ -56,6 +55,7 @@ const ValidationSection = ({ validation }) => (
 
 const SoWViewer = ({ onBack }) => {
   const { sowData, currentWorkspace, currentDocument } = useWorkspace();
+  const [activeSection, setActiveSection] = useState('project-overview');
 
   console.log('SoWViewer - Current workspace:', currentWorkspace);
   console.log('SoWViewer - Current document:', currentDocument);
@@ -72,6 +72,8 @@ const SoWViewer = ({ onBack }) => {
     );
   }
 
+  const sections = generateDocumentationSections(sowData);
+
   return (
     <div className="sow-viewer-container">
       <div className="sow-viewer-header">
@@ -83,15 +85,23 @@ const SoWViewer = ({ onBack }) => {
           </div>
         </div>
       </div>
-      <div className="sow-viewer-content">
-        <div className="sow-viewer-section"><ScopeSummary data={sowData.scope_summary} /></div>
-        <div className="sow-viewer-section"><ModulesAndProcesses data={sowData.modules} /></div>
-        <div className="sow-viewer-grid">
-          <div className="sow-viewer-section"><Stakeholders data={sowData.business_units} /></div>
-          <div className="sow-viewer-section"><LicenseList data={sowData.salesforce_licenses} /></div>
+      <div className="sow-viewer-documentation">
+        <div className="sow-viewer-navigation">
+          <DocumentationNavigation 
+            sections={sections}
+            activeSection={activeSection}
+            onSectionSelect={setActiveSection}
+          />
         </div>
-        <AssumptionsSection assumptions={sowData.assumptions} />
-        <ValidationSection validation={sowData.validation_summary} />
+        <div className="sow-viewer-details">
+          <DocumentationDetails 
+            activeSection={activeSection}
+            sections={sections}
+            sowData={sowData}
+            currentWorkspace={currentWorkspace}
+            currentDocument={currentDocument}
+          />
+        </div>
       </div>
     </div>
   );

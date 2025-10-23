@@ -1,0 +1,107 @@
+.doc-navigation {
+  width: 100%;
+  height: 100%;
+  background-color: #0D0D0D;
+  border-right: 0.5px solid #A8A8A8;
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-nav-header {
+  padding: 20px 16px;
+  border-bottom: 0.5px solid #A8A8A8;
+}
+
+.doc-nav-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.doc-nav-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.doc-nav-item {
+  width: 100%;
+}
+
+.doc-nav-section {
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-radius: 0;
+}
+
+.doc-nav-section:hover {
+  background-color: #262626;
+}
+
+.doc-nav-section.active {
+  background-color: #C82FFF;
+  color: #FFFFFF;
+}
+
+.doc-nav-section-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  min-height: 32px;
+}
+
+.doc-nav-expand-icon {
+  font-size: 18px;
+  color: #A8A8A8;
+  transition: transform 0.2s ease;
+}
+
+.doc-nav-icon {
+  font-size: 18px;
+  color: #A8A8A8;
+  font-weight: 200;
+}
+
+.doc-nav-section.active .doc-nav-icon {
+  color: #FFFFFF;
+}
+
+.doc-nav-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #A8A8A8;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-nav-section.active .doc-nav-title {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.doc-nav-children {
+  background-color: #1A1A1A;
+}
+
+/* Scrollbar styling */
+.doc-nav-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.doc-nav-content::-webkit-scrollbar-track {
+  background: #0D0D0D;
+}
+
+.doc-nav-content::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 2px;
+}
+
+.doc-nav-content::-webkit-scrollbar-thumb:hover {
+  background: #4D4D4D;
+}

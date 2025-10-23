@@ -1,0 +1,144 @@
+.doc-details {
+  width: 100%;
+  height: 100%;
+  background-color: #0D0D0D;
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-details-header {
+  padding: 20px 24px;
+  border-bottom: 0.5px solid #A8A8A8;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.doc-details-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.doc-details-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.doc-details-tabs {
+  display: flex;
+  gap: 0;
+}
+
+.doc-details-tab {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #A8A8A8;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.doc-details-tab.active {
+  color: #C82FFF;
+  border-bottom-color: #C82FFF;
+}
+
+.doc-details-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.doc-details-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.doc-details-section {
+  max-width: 800px;
+}
+
+.doc-details-main-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 24px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #C82FFF;
+}
+
+.doc-details-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.doc-details-content-section {
+  margin-bottom: 24px;
+}
+
+.doc-details-content-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 12px 0;
+}
+
+.doc-details-content-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #A8A8A8;
+  margin: 0;
+}
+
+.doc-details-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doc-details-list-item {
+  padding: 8px 12px;
+  background-color: #1A1A1A;
+  border-radius: 4px;
+  border-left: 3px solid #C82FFF;
+  font-size: 14px;
+  color: #FFFFFF;
+  line-height: 1.5;
+}
+
+.doc-details-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #A8A8A8;
+  font-size: 14px;
+}
+
+/* Scrollbar styling */
+.doc-details-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.doc-details-content::-webkit-scrollbar-track {
+  background: #0D0D0D;
+}
+
+.doc-details-content::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 2px;
+}
+
+.doc-details-content::-webkit-scrollbar-thumb:hover {
+  background: #4D4D4D;
+}
