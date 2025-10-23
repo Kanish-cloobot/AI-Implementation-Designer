@@ -531,6 +531,45 @@ const MeetingDetail = () => {
               'code',
               'purple'
             )}
+            {renderSection(
+              'Scope Summary',
+              extractions.scope_summary || [],
+              (data) =>
+                renderGenericList(data, [
+                  { key: 'in_scope_md', label: 'In Scope' },
+                  { key: 'out_of_scope_md', label: 'Out of Scope' },
+                  { key: 'future_phase_md', label: 'Future Phase' },
+                ]),
+              'checklist',
+              'green'
+            )}
+            {renderSection(
+              'Assumptions & Gaps',
+              extractions.assumptions_gaps || [],
+              (data) =>
+                renderGenericList(data, [{ key: 'note_md', label: 'Note' }]),
+              'help_outline',
+              'orange'
+            )}
+            {renderSection(
+              'Source References',
+              extractions.source_references || [],
+              (data) =>
+                renderGenericList(data, [{ key: 'reference_md', label: 'Reference' }]),
+              'source_notes',
+              'blue'
+            )}
+            {renderSection(
+              'Validation Summary',
+              extractions.validation_summary || [],
+              (data) =>
+                renderGenericList(data, [
+                  { key: 'json_validity', label: 'JSON Valid' },
+                  { key: 'issues_detected', label: 'Issues Detected' },
+                ]),
+              'verified',
+              'green'
+            )}
           </div>
         )}
       </div>

@@ -4,24 +4,23 @@ import time
 import traceback
 from datetime import datetime
 from services.document_processor import DocumentProcessor
-from config import OPENAI_GPT5_CONFIGS, AZURE_ENGINE_NAME_OPEN_AI_GPT_5_MINI_SC
+from config import OPENAI_CONFIG
 
-# Configure OpenAI for Azure GPT-5 Mini
-gpt5_config = OPENAI_GPT5_CONFIGS[AZURE_ENGINE_NAME_OPEN_AI_GPT_5_MINI_SC]
+# Configure OpenAI for Azure GPT-4
 openai.api_type = "azure"
-openai.api_base = gpt5_config['azure_endpoint']
-openai.api_version = gpt5_config['api_version']
-openai.api_key = gpt5_config['api_key']
+openai.api_base = OPENAI_CONFIG['azure_endpoint']
+openai.api_version = OPENAI_CONFIG['api_version']
+openai.api_key = OPENAI_CONFIG['api_key']
 
 
 class MeetingExtractionService:
     def __init__(self, db_manager):
         self.db_manager = db_manager
         self.doc_processor = DocumentProcessor()
-        self.deployment = gpt5_config['deployment']
-        self.max_tokens = gpt5_config['max_tokens']
-        self.temperature = gpt5_config['temperature']
-        self.top_p = gpt5_config['top_p']
+        self.deployment = OPENAI_CONFIG['deployment']
+        self.max_tokens = OPENAI_CONFIG['max_tokens']
+        self.temperature = OPENAI_CONFIG['temperature']
+        self.top_p = OPENAI_CONFIG['top_p']
 
     def process_meeting_files(self, meeting_id, workspace_id, org_id):
         """
