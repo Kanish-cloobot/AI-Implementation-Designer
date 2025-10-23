@@ -72,5 +72,64 @@ export const meetingAPI = {
   },
 };
 
+export const dashboardAPI = {
+  getDashboard: (workspaceId, orgId = 'default_org') => {
+    return api.get(`/dashboard/${workspaceId}`, {
+      params: { org_id: orgId },
+    });
+  },
+  getSummary: (workspaceId, orgId = 'default_org') => {
+    return api.get(`/dashboard/${workspaceId}/summary`, {
+      params: { org_id: orgId },
+    });
+  },
+  getActivity: (workspaceId, orgId = 'default_org', limit = 10) => {
+    return api.get(`/dashboard/${workspaceId}/activity`, {
+      params: { org_id: orgId, limit },
+    });
+  },
+};
+
+export const brdAPI = {
+  getBRD: (workspaceId, orgId = 'default_org') => {
+    return api.get(`/brd/${workspaceId}`, {
+      params: { org_id: orgId },
+    });
+  },
+  getSummary: (workspaceId, orgId = 'default_org') => {
+    return api.get(`/brd/${workspaceId}/summary`, {
+      params: { org_id: orgId },
+    });
+  },
+  getSection: (workspaceId, sectionName, orgId = 'default_org') => {
+    return api.get(`/brd/${workspaceId}/section/${sectionName}`, {
+      params: { org_id: orgId },
+    });
+  },
+};
+
+export const raidAPI = {
+  getRAID: (workspaceId, orgId = 'default_org') => {
+    return api.get(`/raid/${workspaceId}`, {
+      params: { org_id: orgId },
+    });
+  },
+  getSummary: (workspaceId, orgId = 'default_org') => {
+    return api.get(`/raid/${workspaceId}/summary`, {
+      params: { org_id: orgId },
+    });
+  },
+  getStatus: (workspaceId, orgId = 'default_org') => {
+    return api.get(`/raid/${workspaceId}/status`, {
+      params: { org_id: orgId },
+    });
+  },
+  getSection: (workspaceId, sectionName, orgId = 'default_org') => {
+    return api.get(`/raid/${workspaceId}/section/${sectionName}`, {
+      params: { org_id: orgId },
+    });
+  },
+};
+
 export default api;
 

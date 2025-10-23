@@ -1,0 +1,321 @@
+.dashboard-container {
+  padding: 24px;
+  background-color: #0D0D0D;
+  min-height: 100vh;
+  color: #FFFFFF;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.dashboard-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.dashboard-loading,
+.dashboard-error,
+.dashboard-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.dashboard-loading p,
+.dashboard-error p,
+.dashboard-empty p {
+  margin-top: 16px;
+  color: #A8A8A8;
+  font-size: 16px;
+}
+
+/* Summary Cards */
+.dashboard-summary {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  color: #FFFFFF;
+  margin-bottom: 24px;
+}
+
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.summary-card {
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+  background-color: #262626;
+  border-color: #C82FFF;
+}
+
+.summary-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summary-card-icon .material-symbols-outlined {
+  font-size: 24px;
+  color: #FFFFFF;
+}
+
+.summary-card.blue .summary-card-icon {
+  background: linear-gradient(135deg, #00AAFF, #C82FFF);
+}
+
+.summary-card.purple .summary-card-icon {
+  background: linear-gradient(135deg, #C82FFF, #8B5CF6);
+}
+
+.summary-card.red .summary-card-icon {
+  background: linear-gradient(135deg, #EF4444, #F97316);
+}
+
+.summary-card.orange .summary-card-icon {
+  background: linear-gradient(135deg, #F97316, #EAB308);
+}
+
+.summary-card.green .summary-card-icon {
+  background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.summary-card-content {
+  flex: 1;
+}
+
+.summary-card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: #A8A8A8;
+  margin: 0 0 8px 0;
+}
+
+.summary-card-count {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.dashboard-section {
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.dashboard-section .section-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+/* Recent Meetings */
+.recent-meetings,
+.upcoming-meetings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.recent-meeting-item {
+  background-color: #262626;
+  border: 0.5px solid #404040;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.recent-meeting-item:hover {
+  background-color: #333333;
+  border-color: #C82FFF;
+}
+
+.meeting-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meeting-name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.meeting-datetime {
+  font-size: 14px;
+  color: #A8A8A8;
+  margin: 0;
+}
+
+.meeting-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  width: fit-content;
+}
+
+.meeting-status.scheduled {
+  background-color: #1E40AF;
+  color: #FFFFFF;
+}
+
+.meeting-status.completed {
+  background-color: #059669;
+  color: #FFFFFF;
+}
+
+.meeting-status.cancelled {
+  background-color: #DC2626;
+  color: #FFFFFF;
+}
+
+/* Recent Activity */
+.recent-activity {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background-color: #262626;
+  border: 0.5px solid #404040;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.activity-item:hover {
+  background-color: #333333;
+  border-color: #C82FFF;
+}
+
+.activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-icon .material-symbols-outlined {
+  font-size: 18px;
+  color: #FFFFFF;
+}
+
+.activity-icon.icon-purple {
+  background: linear-gradient(135deg, #C82FFF, #8B5CF6);
+}
+
+.activity-icon.icon-orange {
+  background: linear-gradient(135deg, #F97316, #EAB308);
+}
+
+.activity-icon.icon-green {
+  background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.activity-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activity-description {
+  font-size: 14px;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.activity-type {
+  font-size: 12px;
+  color: #A8A8A8;
+  text-transform: capitalize;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #A8A8A8;
+}
+
+/* Empty States */
+.empty-state {
+  text-align: center;
+  color: #A8A8A8;
+  font-style: italic;
+  padding: 32px;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+  
+  .dashboard-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .summary-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}

@@ -111,6 +111,18 @@ const WorkspaceList = () => {
     navigate(`/workspace/${workspace.workspace_id}/meetings`);
   };
 
+  const handleDashboard = (workspace) => {
+    navigate(`/workspace/${workspace.workspace_id}/dashboard`);
+  };
+
+  const handleBRD = (workspace) => {
+    navigate(`/workspace/${workspace.workspace_id}/brd`);
+  };
+
+  const handleRAID = (workspace) => {
+    navigate(`/workspace/${workspace.workspace_id}/raid`);
+  };
+
   if (showSoWViewer && sowData) {
     return <SoWViewer onBack={() => setShowSoWViewer(false)} />;
   }
@@ -131,7 +143,10 @@ const WorkspaceList = () => {
               key={workspace.workspace_id}
               workspace={workspace}
               onView={() => handleViewSoW(workspace)}
+              onDashboard={() => handleDashboard(workspace)}
               onMeetings={() => handleMeetings(workspace)}
+              onBRD={() => handleBRD(workspace)}
+              onRAID={() => handleRAID(workspace)}
               onEdit={handleEdit}
               onDelete={() => handleDelete(workspace)}
             />

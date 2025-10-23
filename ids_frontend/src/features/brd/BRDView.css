@@ -1,0 +1,311 @@
+.brd-container {
+  padding: 24px;
+  background-color: #0D0D0D;
+  min-height: 100vh;
+  color: #FFFFFF;
+}
+
+.brd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.brd-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.brd-loading,
+.brd-error,
+.brd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.brd-loading p,
+.brd-error p,
+.brd-empty p {
+  margin-top: 16px;
+  color: #A8A8A8;
+  font-size: 16px;
+}
+
+/* BRD Sections */
+.brd-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.brd-section {
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.brd-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #262626;
+}
+
+.brd-section-header:hover {
+  background-color: #333333;
+}
+
+.brd-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brd-section-title .material-symbols-outlined {
+  font-size: 20px;
+  color: #FFFFFF;
+}
+
+.brd-section-title .icon-purple {
+  color: #C82FFF;
+}
+
+.brd-section-title .icon-blue {
+  color: #00AAFF;
+}
+
+.brd-section-title .icon-green {
+  color: #10B981;
+}
+
+.brd-section-title .icon-orange {
+  color: #F97316;
+}
+
+.brd-section-title h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.section-count {
+  background-color: #404040;
+  color: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 24px;
+  text-align: center;
+}
+
+.brd-section-header .material-symbols-outlined:last-child {
+  color: #A8A8A8;
+  font-size: 20px;
+}
+
+.brd-section-content {
+  padding: 24px;
+  background-color: #1A1A1A;
+}
+
+.section-empty {
+  text-align: center;
+  color: #A8A8A8;
+  font-style: italic;
+  margin: 0;
+  padding: 32px;
+}
+
+/* BRD Items */
+.brd-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.brd-item {
+  background-color: #262626;
+  border: 0.5px solid #404040;
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.brd-item:hover {
+  background-color: #333333;
+  border-color: #C82FFF;
+}
+
+.brd-field {
+  margin-bottom: 12px;
+}
+
+.brd-field strong {
+  color: #FFFFFF;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.brd-field span {
+  color: #A8A8A8;
+  line-height: 1.5;
+}
+
+.brd-field ul {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+  color: #A8A8A8;
+}
+
+.brd-field li {
+  margin-bottom: 4px;
+}
+
+.brd-item-meta {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 0.5px solid #404040;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.created-at {
+  font-size: 12px;
+  color: #A8A8A8;
+}
+
+/* Requirement Items */
+.requirement-item {
+  border-left: 4px solid #C82FFF;
+}
+
+.requirement-header {
+  margin-bottom: 12px;
+}
+
+.requirement-type {
+  background-color: #C82FFF;
+  color: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.requirement-description {
+  color: #FFFFFF;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.requirement-criteria {
+  background-color: #1A1A1A;
+  border: 0.5px solid #404040;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.requirement-criteria strong {
+  color: #FFFFFF;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.requirement-criteria ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #A8A8A8;
+}
+
+.requirement-criteria li {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+/* Persona Items */
+.persona-item {
+  border-left: 4px solid #F97316;
+}
+
+.persona-name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  color: #FFFFFF;
+  margin: 0 0 16px 0;
+}
+
+.persona-responsibilities,
+.persona-modules {
+  margin-bottom: 16px;
+}
+
+.persona-responsibilities strong,
+.persona-modules strong {
+  color: #FFFFFF;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.persona-responsibilities ul,
+.persona-modules ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #A8A8A8;
+}
+
+.persona-responsibilities li,
+.persona-modules li {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .brd-container {
+    padding: 16px;
+  }
+  
+  .brd-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .brd-section-header {
+    padding: 16px;
+  }
+  
+  .brd-section-content {
+    padding: 16px;
+  }
+  
+  .brd-section-title {
+    gap: 8px;
+  }
+  
+  .brd-section-title h3 {
+    font-size: 16px;
+  }
+}

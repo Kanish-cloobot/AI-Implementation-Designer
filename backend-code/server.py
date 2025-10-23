@@ -7,6 +7,9 @@ from routes.workspace_routes import workspace_bp
 from routes.document_routes import document_bp
 from routes.llm_routes import llm_bp
 from routes.meeting_routes import meeting_routes
+from routes.dashboard_routes import dashboard_routes
+from routes.brd_routes import brd_routes
+from routes.raid_routes import raid_routes
 
 load_dotenv()
 
@@ -26,6 +29,9 @@ app.register_blueprint(workspace_bp, url_prefix='/api')
 app.register_blueprint(document_bp, url_prefix='/api')
 app.register_blueprint(llm_bp, url_prefix='/api')
 app.register_blueprint(meeting_routes, url_prefix='/api')
+app.register_blueprint(dashboard_routes, url_prefix='/api')
+app.register_blueprint(brd_routes, url_prefix='/api')
+app.register_blueprint(raid_routes, url_prefix='/api')
 
 
 @app.route('/api/health', methods=['GET'])

@@ -1,0 +1,441 @@
+.raid-container {
+  padding: 24px;
+  background-color: #0D0D0D;
+  min-height: 100vh;
+  color: #FFFFFF;
+}
+
+.raid-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.raid-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 32px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.raid-loading,
+.raid-error,
+.raid-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.raid-loading p,
+.raid-error p,
+.raid-empty p {
+  margin-top: 16px;
+  color: #A8A8A8;
+  font-size: 16px;
+}
+
+/* RAID Sections */
+.raid-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.raid-section {
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.raid-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #262626;
+}
+
+.raid-section-header:hover {
+  background-color: #333333;
+}
+
+.raid-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.raid-section-title .material-symbols-outlined {
+  font-size: 20px;
+  color: #FFFFFF;
+}
+
+.raid-section-title .icon-red {
+  color: #EF4444;
+}
+
+.raid-section-title .icon-orange {
+  color: #F97316;
+}
+
+.raid-section-title .icon-green {
+  color: #10B981;
+}
+
+.raid-section-title .icon-blue {
+  color: #00AAFF;
+}
+
+.raid-section-title h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.section-count {
+  background-color: #404040;
+  color: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 24px;
+  text-align: center;
+}
+
+.raid-section-header .material-symbols-outlined:last-child {
+  color: #A8A8A8;
+  font-size: 20px;
+}
+
+.raid-section-content {
+  padding: 24px;
+  background-color: #1A1A1A;
+}
+
+.section-empty {
+  text-align: center;
+  color: #A8A8A8;
+  font-style: italic;
+  margin: 0;
+  padding: 32px;
+}
+
+/* RAID Items */
+.raid-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.raid-item {
+  background-color: #262626;
+  border: 0.5px solid #404040;
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.raid-item:hover {
+  background-color: #333333;
+  border-color: #C82FFF;
+}
+
+.raid-item-meta {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 0.5px solid #404040;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.created-at {
+  font-size: 12px;
+  color: #A8A8A8;
+}
+
+/* Risk Items */
+.risk-item {
+  border-left: 4px solid #EF4444;
+}
+
+.risk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.risk-type {
+  background-color: #EF4444;
+  color: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.risk-date {
+  font-size: 12px;
+  color: #A8A8A8;
+}
+
+.risk-description {
+  color: #FFFFFF;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.risk-detail {
+  background-color: #1A1A1A;
+  border: 0.5px solid #404040;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.risk-detail strong {
+  color: #FFFFFF;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.risk-owner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #A8A8A8;
+  font-size: 14px;
+}
+
+.risk-owner .material-symbols-outlined {
+  font-size: 16px;
+}
+
+/* Action Items */
+.action-item {
+  border-left: 4px solid #F97316;
+}
+
+.action-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.action-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.action-status.pending {
+  background-color: #F97316;
+  color: #FFFFFF;
+}
+
+.action-status.in_progress {
+  background-color: #3B82F6;
+  color: #FFFFFF;
+}
+
+.action-status.completed {
+  background-color: #10B981;
+  color: #FFFFFF;
+}
+
+.action-status.cancelled {
+  background-color: #6B7280;
+  color: #FFFFFF;
+}
+
+.action-date {
+  font-size: 12px;
+  color: #A8A8A8;
+}
+
+.action-description {
+  color: #FFFFFF;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.action-owner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #A8A8A8;
+  font-size: 14px;
+}
+
+.action-owner .material-symbols-outlined {
+  font-size: 16px;
+}
+
+/* Decision Items */
+.decision-item {
+  border-left: 4px solid #10B981;
+}
+
+.decision-description {
+  color: #FFFFFF;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.decision-rationale {
+  background-color: #1A1A1A;
+  border: 0.5px solid #404040;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.decision-rationale strong {
+  color: #FFFFFF;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.decision-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #A8A8A8;
+}
+
+/* Dependency Items */
+.dependency-item {
+  border-left: 4px solid #00AAFF;
+}
+
+.dependency-header {
+  margin-bottom: 12px;
+}
+
+.dependency-type {
+  background-color: #00AAFF;
+  color: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.dependency-description {
+  color: #FFFFFF;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.dependency-detail {
+  background-color: #1A1A1A;
+  border: 0.5px solid #404040;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.dependency-detail strong {
+  color: #FFFFFF;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.dependency-owner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #A8A8A8;
+  font-size: 14px;
+}
+
+.dependency-owner .material-symbols-outlined {
+  font-size: 16px;
+}
+
+/* Pain Point Items */
+.pain-point-item {
+  border-left: 4px solid #F97316;
+}
+
+.pain-point-description {
+  color: #FFFFFF;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.pain-point-detail {
+  background-color: #1A1A1A;
+  border: 0.5px solid #404040;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.pain-point-detail strong {
+  color: #FFFFFF;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .raid-container {
+    padding: 16px;
+  }
+  
+  .raid-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .raid-section-header {
+    padding: 16px;
+  }
+  
+  .raid-section-content {
+    padding: 16px;
+  }
+  
+  .raid-section-title {
+    gap: 8px;
+  }
+  
+  .raid-section-title h3 {
+    font-size: 16px;
+  }
+  
+  .risk-header,
+  .action-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .decision-meta {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

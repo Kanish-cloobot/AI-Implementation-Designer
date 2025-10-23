@@ -8,6 +8,9 @@ import Sidebar from './components/layout/Sidebar';
 import WorkspaceList from './features/workspaces/WorkspaceList';
 import MeetingList from './features/meetings/MeetingList';
 import MeetingDetail from './features/meetings/MeetingDetail';
+import Dashboard from './features/dashboard/Dashboard';
+import BRDView from './features/brd/BRDView';
+import RAIDView from './features/raid/RAIDView';
 import Snackbar from './components/common/Snackbar';
 
 const AppContent = () => {
@@ -23,12 +26,24 @@ const AppContent = () => {
             <Route path="/" element={<Navigate to="/workspaces" replace />} />
             <Route path="/workspaces" element={<WorkspaceList />} />
             <Route
+              path="/workspace/:workspaceId/dashboard"
+              element={<Dashboard />}
+            />
+            <Route
               path="/workspace/:workspaceId/meetings"
               element={<WorkspaceWithMeetings />}
             />
             <Route
               path="/workspace/:workspaceId/meeting/:meetingId"
               element={<MeetingDetail />}
+            />
+            <Route
+              path="/workspace/:workspaceId/brd"
+              element={<BRDView />}
+            />
+            <Route
+              path="/workspace/:workspaceId/raid"
+              element={<RAIDView />}
             />
           </Routes>
         </PageWrapper>
