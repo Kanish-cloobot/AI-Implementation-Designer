@@ -1,0 +1,149 @@
+.document-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.document-upload-description {
+  font-size: 14px;
+  color: #A8A8A8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.document-upload-dropzone {
+  border: 2px dashed #A8A8A8;
+  border-radius: 8px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #1A1A1A;
+  min-height: 200px;
+}
+
+.document-upload-dropzone:hover {
+  border-color: #C82FFF;
+  background-color: #262626;
+}
+
+.document-upload-dropzone.active {
+  border-color: #C82FFF;
+  background-color: #262626;
+}
+
+.document-upload-dropzone.has-file {
+  border-style: solid;
+  border-color: #C82FFF;
+}
+
+.document-upload-icon {
+  font-size: 48px;
+  color: #A8A8A8;
+}
+
+.document-upload-text {
+  font-size: 14px;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.document-upload-text strong {
+  color: #C82FFF;
+}
+
+.document-upload-hint {
+  font-size: 12px;
+  color: #A8A8A8;
+  margin: 0;
+}
+
+.document-upload-file-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.document-upload-file-icon {
+  font-size: 40px;
+  color: #C82FFF;
+}
+
+.document-upload-file-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.document-upload-file-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin: 0;
+  word-break: break-all;
+}
+
+.document-upload-file-size {
+  font-size: 12px;
+  color: #A8A8A8;
+  margin: 0;
+}
+
+.document-upload-remove-btn {
+  background: none;
+  border: none;
+  color: #A8A8A8;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.document-upload-remove-btn:hover {
+  color: #D32F2F;
+}
+
+.document-upload-error {
+  background-color: rgba(211, 47, 47, 0.2);
+  color: #D32F2F;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  border: 0.5px solid #D32F2F;
+}
+
+.document-upload-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: rgba(200, 47, 255, 0.1);
+  border-radius: 4px;
+  border: 0.5px solid #C82FFF;
+  color: #C82FFF;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.document-upload-status-icon {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+

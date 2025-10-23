@@ -1,0 +1,50 @@
+.header {
+  background-color: #1A1A1A;
+  border-bottom: 0.5px solid #A8A8A8;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+}
+
+.header-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo-icon {
+  color: #C82FFF;
+  font-size: 32px;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.header-user-icon {
+  color: #A8A8A8;
+  font-size: 32px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.header-user-icon:hover {
+  color: #FFFFFF;
+}
+

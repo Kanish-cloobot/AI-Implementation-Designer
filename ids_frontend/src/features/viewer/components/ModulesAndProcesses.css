@@ -1,0 +1,136 @@
+.modules-processes {
+  width: 100%;
+}
+
+.modules-processes-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modules-processes-title .material-symbols-outlined {
+  color: #C82FFF;
+  font-size: 26px;
+}
+
+.modules-processes-empty {
+  padding: 20px;
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 8px;
+  text-align: center;
+  color: #A8A8A8;
+  font-size: 14px;
+}
+
+.modules-processes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.module-card {
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.module-card:hover {
+  border-color: #C82FFF;
+}
+
+.module-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.module-card-header:hover {
+  background-color: #262626;
+}
+
+.module-card-header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex: 1;
+}
+
+.module-icon {
+  color: #C82FFF;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.module-card-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.module-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.module-card-description {
+  font-size: 13px;
+  color: #A8A8A8;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.module-expand-icon {
+  color: #A8A8A8;
+  font-size: 24px;
+  transition: transform 0.3s ease;
+}
+
+.module-expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.module-card-content {
+  padding: 0 20px 20px 20px;
+  border-top: 0.5px solid #A8A8A8;
+}
+
+.module-processes-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.module-process-item {
+  padding: 10px 14px;
+  background-color: #262626;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #FFFFFF;
+  line-height: 1.5;
+  border-left: 2px solid #C82FFF;
+}
+
+.module-processes-empty {
+  padding: 16px 0 0 0;
+  text-align: center;
+  color: #A8A8A8;
+  font-size: 13px;
+  font-style: italic;
+}
+

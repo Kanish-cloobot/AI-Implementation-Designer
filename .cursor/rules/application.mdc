@@ -1,0 +1,380 @@
+---
+alwaysApply: true
+---
+
+
+---
+description: Strictly follow all the rules.It is a combination of both frontend and backend rules.
+globs:
+alwaysApply: true
+---
+
+# CloobotX Project - Cursor Rules
+
+## Project Overview
+This is a multi-technology project with:
+- **Frontend**: React (ids_frontend) application
+- **Backend**: Python Flask application with AI/ML capabilities
+- **Database**: SQLite
+
+## General Project Rules
+
+### 1. Code Organization
+- Follow the existing project structure and naming conventions
+- Maintain separation between frontend and backend code
+- Use consistent file naming (snake_case for Python, camelCase for JavaScript)
+- Keep related functionality grouped in appropriate directories
+
+### 2. Documentation
+- Update relevant documentation when making significant changes
+- Include clear comments for complex logic
+- Maintain API documentation for backend endpoints
+- Document any new dependencies or configuration changes
+
+### 3. Testing
+- **Backend**: Run test files after completing backend changes and show output
+- **Frontend**: Ensure components work across different browsers
+- Test API integrations thoroughly
+- Validate data flow between frontend and backend
+
+### 4. Security
+- Never commit sensitive data (API keys, passwords, tokens)
+- Use environment variables for configuration
+- Validate all user inputs
+- Follow secure coding practices
+
+---
+
+## Frontend Development Rules
+
+### React Application (ids_frontend/)
+
+#### 1. Component Structure
+- Use functional components with hooks
+- Follow React best practices and patterns
+- Implement proper error boundaries
+- Use TypeScript for type safety when possible
+
+#### 2. Styling Guidelines
+- **ONLY modify visual/aesthetic elements**: colors, spacing, fonts, borders, shadows, layout styling
+- **Edit ONLY inline styles or component-specific CSS files** (like ComponentName.css)
+- **NEVER touch global files** like App.css, index.css, or index.html
+- **Preserve all existing logic** - don't modify JavaScript functions, state management, API calls, or backend-related code
+- **Never modify config.js** - this file contains critical configuration
+
+#### 3. Design System (Material Design 3 Dark Mode)
+
+**Design System Guidelines for Claude**
+This is a design system based on Google Material Design 3 dark mode. The following are the design guidelines for this project, which are divided into multiple sections, starting with colours.
+
+**Design Guideline for Colours:**
+Use the following colors to build the surface hierarchy. The color number indicates darkness of the color. for ex color 1 is the darkest color.
+
+- **Color 1 (#0D0D0D)** - This is the 1st and the most darkest color and should be used as the background for panels and also as the base color on top of which every other item will rest. this color is the layer 0 from material design surface elevation point of view and should be used as such.
+
+- **Color 2 (#1A1A1A)** - This is the 2nd dark color (lighter than Color 1) & should be used as a background fill for panels when there is an overlap of color 1. This can be used to make an element appear differentiated.
+
+- **Color 3 (#262626)** - This is the 3rd dark color (lighter than Color 2). This color should be used for the Default state background color of buttons or other items like clickable list items.
+
+- **Color 4 (#333333)** - This is the 4th dark color (lighter than Color 3). This color should be used for the hover state background color of buttons or other items like clickable list items.
+
+- **Color 5 (#404040)** - This is the 5th dark color (lighter than Color 4). This color should be used to indicate the active state background color of buttons or other items like clickable list items, which need to be shown to be in active state.
+
+- **Color 6 (#4D4D4D)** - This is the 6th dark color (lighter than Color 5). This color should be used to achieve the highest surface elevation in rare cases. Try to avoid using this color as much as possible. This should be used if there is visual blending of color 5 with color 5 then this should be used as a higher surface elevation color.
+
+- **Color 7 (#FFFFFF)** - This is the brightest color in the UI and should be used for text and, in rare cases, to highlight primary buttons.
+
+- **Accent color Magenta (#C82FFF)** - This color should be used as an accent color, as a fill for checkboxes and toggles. Use this color rarely. Use it to bring a sliver of color to the UI.
+
+- **X Color Gradient** - This gradient is made using 2 Colours, one of which is an accent color #C82FFF, and the other one is a blue color 00AAFF. use this gradient color for really important CTA button like Next. or any primary button which initiates very important action.
+
+- **Placeholder color (#A8A8A8)** - This color is to be used for borders of panels or cards. This color should also be used as text color for hint text inside the text input box.
+
+**Design Guideline for Stroke:**
+The panel border strokes should be the placeholder colour. The stroke thickness for panel should be 0.5 pts. for main separation lines it can be 1 pt.
+
+**Design Guideline for Buttons:** 
+For primary buttons, use the x gradient colour as a fill color and for secondary buttons, use the color 3 as the default state color 4 as the hover state and color 5 as the active or pressed state.
+Buttons should as much as possible have maximum possible corner roundness to make sure we have capsule buttons. The button text color shall be color 7, which is pure white #FFFFFF.
+
+**Design Guidelines for Icons:** 
+Use the icons from Google's Material Design material symbols and icons library with the weight set at 200 and fill set as off to achieve a clean line icon look.
+
+**Design Guidelines for Typography:** 
+Use the Regular, Medium and Semi-bold fonts from the Montserrat font family, which is a Google font. use semi bold only for very big headings. other wise stick to medium fonts for most headlines. do not user any other fonts.
+
+**Design guidelines for Text input:** 
+The text input boxes will have sharp but comfortably rounded corners. Do not make capsule text input boxes keep them rectangular but with decently rounded corners for ex use 2 points as maximum corner radius or maximum 4 not exceeding that.
+
+#### 4. UI Components
+- **Buttons**: Use X gradient for primary, Color 3/4/5 for secondary states
+- **Icons**: Google Material Design icons, weight 200, fill off
+- **Typography**: Montserrat font family (Regular, Medium, Semi-bold)
+- **Text Inputs**: Rounded corners (2-4px max), rectangular shape
+- **Strokes**: 0.5pt for panels, 1pt for main separations
+
+#### 5. State Management
+- Use React Context for global state when needed
+- Implement proper loading and error states
+- Handle async operations with proper error handling
+- Use React Query or similar for API state management
+
+#### 6. Performance
+- Implement lazy loading for components
+- Use React.memo for expensive components
+- Optimize bundle size
+- Implement proper caching strategies
+
+#### 7. Code Quality & Linting (ESLint)
+- **MANDATORY**: All JavaScript/TypeScript code must pass ESLint validation
+- **ESLint Configuration**:
+  - Use `react-app` and `react-app/jest` configurations
+  - **Complexity threshold**: ≤ 10
+  - **Function length**: ≤ 75 lines
+  - **Max statements**: ≤ 120 per function
+  - Enforce consistent code formatting
+  - Catch common JavaScript/React errors
+  - Validate JSX syntax and React best practices
+  - Ensure proper import/export usage
+  - Enforce consistent naming conventions
+- **File Structure Guidelines**:
+  - **Page length**: ≤ 300 lines
+  - **Line length**: ≤ 120 characters (170 for comments/docstrings)
+- **Code Quality Standards**:
+  - Remove unused imports
+  - Use meaningful variable and function names
+  - Replace magic numbers with named constants
+  - Follow single responsibility principle
+  - Keep comments focused and explain "why", not "what"
+- **Pre-commit**: Run `npm run lint` and `tsc --noEmit` before committing changes
+- **IDE Integration**: Configure ESLint in your IDE for real-time feedback
+
+---
+
+## Backend Development Rules
+
+### Python Flask Application (backend-code/)
+
+#### 1. Code Structure
+- Follow PEP 8 style guidelines
+- Use type hints for better code documentation
+- Implement proper error handling and logging
+- Use dependency injection patterns
+
+#### 2. API Development
+- Follow RESTful API conventions
+- Implement proper HTTP status codes
+- Use Flask-CORS for cross-origin requests
+- Validate all input data with Pydantic models
+
+#### 3. Database Operations
+- Use SQLite for data persistence
+- Implement proper connection pooling
+- Use transactions for data consistency
+- Follow database naming conventions
+
+#### 3.1 Database Query Requirements
+- **MANDATORY WHERE CONDITIONS**: All database queries MUST include `*_org_id` and `*_status` in WHERE conditions when these columns are available in the table
+- **Column Name Patterns**: Column names may have prefixes like `igc_org_id`, `igc_status`, `icm_org_id`, `icm_status`, etc.
+- **Conditional WHERE Conditions**: Include `ws_id` or other relevant IDs in WHERE conditions based on the table structure and function requirements
+- **Security**: Always filter by `*_org_id` to ensure data isolation between organizations
+- **Data Integrity**: Use `*_status` filtering to exclude soft-deleted or inactive records
+
+#### 4. AI/ML Integration
+- Use the existing GPT tools and validation layer
+- Implement proper error handling for AI responses
+- Use the validation system for response quality
+- Follow the existing AI processing patterns
+
+#### 5. File Structure
+- Standard
+
+#### 6. Testing Requirements
+- **MANDATORY**: After completing backend changes, use test files to run and show output
+- Write unit tests for new functionality
+- Test API endpoints thoroughly
+- Validate AI response processing
+- Run integration tests for database operations
+
+#### 7. AI/ML Specific Rules
+- Use the validation layer for all GPT responses
+- Follow the existing prompt engineering patterns
+- Implement proper token counting and management
+- Use the router system for model selection
+- Validate all AI outputs before processing
+
+#### 8. Security
+- Implement proper authentication and authorization
+- Use JWT tokens for session management
+- Validate all user inputs
+- Implement rate limiting for API endpoints
+- Use environment variables for sensitive configuration
+
+#### 9. Code Quality & Linting (PyFlake/Flake8)
+- **MANDATORY**: All Python code must pass PyFlake/Flake8 validation
+- **PyFlake Configuration**:
+  - Follow PEP 8 style guidelines strictly
+  - **Line length**: ≤ 120 characters (≤ 100 for docstrings and comments)
+  - **Function length**: ≤ 75 lines
+  - **Max statements**: ≤ 120 per function
+  - **Complexity threshold**: ≤ 10 cyclomatic complexity
+  - Use proper import organization (standard library, third-party, local)
+  - Enforce consistent naming conventions (snake_case for variables/functions, PascalCase for classes)
+  - Validate unused imports and variables
+  - Check for undefined names and syntax errors
+  - Ensure proper docstring formatting
+- **File Structure Guidelines**:
+  - **Page length**: ≤ 300-350 lines
+  - Remove unused imports
+- **Code Quality Standards**:
+  - **Function Guidelines**:
+    - Prefer built-in functions and libraries over reinventing logic
+    - Each function should follow single responsibility principle (do one thing well)
+    - Keep function complexity ≤ 10 cyclomatic complexity (avoid deeply nested logic)
+  - **Comments**:
+    - Keep comments focused
+    - Comments explain "why", not "what"
+  - **Exception Handling**:
+    - Always print traceback errors
+    - Validate function arguments early
+  - **Code Readability & Maintainability**:
+    - Use meaningful names (e.g., `get_user_profile`)
+    - Replace magic numbers with named constants
+    - Use list/dict comprehensions where clear
+    - Follow PEP 8
+    - Write scalable code: new dev should understand logic in < 2 minutes
+- **Additional Tools**:
+  - Use `black` for code formatting
+  - Use `isort` for import sorting
+  - Use `mypy` for type checking
+  - Use `pylint` for additional code quality checks
+- **Pre-commit**: Run `flake8 .` and `black --check .` before committing changes
+- **IDE Integration**: Configure PyFlake/Flake8 in your IDE for real-time feedback
+
+---
+
+## Comprehensive Linting & Error Resolution Strategy
+
+### 1. Systematic Error Resolution Process
+- **Step 1**: Take statistics of all pending issues (errors, warnings, info)
+- **Step 2**: Run lint checks (`npm run lint` for frontend, `flake8 .` for backend)
+- **Step 3**: Run TypeScript checks (`tsc --noEmit` for frontend)
+- **Step 4**: Address issues strategically in order of severity:
+  1. Errors (blocking)
+  2. Warnings (important)
+  3. Info messages (nice to have)
+- **Step 5**: Repeat until everything is completely resolved
+- **Step 6**: Never suppress rules - fix the underlying issues
+
+### 2. Error Resolution Guidelines
+- **No Rule Suppression**: Never use `// eslint-disable` or `# flake8: noqa` without fixing the root cause
+- **Incremental Fixes**: Address one type of issue at a time
+- **Documentation**: Document any complex fixes or workarounds
+- **Testing**: Verify fixes don't break existing functionality
+
+### 3. Quality Gates
+- All lint checks must pass with zero errors
+- All TypeScript checks must pass with zero errors
+- All tests must pass
+- Code coverage must be maintained or improved
+
+---
+
+## Development Workflow
+
+### 1. Before Making Changes
+- Understand the existing codebase structure
+- Check for existing similar functionality
+- Review related documentation
+- Plan the implementation approach
+
+### 2. During Development
+- Follow the technology-specific rules above
+- Write clean, maintainable code
+- Add appropriate comments and documentation
+- Test functionality as you develop
+
+### 3. After Development
+- **Backend**: Run test files and show output
+- **Frontend**: Test in multiple browsers
+- Update documentation if needed
+- Review code for security issues
+- Ensure proper error handling
+
+### 4. Code Review Checklist
+- [ ] Follows project conventions
+- [ ] Includes proper error handling
+- [ ] Has appropriate tests
+- [ ] Updates documentation if needed
+- [ ] Follows security best practices
+- [ ] Maintains existing functionality
+
+---
+
+## Quick Reference Commands
+
+### Frontend (React)
+```bash
+cd ids_frontend
+npm start          # Development server
+npm run build      # Production build
+npm test           # Run tests
+npm run lint       # Run ESLint
+tsc --noEmit       # TypeScript type checking
+```
+
+### Backend (Python)
+```bash
+cd backend-code
+python server.py   # Start Flask server
+python -m pytest  # Run tests
+pip install -r requirements.txt  # Install dependencies
+flake8 .           # Run PyFlake/Flake8 linting
+black .            # Format code with Black
+isort .            # Sort imports
+mypy .             # Type checking
+pylint .           # Additional code quality checks
+```
+
+### Comprehensive Linting Commands
+```bash
+# Frontend - Complete linting check
+cd ids_frontend
+npm run lint && tsc --noEmit
+
+# Backend - Complete linting check
+cd backend-code
+flake8 . && black --check . && isort --check-only . && mypy .
+```
+
+---
+
+## Important Notes
+
+1. **Never modify config.js** - Contains critical configuration
+2. **Test backend changes** - Always run test files and show output
+3. **Follow design system** - Use the specified color palette and components
+4. **Maintain separation** - Keep frontend and backend concerns separate
+5. **Document changes** - Update relevant documentation for significant changes
+6. **Security first** - Never commit sensitive data, always validate inputs
+7. **AI validation** - Use the validation layer for all AI responses
+8. **Performance** - Optimize for both frontend and backend performance
+
+## File Extensions and Patterns
+
+### Frontend
+- `.js`, `.jsx` - React components
+- `.css` - Component-specific styles
+- `.scss` - SCSS stylesheets
+
+### Backend
+- `.py` - Python source files
+- `.sql` - Database scripts
+- `.md` - Documentation
+- `.json` - Configuration files
+
+### General
+- `.env` - Environment variables (never commit)
+- `.gitignore` - Git ignore patterns
+- `requirements.txt` - Python dependencies
+- `package.json` - Node.js dependencies

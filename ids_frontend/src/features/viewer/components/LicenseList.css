@@ -1,0 +1,87 @@
+.license-list-card {
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 8px;
+  padding: 24px;
+  height: fit-content;
+}
+
+.license-list-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.license-list-title .material-symbols-outlined {
+  color: #C82FFF;
+  font-size: 26px;
+}
+
+.license-list-empty {
+  text-align: center;
+  color: #A8A8A8;
+  font-size: 14px;
+  padding: 20px 0;
+}
+
+.license-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.license-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background-color: #262626;
+  border-radius: 6px;
+  border-left: 3px solid #C82FFF;
+  transition: background-color 0.2s ease;
+}
+
+.license-item:hover {
+  background-color: #333333;
+}
+
+.license-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #C82FFF;
+}
+
+.license-item-icon .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.license-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.license-item-type {
+  font-size: 14px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.license-item-count {
+  font-size: 12px;
+  color: #A8A8A8;
+  margin: 0;
+}
+
+.license-item-count span {
+  color: #C82FFF;
+  font-weight: 500;
+}
+

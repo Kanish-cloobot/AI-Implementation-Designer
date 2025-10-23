@@ -1,0 +1,29 @@
+.page-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #0D0D0D;
+}
+
+.page-content {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.page-wrapper::-webkit-scrollbar-track {
+  background: #0D0D0D;
+}
+
+.page-wrapper::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 4px;
+}
+
+.page-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #4D4D4D;
+}
+
