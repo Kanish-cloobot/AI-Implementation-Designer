@@ -27,11 +27,10 @@ class MeetingExtractionService:
         Process all files for a meeting and extract insights
         """
         try:
-            # Get all files for the meeting from unified files table
+            # Get all files for the meeting
             files_query = '''
-                SELECT f.* FROM files f
-                INNER JOIN meeting_files mf ON f.file_name = mf.file_name 
-                WHERE mf.meeting_id = ? AND mf.org_id = ? AND f.status = 'uploaded'
+                SELECT * FROM meeting_files
+                WHERE meeting_id = ? AND org_id = ? AND status = 'uploaded'
             '''
             files = self.db_manager.fetch_all(
                 files_query,
@@ -45,21 +44,7 @@ class MeetingExtractionService:
             combined_text = ""
             for file in files:
                 try:
-                    # Check if file has content stored in database
-                    if not file.get('file_content'):
-                        print(f"Skipping {file['file_name']}: No file content available")
-                        continue
-                    
-                    # Extract text from file content using the correct method
-                    # Strip the dot from file extension if present
-                    file_extension = file.get('file_extension', 'txt')
-                    if file_extension.startswith('.'):
-                        file_extension = file_extension[1:]
-                    
-                    file_text = self.doc_processor.extract_text(
-                        file['file_content'], 
-                        file_extension
-                    )
+                    file_text = self.doc_processor.extract_text(file['storage_path'])
                     combined_text += f"\n\n--- File: {file['file_name']} ---\n\n{file_text}"
                 except Exception as e:
                     print(f"Error extracting text from {file['file_name']}: {str(e)}")
