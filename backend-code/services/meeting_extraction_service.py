@@ -169,10 +169,11 @@ Denoising & Relevance Rules
 
 Output Requirements
 - Output must be a single JSON object, enclosed in triple backticks (```json ... ```).
-- Each V1–V16 key must contain a list of JSON objects.
+- Each V1-V16 key must contain a list of JSON objects.
 - All text content should be written as Markdown within string values.
 - Use double-quoted keys, properly escaped strings, and no trailing commas.
 - Each array must exist even if empty.
+- IMPORTANT: Generate as many as possible items for each V1-V16 key, especially for V5_requirements.
 
 JSON Structure Required:
 {{

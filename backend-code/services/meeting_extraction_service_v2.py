@@ -143,6 +143,7 @@ class MeetingExtractionServiceV2:
         """Build the extraction prompt for LLM"""
         prompt = f"""
         Analyze the following meeting transcript and extract structured information for Salesforce implementation discovery.
+        Important: Generate as many as possible items for each  key, especially for Requirements (V5).
 
         Meeting Content:
         {text}
