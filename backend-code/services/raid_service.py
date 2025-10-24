@@ -23,7 +23,7 @@ class RAIDService:
                 'action_items': self._consolidate_action_items(extractions),
                 'decisions': self._consolidate_decisions(extractions),
                 'dependencies': self._consolidate_dependencies(extractions),
-                'pain_points': self._consolidate_pain_points(extractions)
+                # 'pain_points': self._consolidate_pain_points(extractions)
             }
             
             return raid_data
