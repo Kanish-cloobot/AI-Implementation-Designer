@@ -1,5 +1,6 @@
-import React, { createContext, useState, useContext, useCallback } from 'react';
+import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
 import { workspaceAPI, documentAPI, llmAPI } from '../services/api';
+import { saveCurrentWorkspace, loadCurrentWorkspace, clearCurrentWorkspace } from '../utils/localStorage';
 
 const WorkspaceContext = createContext();
 
@@ -194,6 +195,22 @@ export const WorkspaceProvider = ({ children }) => {
     duration: 4000
   });
 
+  // Initialize with saved workspace from localStorage
+  useEffect(() => {
+    const savedWorkspace = loadCurrentWorkspace();
+    if (savedWorkspace) {
+      setCurrentWorkspace(savedWorkspace);
+      console.log('Restored workspace from localStorage:', savedWorkspace);
+    }
+  }, []);
+
+  // Save workspace to localStorage whenever currentWorkspace changes
+  useEffect(() => {
+    if (currentWorkspace) {
+      saveCurrentWorkspace(currentWorkspace);
+    }
+  }, [currentWorkspace]);
+
   const fetchWorkspaces = useFetchWorkspaces(setWorkspaces, setLoading, setError);
   const createWorkspace = useCreateWorkspace(setWorkspaces, setCurrentWorkspace, setLoading, setError);
   const updateWorkspace = useUpdateWorkspace(setWorkspaces, setLoading, setError);
@@ -206,6 +223,7 @@ export const WorkspaceProvider = ({ children }) => {
     setCurrentWorkspace(null);
     setCurrentDocument(null);
     setSowData(null);
+    clearCurrentWorkspace();
   }, []);
 
   const toggleSidebar = useCallback(() => {

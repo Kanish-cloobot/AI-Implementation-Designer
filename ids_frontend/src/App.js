@@ -7,7 +7,8 @@ import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import WorkspaceSidebar from './components/layout/WorkspaceSidebar';
 import WorkspaceWrapper from './components/layout/WorkspaceWrapper';
-import WorkspaceList from './features/workspaces/WorkspaceList';
+import WorkspaceRedirect from './components/WorkspaceRedirect';
+  import WorkspaceList from './features/workspaces/WorkspaceList';
 import MeetingList from './features/meetings/MeetingList';
 import MeetingDetail from './features/meetings/MeetingDetail';
 import Dashboard from './features/dashboard/Dashboard';
@@ -29,58 +30,60 @@ const AppContent = () => {
       <div className={`app-body ${isWorkspaceRoute ? 'app-body-workspace' : ''} ${isWorkspaceRoute && sidebarCollapsed ? 'app-body-collapsed' : ''}`}>
         {isWorkspaceRoute ? <WorkspaceSidebar /> : <Sidebar />}
         <PageWrapper>
-          <Routes>
-            <Route path="/" element={<Navigate to="/workspaces" replace />} />
-            <Route path="/workspaces" element={<WorkspaceList />} />
-            <Route
-              path="/workspace/:workspaceId/view"
-              element={
-                <WorkspaceWrapper>
-                  <WorkspaceView />
-                </WorkspaceWrapper>
-              }
-            />
-            <Route
-              path="/workspace/:workspaceId/dashboard"
-              element={
-                <WorkspaceWrapper>
-                  <Dashboard />
-                </WorkspaceWrapper>
-              }
-            />
-            <Route
-              path="/workspace/:workspaceId/meetings"
-              element={
-                <WorkspaceWrapper>
-                  <WorkspaceWithMeetings />
-                </WorkspaceWrapper>
-              }
-            />
-            <Route
-              path="/workspace/:workspaceId/meeting/:meetingId"
-              element={
-                <WorkspaceWrapper>
-                  <MeetingDetail />
-                </WorkspaceWrapper>
-              }
-            />
-            <Route
-              path="/workspace/:workspaceId/brd"
-              element={
-                <WorkspaceWrapper>
-                  <BRDView />
-                </WorkspaceWrapper>
-              }
-            />
-            <Route
-              path="/workspace/:workspaceId/raid"
-              element={
-                <WorkspaceWrapper>
-                  <RAIDView />
-                </WorkspaceWrapper>
-              }
-            />
-          </Routes>
+          <WorkspaceRedirect>
+            <Routes>
+              <Route path="/" element={<Navigate to="/workspaces" replace />} />
+              <Route path="/workspaces" element={<WorkspaceList />} />
+              <Route
+                path="/workspace/:workspaceId/view"
+                element={
+                  <WorkspaceWrapper>
+                    <WorkspaceView />
+                  </WorkspaceWrapper>
+                }
+              />
+              <Route
+                path="/workspace/:workspaceId/dashboard"
+                element={
+                  <WorkspaceWrapper>
+                    <Dashboard />
+                  </WorkspaceWrapper>
+                }
+              />
+              <Route
+                path="/workspace/:workspaceId/meetings"
+                element={
+                  <WorkspaceWrapper>
+                    <WorkspaceWithMeetings />
+                  </WorkspaceWrapper>
+                }
+              />
+              <Route
+                path="/workspace/:workspaceId/meeting/:meetingId"
+                element={
+                  <WorkspaceWrapper>
+                    <MeetingDetail />
+                  </WorkspaceWrapper>
+                }
+              />
+              <Route
+                path="/workspace/:workspaceId/brd"
+                element={
+                  <WorkspaceWrapper>
+                    <BRDView />
+                  </WorkspaceWrapper>
+                }
+              />
+              <Route
+                path="/workspace/:workspaceId/raid"
+                element={
+                  <WorkspaceWrapper>
+                    <RAIDView />
+                  </WorkspaceWrapper>
+                }
+              />
+            </Routes>
+          </WorkspaceRedirect>
         </PageWrapper>
       </div>
       <Snackbar
