@@ -28,8 +28,12 @@ def upload_document():
             return jsonify({'error': 'No file provided'}), 400
         
         file = request.files['file']
-        workspace_id = request.args.get('workspace_id')
+        workspace_id = request.form.get('workspace_id') or request.args.get('workspace_id')
+        org_id = request.form.get('org_id', 'default_org')
         document_type = request.form.get('document_type', 'SOW')
+        
+        # Debug logging
+        print(f"Upload request - workspace_id: {workspace_id}, org_id: {org_id}, document_type: {document_type}")
         
         if not workspace_id:
             return jsonify({'error': 'Workspace ID is required'}), 400
@@ -49,10 +53,10 @@ def upload_document():
         if not workspace:
             return jsonify({'error': 'Workspace not found'}), 404
         
-        document_id = str(uuid.uuid4())
         filename = secure_filename(file.filename)
         file_extension = filename.rsplit('.', 1)[1].lower()
-        storage_filename = f"{document_id}.{file_extension}"
+        # Generate unique filename using timestamp
+        storage_filename = f"{int(datetime.utcnow().timestamp())}.{file_extension}"
         
         upload_folder = current_app.config.get('UPLOAD_FOLDER', './uploads')
         os.makedirs(upload_folder, exist_ok=True)
@@ -60,12 +64,12 @@ def upload_document():
         
         file.save(storage_path)
         
-        db.execute_query(
+        document_id = db.execute_query(
             '''INSERT INTO documents 
-               (document_id, workspace_id, document_type, file_name, 
+               (workspace_id, document_type, file_name, 
                 storage_path, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-            (document_id, workspace_id, document_type, filename,
+               VALUES (?, ?, ?, ?, ?, ?, ?)''',
+            (workspace_id, document_type, filename,
              storage_path, 'uploaded', datetime.utcnow(), datetime.utcnow())
         )
         
@@ -87,6 +91,11 @@ def process_document_payload():
             return jsonify({'error': 'document_id is required'}), 400
             
         document_id = data['document_id']
+        org_id = data.get('org_id', 'default_org')
+        
+        # Debug logging
+        print(f"Process request - document_id: {document_id}, org_id: {org_id}")
+        
         db = get_db()
         
         document = db.fetch_one(
@@ -120,14 +129,12 @@ def process_document_payload():
         end_time = datetime.utcnow()
         latency_ms = int((end_time - start_time).total_seconds() * 1000)
         
-        stream_id = str(uuid.uuid4())
-        
-        db.execute_query(
+        stream_id = db.execute_query(
             '''INSERT INTO llm_streams 
-               (stream_id, document_id, request_payload, response_payload,
+               (document_id, request_payload, response_payload,
                 tokens_used, latency_ms, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (stream_id, document_id, extracted_text[:1000], 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+            (document_id, extracted_text[:1000], 
              response_data, 0, latency_ms, 'success',
              datetime.utcnow(), datetime.utcnow())
         )
@@ -144,11 +151,17 @@ def process_document_payload():
         
         return jsonify(stream), 200
     except Exception as e:
-        db = get_db()
-        db.execute_query(
-            'UPDATE documents SET status = ?, updated_at = ? WHERE document_id = ?',
-            ('failed', datetime.utcnow(), document_id)
-        )
+        print(f"Error processing document: {str(e)}")
+        # Only update document status if document_id is available
+        if 'document_id' in locals():
+            try:
+                db = get_db()
+                db.execute_query(
+                    'UPDATE documents SET status = ?, updated_at = ? WHERE document_id = ?',
+                    ('failed', datetime.utcnow(), document_id)
+                )
+            except Exception as update_error:
+                print(f"Error updating document status: {str(update_error)}")
         return jsonify({'error': str(e)}), 500
 
 

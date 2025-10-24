@@ -132,18 +132,18 @@ def create_workspace():
         if not data.get('licenses') or len(data.get('licenses', [])) == 0:
             return jsonify({'error': 'At least one license is required'}), 400
         
-        workspace_id = str(uuid.uuid4())
         licenses_json = json.dumps(data['licenses'])
         
         db = get_db()
-        db.execute_query(
+        workspace_id = db.execute_query(
             '''INSERT INTO workspaces 
-               (workspace_id, name, project_type, licenses, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?)''',
-            (workspace_id, data['name'], data['project_type'], 
+               (name, project_type, licenses, status, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?)''',
+            (data['name'], data['project_type'], 
              licenses_json, 'active', datetime.utcnow(), datetime.utcnow())
         )
         
+        # Get the created workspace
         workspace = db.fetch_one(
             'SELECT * FROM workspaces WHERE workspace_id = ?',
             (workspace_id,)

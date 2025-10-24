@@ -24,7 +24,6 @@ extraction_service = MeetingExtractionService(db_manager)
 def create_meeting():
     """Create a new meeting"""
     try:
-        meeting_id = str(uuid.uuid4())
         workspace_id = request.form.get('workspace_id')
         org_id = request.form.get('org_id', 'default_org')
         meeting_name = request.form.get('meeting_name')
@@ -39,17 +38,17 @@ def create_meeting():
         # Insert meeting record
         query = '''
             INSERT INTO meetings (
-                meeting_id, workspace_id, org_id, meeting_name,
+                workspace_id, org_id, meeting_name,
                 stakeholders, meeting_datetime, meeting_details,
                 status, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         '''
         params = (
-            meeting_id, workspace_id, org_id, meeting_name,
+            workspace_id, org_id, meeting_name,
             stakeholders, meeting_datetime, meeting_details,
             status, datetime.now(), datetime.now()
         )
-        db_manager.execute_query(query, params)
+        meeting_id = db_manager.execute_query(query, params)
 
         # Handle file uploads
         uploaded_files = []
@@ -57,9 +56,9 @@ def create_meeting():
 
         for file in files:
             if file and file.filename:
-                file_id = str(uuid.uuid4())
                 file_ext = os.path.splitext(file.filename)[1]
-                storage_filename = f"{file_id}{file_ext}"
+                # Generate a unique filename using timestamp
+                storage_filename = f"{int(datetime.now().timestamp())}{file_ext}"
                 storage_path = os.path.join(UPLOAD_FOLDER, storage_filename)
 
                 file.save(storage_path)
@@ -68,17 +67,17 @@ def create_meeting():
                 # Insert file record
                 file_query = '''
                     INSERT INTO meeting_files (
-                        file_id, meeting_id, workspace_id, org_id,
+                        meeting_id, workspace_id, org_id,
                         file_name, storage_path, file_type, file_size,
                         status, created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 '''
                 file_params = (
-                    file_id, meeting_id, workspace_id, org_id,
+                    meeting_id, workspace_id, org_id,
                     file.filename, storage_path, file_ext, file_size,
                     'uploaded', datetime.now(), datetime.now()
                 )
-                db_manager.execute_query(file_query, file_params)
+                file_id = db_manager.execute_query(file_query, file_params)
                 uploaded_files.append({
                     'file_id': file_id,
                     'file_name': file.filename,

@@ -22,7 +22,7 @@ def test_create_workspace():
     print(f"Input Data: {json.dumps(workspace_data, indent=2)}")
     
     expected_response = {
-        'workspace_id': str(uuid.uuid4()),
+        'workspace_id': 'INTEGER',  # Will be auto-generated
         'name': workspace_data['name'],
         'project_type': workspace_data['project_type'],
         'licenses': workspace_data['licenses'],
