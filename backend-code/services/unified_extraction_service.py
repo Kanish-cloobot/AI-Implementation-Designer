@@ -89,26 +89,60 @@ class UnifiedExtractionService:
                 SELECT * FROM unified_extractions
                 WHERE meeting_id = ? AND org_id = ? AND status = 'active'
                 ORDER BY created_at DESC
-                LIMIT 1
             '''
             
-            result = self.db_manager.fetch_one(query, (meeting_id, org_id))
+            results = self.db_manager.fetch_all(query, (meeting_id, org_id))
             
-            if not result:
+            if not results:
                 return None
-                
-            # Parse the JSON extraction data
-            extraction_data = dict(result)
             
-            if extraction_data.get('extraction_data'):
-                try:
-                    # Parse the main extraction data JSON
-                    parsed_data = json.loads(extraction_data['extraction_data'])
-                    # Merge with metadata
-                    extraction_data.update(parsed_data)
-                except json.JSONDecodeError as e:
-                    print(f"Error parsing extraction data JSON: {str(e)}")
-                    extraction_data['extraction_data'] = {}
+            # Reconstruct the original extraction data structure
+            extraction_data = {}
+            metadata = {}
+            
+            for row in results:
+                row_dict = dict(row)
+                
+                # Store metadata from the first row (they should all be the same)
+                if not metadata:
+                    metadata = {
+                        'id': row_dict.get('id'),
+                        'meeting_id': row_dict.get('meeting_id'),
+                        'workspace_id': row_dict.get('workspace_id'),
+                        'org_id': row_dict.get('org_id'),
+                        'extraction_status': row_dict.get('extraction_status'),
+                        'status': row_dict.get('status'),
+                        'created_at': row_dict.get('created_at'),
+                        'updated_at': row_dict.get('updated_at'),
+                        'created_by': row_dict.get('created_by'),
+                        'updated_by': row_dict.get('updated_by')
+                    }
+                
+                # Reconstruct the original data structure
+                data_key = row_dict.get('type')
+                data_value = row_dict.get('extraction_data')
+                
+                if data_key and data_value:
+                    try:
+                        parsed_value = json.loads(data_value)
+                        
+                        # If this key already exists, append to it (for list items)
+                        if data_key in extraction_data:
+                            if isinstance(extraction_data[data_key], list):
+                                extraction_data[data_key].append(parsed_value)
+                            else:
+                                # Convert existing value to list and add new item
+                                extraction_data[data_key] = [extraction_data[data_key], parsed_value]
+                        else:
+                            extraction_data[data_key] = parsed_value
+                            
+                    except json.JSONDecodeError as e:
+                        print(f"Error parsing extraction data JSON for key {data_key}: {str(e)}")
+                        continue
+            
+            # Merge metadata with reconstructed data
+            if metadata:
+                extraction_data.update(metadata)
             
             return extraction_data
             
@@ -126,32 +160,73 @@ class UnifiedExtractionService:
             org_id: Organization ID
             
         Returns:
-            List of extraction data dictionaries
+            List of extraction data dictionaries grouped by meeting_id
         """
         try:
             query = '''
                 SELECT * FROM unified_extractions
                 WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-                ORDER BY created_at DESC
+                ORDER BY meeting_id, created_at DESC
             '''
             
             results = self.db_manager.fetch_all(query, (workspace_id, org_id))
             
-            extractions = []
-            for result in results:
-                extraction_data = dict(result)
+            if not results:
+                return []
+            
+            # Group results by meeting_id
+            meetings_data = {}
+            
+            for row in results:
+                row_dict = dict(row)
+                meeting_id = row_dict.get('meeting_id')
                 
-                # Parse the JSON extraction data
-                if extraction_data.get('extraction_data'):
+                if meeting_id not in meetings_data:
+                    meetings_data[meeting_id] = {
+                        'metadata': {
+                            'meeting_id': meeting_id,
+                            'workspace_id': row_dict.get('workspace_id'),
+                            'org_id': row_dict.get('org_id'),
+                            'extraction_status': row_dict.get('extraction_status'),
+                            'status': row_dict.get('status'),
+                            'created_at': row_dict.get('created_at'),
+                            'updated_at': row_dict.get('updated_at'),
+                            'created_by': row_dict.get('created_by'),
+                            'updated_by': row_dict.get('updated_by')
+                        },
+                        'data': {}
+                    }
+                
+                # Reconstruct the original data structure
+                data_key = row_dict.get('type')
+                data_value = row_dict.get('extraction_data')
+                
+                if data_key and data_value:
                     try:
-                        # Parse the main extraction data JSON
-                        parsed_data = json.loads(extraction_data['extraction_data'])
-                        # Merge with metadata
-                        extraction_data.update(parsed_data)
+                        parsed_value = json.loads(data_value)
+                        
+                        # If this key already exists, append to it (for list items)
+                        if data_key in meetings_data[meeting_id]['data']:
+                            if isinstance(meetings_data[meeting_id]['data'][data_key], list):
+                                meetings_data[meeting_id]['data'][data_key].append(parsed_value)
+                            else:
+                                # Convert existing value to list and add new item
+                                meetings_data[meeting_id]['data'][data_key] = [
+                                    meetings_data[meeting_id]['data'][data_key], 
+                                    parsed_value
+                                ]
+                        else:
+                            meetings_data[meeting_id]['data'][data_key] = parsed_value
+                            
                     except json.JSONDecodeError as e:
-                        print(f"Error parsing extraction data JSON: {str(e)}")
-                        extraction_data['extraction_data'] = {}
-                
+                        print(f"Error parsing extraction data JSON for key {data_key}: {str(e)}")
+                        continue
+            
+            # Convert to list format
+            extractions = []
+            for meeting_id, meeting_data in meetings_data.items():
+                # Merge metadata with data
+                extraction_data = {**meeting_data['metadata'], **meeting_data['data']}
                 extractions.append(extraction_data)
             
             return extractions

@@ -1,11 +1,13 @@
 import json
 from datetime import datetime
 from database.db_manager import DatabaseManager
+from services.unified_extraction_service import UnifiedExtractionService
 
 
 class BRDService:
     def __init__(self, db_manager):
         self.db_manager = db_manager
+        self.unified_extraction_service = UnifiedExtractionService(db_manager)
 
     def get_workspace_brd(self, workspace_id, org_id='default_org'):
         """
@@ -37,177 +39,139 @@ class BRDService:
             return None
 
     def _get_workspace_unified_extractions(self, workspace_id, org_id):
-        """Get all unified extractions for a workspace"""
-        query = '''
-            SELECT * FROM unified_extractions
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+        """Get all unified extractions for a workspace using the unified extraction service"""
+        return self.unified_extraction_service.get_workspace_extractions(workspace_id, org_id)
 
     def _consolidate_business_units_teams(self, extractions):
         """Consolidate business units and teams from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'bu_teams' in data and isinstance(data['bu_teams'], list):
-                        for item in data['bu_teams']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'bu_teams' in extraction and isinstance(extraction['bu_teams'], list):
+                for item in extraction['bu_teams']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def _consolidate_modules_processes(self, extractions):
         """Consolidate modules and processes from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'modules_processes' in data and isinstance(data['modules_processes'], list):
-                        for item in data['modules_processes']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'modules_processes' in extraction and isinstance(extraction['modules_processes'], list):
+                for item in extraction['modules_processes']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def _consolidate_license_list(self, extractions):
         """Consolidate license list from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'licenses' in data and isinstance(data['licenses'], list):
-                        for item in data['licenses']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'licenses' in extraction and isinstance(extraction['licenses'], list):
+                for item in extraction['licenses']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def _consolidate_personas(self, extractions):
         """Consolidate personas from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'personas' in data and isinstance(data['personas'], list):
-                        for item in data['personas']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'personas' in extraction and isinstance(extraction['personas'], list):
+                for item in extraction['personas']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def _consolidate_requirements(self, extractions):
         """Consolidate requirements from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'requirements' in data and isinstance(data['requirements'], list):
-                        for item in data['requirements']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'requirements' in extraction and isinstance(extraction['requirements'], list):
+                for item in extraction['requirements']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def _consolidate_current_state(self, extractions):
         """Consolidate current state from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'current_state' in data and isinstance(data['current_state'], list):
-                        for item in data['current_state']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'current_state' in extraction and isinstance(extraction['current_state'], list):
+                for item in extraction['current_state']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def _consolidate_target_state(self, extractions):
         """Consolidate target state from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'target_state' in data and isinstance(data['target_state'], list):
-                        for item in data['target_state']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'target_state' in extraction and isinstance(extraction['target_state'], list):
+                for item in extraction['target_state']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def _consolidate_integrations(self, extractions):
         """Consolidate integrations from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'integrations' in data and isinstance(data['integrations'], list):
-                        for item in data['integrations']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'integrations' in extraction and isinstance(extraction['integrations'], list):
+                for item in extraction['integrations']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def _consolidate_data_migration(self, extractions):
         """Consolidate data migration from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'data_migration' in data and isinstance(data['data_migration'], list):
-                        for item in data['data_migration']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'data_migration' in extraction and isinstance(extraction['data_migration'], list):
+                for item in extraction['data_migration']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def _consolidate_data_model(self, extractions):
         """Consolidate data model from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'data_model' in data and isinstance(data['data_model'], list):
-                        for item in data['data_model']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'data_model' in extraction and isinstance(extraction['data_model'], list):
+                for item in extraction['data_model']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def _consolidate_metadata_updates(self, extractions):
         """Consolidate metadata updates from unified extractions"""
         consolidated = []
         for extraction in extractions:
-            if extraction.get('extraction_data'):
-                try:
-                    data = json.loads(extraction['extraction_data'])
-                    if 'metadata_updates' in data and isinstance(data['metadata_updates'], list):
-                        for item in data['metadata_updates']:
-                            item['created_at'] = extraction['created_at']
-                            consolidated.append(item)
-                except json.JSONDecodeError:
-                    continue
+            # With new structure, data is already parsed and available as direct keys
+            if 'metadata_updates' in extraction and isinstance(extraction['metadata_updates'], list):
+                for item in extraction['metadata_updates']:
+                    if isinstance(item, dict):
+                        item['created_at'] = extraction.get('created_at')
+                        consolidated.append(item)
         return consolidated
 
     def get_brd_summary(self, workspace_id, org_id='default_org'):

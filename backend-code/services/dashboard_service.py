@@ -112,23 +112,14 @@ class DashboardService:
     def _count_from_unified_extractions(self, workspace_id, org_id, category):
         """Count items from unified extractions for a specific category"""
         try:
+            # Count rows where type matches the category
             query = '''
-                SELECT extraction_data FROM unified_extractions
-                WHERE workspace_id = ? AND org_id = ? AND status = 'active'
+                SELECT COUNT(*) as count FROM unified_extractions
+                WHERE workspace_id = ? AND org_id = ? AND status = 'active' AND type = ?
             '''
-            extractions = self.db_manager.fetch_all(query, (workspace_id, org_id))
+            result = self.db_manager.fetch_one(query, (workspace_id, org_id, category))
+            return result['count'] if result else 0
             
-            total_count = 0
-            for extraction in extractions:
-                if extraction.get('extraction_data'):
-                    try:
-                        data = json.loads(extraction['extraction_data'])
-                        if category in data and isinstance(data[category], list):
-                            total_count += len(data[category])
-                    except json.JSONDecodeError:
-                        continue
-            
-            return total_count
         except Exception as e:
             print(f"Error counting {category}: {str(e)}")
             return 0
@@ -139,7 +130,7 @@ class DashboardService:
         
         try:
             query = '''
-                SELECT extraction_data, created_at FROM unified_extractions
+                SELECT type, extraction_data, created_at FROM unified_extractions
                 WHERE workspace_id = ? AND org_id = ? AND status = 'active'
                 ORDER BY created_at DESC
                 LIMIT ?
@@ -151,39 +142,44 @@ class DashboardService:
                     try:
                         data = json.loads(extraction['extraction_data'])
                         created_at = extraction['created_at']
+                        extraction_type = extraction.get('type', '')
                         
-                        # Get recent requirements
-                        if 'requirements' in data and isinstance(data['requirements'], list):
-                            for req in data['requirements'][:3]:  # Limit to 3 per extraction
-                                activities.append({
-                                    'type': 'requirement',
-                                    'description': req.get('description', '')[:100] + '...' if len(req.get('description', '')) > 100 else req.get('description', ''),
-                                    'created_at': created_at,
-                                    'icon': 'assignment',
-                                    'color': 'purple'
-                                })
+                        # Handle different types of activities
+                        if extraction_type == 'requirements' and isinstance(data, dict):
+                            activities.append({
+                                'type': 'requirement',
+                                'description': data.get('description', '')[:100] + '...' if len(data.get('description', '')) > 100 else data.get('description', ''),
+                                'created_at': created_at,
+                                'icon': 'assignment',
+                                'color': 'purple'
+                            })
                         
-                        # Get recent action items
-                        if 'action_items' in data and isinstance(data['action_items'], list):
-                            for action in data['action_items'][:3]:  # Limit to 3 per extraction
-                                activities.append({
-                                    'type': 'action',
-                                    'description': action.get('task', '')[:100] + '...' if len(action.get('task', '')) > 100 else action.get('task', ''),
-                                    'created_at': created_at,
-                                    'icon': 'task_alt',
-                                    'color': 'orange'
-                                })
+                        elif extraction_type == 'action_items' and isinstance(data, dict):
+                            activities.append({
+                                'type': 'action',
+                                'description': data.get('task', '')[:100] + '...' if len(data.get('task', '')) > 100 else data.get('task', ''),
+                                'created_at': created_at,
+                                'icon': 'task_alt',
+                                'color': 'orange'
+                            })
                         
-                        # Get recent decisions
-                        if 'decisions' in data and isinstance(data['decisions'], list):
-                            for decision in data['decisions'][:3]:  # Limit to 3 per extraction
-                                activities.append({
-                                    'type': 'decision',
-                                    'description': decision.get('decision', '')[:100] + '...' if len(decision.get('decision', '')) > 100 else decision.get('decision', ''),
-                                    'created_at': created_at,
-                                    'icon': 'gavel',
-                                    'color': 'green'
-                                })
+                        elif extraction_type == 'risks_issues' and isinstance(data, dict):
+                            activities.append({
+                                'type': 'risk',
+                                'description': data.get('description', '')[:100] + '...' if len(data.get('description', '')) > 100 else data.get('description', ''),
+                                'created_at': created_at,
+                                'icon': 'warning',
+                                'color': 'red'
+                            })
+                        
+                        elif extraction_type == 'decisions' and isinstance(data, dict):
+                            activities.append({
+                                'type': 'decision',
+                                'description': data.get('decision', '')[:100] + '...' if len(data.get('decision', '')) > 100 else data.get('decision', ''),
+                                'created_at': created_at,
+                                'icon': 'gavel',
+                                'color': 'green'
+                            })
                                 
                     except json.JSONDecodeError:
                         continue
