@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { meetingAPI } from '../../services/api';
 import Button from '../../components/common/Button';
@@ -13,11 +13,7 @@ const MeetingDetail = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [expandedSections, setExpandedSections] = useState({});
 
-  useEffect(() => {
-    fetchMeetingDetail();
-  }, [meetingId]);
-
-  const fetchMeetingDetail = async () => {
+  const fetchMeetingDetail = useCallback(async () => {
     try {
       setLoading(true);
       const payload = { meeting_id: meetingId };
@@ -28,7 +24,11 @@ const MeetingDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [meetingId]);
+
+  useEffect(() => {
+    fetchMeetingDetail();
+  }, [fetchMeetingDetail]);
 
   const toggleSection = (section) => {
     setExpandedSections((prev) => ({

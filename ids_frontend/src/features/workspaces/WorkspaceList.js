@@ -31,7 +31,10 @@ const useWorkspaceHandlers = (workspaces, loading, error, fetchWorkspaces, delet
     workspaceName: ''
   });
 
-  useEffect(() => { fetchWorkspaces(); }, [fetchWorkspaces]);
+  useEffect(() => { 
+    fetchWorkspaces(); 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCreateNew = () => { setEditingWorkspace(null); setIsFormOpen(true); };
   const handleEdit = (workspace) => { setEditingWorkspace(workspace); setIsFormOpen(true); };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { meetingAPI } from '../../services/api';
 import Button from '../../components/common/Button';
@@ -18,11 +18,11 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
   const [snackbar, setSnackbar] = useState({ show: false, message: '', type: 'success' });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchMeetings();
-  }, [workspaceId, activeTab]);
+  const showSnackbar = useCallback((message, type = 'success') => {
+    setSnackbar({ show: true, message, type });
+  }, []);
 
-  const fetchMeetings = async () => {
+  const fetchMeetings = useCallback(async () => {
     try {
       setLoading(true);
       const status = activeTab === 'scheduled' ? 'scheduled' : activeTab === 'completed' ? 'completed' : null;
@@ -39,7 +39,11 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [workspaceId, activeTab, orgId, showSnackbar]);
+
+  useEffect(() => {
+    fetchMeetings();
+  }, [fetchMeetings]);
 
   const handleCreateMeeting = () => {
     setEditingMeeting(null);
@@ -85,9 +89,6 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
     navigate(`/workspace/${workspaceId}/meeting/${meetingId}`);
   };
 
-  const showSnackbar = (message, type = 'success') => {
-    setSnackbar({ show: true, message, type });
-  };
 
   const formatDateTime = (dateTimeStr) => {
     if (!dateTimeStr) return 'Not set';

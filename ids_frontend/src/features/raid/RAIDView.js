@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { raidAPI } from '../../services/api';
 import Spinner from '../../components/common/Spinner';
@@ -12,11 +12,7 @@ const RAIDView = () => {
   const [error, setError] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
 
-  useEffect(() => {
-    fetchRAIDData();
-  }, [workspaceId]);
-
-  const fetchRAIDData = async () => {
+  const fetchRAIDData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -29,7 +25,11 @@ const RAIDView = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [workspaceId]);
+
+  useEffect(() => {
+    fetchRAIDData();
+  }, [fetchRAIDData]);
 
   const toggleSection = (section) => {
     setExpandedSections((prev) => ({

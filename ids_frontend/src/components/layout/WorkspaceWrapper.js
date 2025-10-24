@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 import Spinner from '../common/Spinner';
@@ -7,6 +7,7 @@ const WorkspaceWrapper = ({ children }) => {
   const { workspaceId } = useParams();
   const { currentWorkspace, loadWorkspaceData, loading, error } = useWorkspace();
   const [isLoadingWorkspace, setIsLoadingWorkspace] = useState(false);
+  const loadingRef = useRef(false);
 
   console.log('WorkspaceWrapper - workspaceId:', workspaceId);
   console.log('WorkspaceWrapper - currentWorkspace:', currentWorkspace);
@@ -14,7 +15,9 @@ const WorkspaceWrapper = ({ children }) => {
   useEffect(() => {
     const loadWorkspace = async () => {
       // Only load if we don't have the current workspace or it's a different workspace
-      if (!currentWorkspace || currentWorkspace.workspace_id !== workspaceId) {
+      // and we're not already loading
+      if ((!currentWorkspace || currentWorkspace.workspace_id !== workspaceId) && !loadingRef.current) {
+        loadingRef.current = true;
         setIsLoadingWorkspace(true);
         try {
           // Create a minimal workspace object with the ID
@@ -24,6 +27,7 @@ const WorkspaceWrapper = ({ children }) => {
           console.error('Failed to load workspace:', err);
         } finally {
           setIsLoadingWorkspace(false);
+          loadingRef.current = false;
         }
       }
     };
@@ -31,7 +35,8 @@ const WorkspaceWrapper = ({ children }) => {
     if (workspaceId && workspaceId !== 'undefined') {
       loadWorkspace();
     }
-  }, [workspaceId, currentWorkspace, loadWorkspaceData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workspaceId]);
 
   if (isLoadingWorkspace || loading) {
     return (

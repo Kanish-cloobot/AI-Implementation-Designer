@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter, Routes, Route, Navigate, useParams, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { WorkspaceProvider, useWorkspace } from './contexts/WorkspaceContext';
 import PageWrapper from './components/layout/PageWrapper';
 import Header from './components/layout/Header';
@@ -95,7 +95,13 @@ const AppContent = () => {
 };
 
 const WorkspaceView = () => {
-  return <SoWViewer />;
+  const navigate = useNavigate();
+  
+  const handleBack = () => {
+    navigate('/workspaces');
+  };
+  
+  return <SoWViewer onBack={handleBack} />;
 };
 
 const WorkspaceWithMeetings = () => {

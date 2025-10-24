@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { brdAPI } from '../../services/api';
 import Spinner from '../../components/common/Spinner';
@@ -13,11 +13,7 @@ const BRDView = () => {
   const [activeSection, setActiveSection] = useState('business_units_teams');
   const [expandedSections, setExpandedSections] = useState({});
 
-  useEffect(() => {
-    fetchBRDData();
-  }, [workspaceId]);
-
-  const fetchBRDData = async () => {
+  const fetchBRDData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -30,7 +26,11 @@ const BRDView = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [workspaceId]);
+
+  useEffect(() => {
+    fetchBRDData();
+  }, [fetchBRDData]);
 
   const toggleSection = (section) => {
     setExpandedSections((prev) => ({

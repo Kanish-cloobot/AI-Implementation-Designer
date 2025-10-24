@@ -23,7 +23,8 @@ const useFetchWorkspaces = (setWorkspaces, setLoading, setError) => {
     } finally {
       setLoading(false);
     }
-  }, [setWorkspaces, setLoading, setError]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };
 
 const useCreateWorkspace = (setWorkspaces, setCurrentWorkspace, setLoading, setError) => {
@@ -41,7 +42,8 @@ const useCreateWorkspace = (setWorkspaces, setCurrentWorkspace, setLoading, setE
     } finally {
       setLoading(false);
     }
-  }, [setWorkspaces, setCurrentWorkspace, setLoading, setError]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };
 
 const useUpdateWorkspace = (setWorkspaces, setLoading, setError) => {
@@ -61,7 +63,8 @@ const useUpdateWorkspace = (setWorkspaces, setLoading, setError) => {
     } finally {
       setLoading(false);
     }
-  }, [setWorkspaces, setLoading, setError]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };
 
 const useDeleteWorkspace = (setWorkspaces, setLoading, setError) => {
@@ -78,7 +81,8 @@ const useDeleteWorkspace = (setWorkspaces, setLoading, setError) => {
     } finally {
       setLoading(false);
     }
-  }, [setWorkspaces, setLoading, setError]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };
 
 const useUploadAndProcess = (setCurrentDocument, setSowData, setLoading, setError) => {
@@ -106,7 +110,8 @@ const useUploadAndProcess = (setCurrentDocument, setSowData, setLoading, setErro
     } finally {
       setLoading(false);
     }
-  }, [setCurrentDocument, setSowData, setLoading, setError]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };
 
 const useLoadSowData = (setSowData, setLoading, setError) => {
@@ -125,7 +130,8 @@ const useLoadSowData = (setSowData, setLoading, setError) => {
     } finally {
       setLoading(false);
     }
-  }, [setSowData, setLoading, setError]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };
 
 const useLoadWorkspaceData = (setCurrentWorkspace, setSowData, setCurrentDocument, setLoading, setError) => {
@@ -169,7 +175,8 @@ const useLoadWorkspaceData = (setCurrentWorkspace, setSowData, setCurrentDocumen
     } finally {
       setLoading(false);
     }
-  }, [setCurrentWorkspace, setSowData, setCurrentDocument, setLoading, setError]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };
 
 export const WorkspaceProvider = ({ children }) => {
