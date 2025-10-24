@@ -27,10 +27,14 @@ class MeetingExtractionService:
         Process all files for a meeting and extract insights
         """
         try:
-            # Get all files for the meeting
+            # Get all files for the meeting with their content from the unified files table
             files_query = '''
-                SELECT * FROM meeting_files
-                WHERE meeting_id = ? AND org_id = ? AND status = 'uploaded'
+                SELECT f.*, mf.meeting_id 
+                FROM files f
+                JOIN meeting_files mf ON f.file_name = mf.file_name 
+                    AND f.workspace_id = mf.workspace_id
+                WHERE mf.meeting_id = ? AND mf.org_id = ? AND f.status = 'uploaded' 
+                    AND mf.status = 'uploaded'
             '''
             files = self.db_manager.fetch_all(
                 files_query,
@@ -40,12 +44,19 @@ class MeetingExtractionService:
             if not files:
                 return {'status': 'no_files', 'message': 'No files to process'}
 
-            # Extract text from all files
+            # Extract text from all files using stored content
             combined_text = ""
             for file in files:
                 try:
-                    file_text = self.doc_processor.extract_text(file['storage_path'])
-                    combined_text += f"\n\n--- File: {file['file_name']} ---\n\n{file_text}"
+                    # Use file content from database and file extension
+                    file_content = file['file_content']
+                    file_extension = file['file_extension'].lstrip('.') if file['file_extension'] else ''
+                    
+                    if file_content:
+                        file_text = self.doc_processor.extract_text(file_content, file_extension)
+                        combined_text += f"\n\n--- File: {file['file_name']} ---\n\n{file_text}"
+                    else:
+                        print(f"Warning: No content found for file {file['file_name']}")
                 except Exception as e:
                     print(f"Error extracting text from {file['file_name']}: {str(e)}")
                     traceback.print_exc()

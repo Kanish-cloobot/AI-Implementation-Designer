@@ -54,28 +54,29 @@ def create_meeting():
             'SELECT meeting_id FROM meetings ORDER BY meeting_id DESC LIMIT 1'
         )['meeting_id']
 
-        # Handle file metadata (no file storage)
+        # Handle file storage with actual content
         uploaded_files = []
         files = request.files.getlist('files')
 
         for file in files:
             if file and file.filename:
                 file_ext = os.path.splitext(file.filename)[1]
-                # No storage_path needed - only metadata
-                file_size = len(file.read()) if hasattr(file, 'read') else 0
-                file.seek(0)  # Reset file pointer
+                # Read file content for storage
+                file_content = file.read()
+                file_size = len(file_content)
+                file.seek(0)  # Reset file pointer for potential reuse
 
-                # Insert into unified files table (metadata only)
+                # Insert into unified files table with actual content
                 unified_file_query = '''
                     INSERT INTO files (
                         workspace_id, file_type, file_name,
-                        storage_path, file_extension, file_size, status,
+                        storage_path, file_content, file_extension, file_size, status,
                         created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 '''
                 unified_file_params = (
                     workspace_id, 'meetings', file.filename,
-                    'metadata_only', file_ext, file_size, 'uploaded',
+                    'database_stored', file_content, file_ext, file_size, 'uploaded',
                     datetime.now(), datetime.now()
                 )
                 db_manager.execute_query(unified_file_query, unified_file_params)
@@ -95,7 +96,7 @@ def create_meeting():
                 '''
                 file_params = (
                     meeting_id, workspace_id, org_id,
-                    file.filename, 'metadata_only', file_ext, file_size,
+                    file.filename, 'database_stored', file_ext, file_size,
                     'uploaded', datetime.now(), datetime.now()
                 )
                 db_manager.execute_query(file_query, file_params)
