@@ -20,7 +20,7 @@ const EmptyState = ({ onCreate }) => (
 );
 
 const useWorkspaceHandlers = (workspaces, loading, error, fetchWorkspaces, deleteWorkspace, 
-  currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar) => {
+  currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar, navigate) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState(null);
@@ -69,7 +69,7 @@ const useWorkspaceHandlers = (workspaces, loading, error, fetchWorkspaces, delet
   const handleViewSoW = async (workspace) => {
     try {
       await loadWorkspaceData(workspace);
-      setShowSoWViewer(true);
+      navigate(`/workspace/${workspace.workspace_id}/view`);
       collapseSidebar();
       showSnackbar('Workspace data loaded successfully', 'success');
     } catch (err) {
@@ -105,10 +105,18 @@ const WorkspaceList = () => {
     handleConfirmDelete, handleCancelDelete,
     handleFormSuccess, handleUploadSuccess, handleViewSoW
   } = useWorkspaceHandlers(workspaces, loading, error, fetchWorkspaces, deleteWorkspace, 
-    currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar);
+    currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar, navigate);
 
-  const handleDashboard = (workspace) => {
-    navigate(`/workspace/${workspace.workspace_id}/dashboard`);
+  const handleDashboard = async (workspace) => {
+    try {
+      await loadWorkspaceData(workspace);
+      navigate(`/workspace/${workspace.workspace_id}/dashboard`);
+      collapseSidebar();
+      showSnackbar('Workspace data loaded successfully', 'success');
+    } catch (err) {
+      console.error('Failed to load workspace data:', err);
+      showSnackbar('Failed to load workspace data', 'error');
+    }
   };
 
   if (showSoWViewer && sowData) {
