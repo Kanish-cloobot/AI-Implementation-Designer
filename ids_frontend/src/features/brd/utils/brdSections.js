@@ -1,4 +1,4 @@
-export const generateBRDSections = (brdData) => {
+export const generateBRDSections = (brdData, requirementStatuses = {}, handleRequirementAction = () => {}) => {
   if (!brdData) return [];
 
   const sections = [];
@@ -222,31 +222,81 @@ export const generateBRDSections = (brdData) => {
             <span className="material-symbols-outlined">assignment</span>
             Requirements
           </h2>
-          <div className="brd-items">
-            {brdData.requirements.map((item, index) => (
-              <div key={index} className="brd-item requirement-item">
-                <div className="requirement-header">
-                  <span className="requirement-type">{item.requirement_type}</span>
-                </div>
-                <p className="requirement-description">{item.description_md}</p>
-                {item.acceptance_criteria && (
-                  <div className="requirement-criteria">
-                    <strong>Acceptance Criteria:</strong>
-                    <ul>
-                      {Array.isArray(item.acceptance_criteria) && item.acceptance_criteria.length > 0
-                        ? item.acceptance_criteria.map((criteria, idx) => (
-                            <li key={idx}>{criteria}</li>
-                          ))
-                        : <li>{item.acceptance_criteria}</li>
-                      }
-                    </ul>
-                  </div>
-                )}
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
+          <div className="requirements-table-container">
+            <table className="requirements-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {brdData.requirements.map((item, index) => {
+                  const currentStatus = requirementStatuses[index] || 'pending';
+                  return (
+                    <tr key={index} className="requirement-row">
+                      <td className="requirement-type-cell">
+                        <span className="requirement-type-badge">{item.requirement_type}</span>
+                      </td>
+                      <td className="requirement-description-cell">
+                        <div className="requirement-description-text">{item.description_md}</div>
+                      </td>
+                      <td className="requirement-status-cell">
+                        <span className={`requirement-status ${currentStatus}`}>
+                          {currentStatus === 'approved' ? 'Approved' : 
+                           currentStatus === 'rejected' ? 'Rejected' : 
+                           currentStatus === 'review' ? 'Under Review' : 'Pending'}
+                        </span>
+                      </td>
+                      <td className="requirement-created-cell">
+                        <span className="requirement-created">{formatDateTime(item.created_at)}</span>
+                      </td>
+                      <td className="requirement-actions-cell">
+                        <div className="requirement-actions">
+                          {currentStatus === 'pending' && (
+                            <>
+                              <button 
+                                className="requirement-action-btn approve-btn"
+                                onClick={() => handleRequirementAction(index, 'approved')}
+                              >
+                                <span className="material-symbols-outlined">check</span>
+                                Approve
+                              </button>
+                              <button 
+                                className="requirement-action-btn review-btn"
+                                onClick={() => handleRequirementAction(index, 'review')}
+                              >
+                                <span className="material-symbols-outlined">visibility</span>
+                                Review
+                              </button>
+                              <button 
+                                className="requirement-action-btn reject-btn"
+                                onClick={() => handleRequirementAction(index, 'rejected')}
+                              >
+                                <span className="material-symbols-outlined">close</span>
+                                Reject
+                              </button>
+                            </>
+                          )}
+                          {currentStatus === 'approved' && (
+                            <span className="requirement-status-text approved">✓ Approved</span>
+                          )}
+                          {currentStatus === 'rejected' && (
+                            <span className="requirement-status-text rejected">✗ Rejected</span>
+                          )}
+                          {currentStatus === 'review' && (
+                            <span className="requirement-status-text review">👁 Under Review</span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )

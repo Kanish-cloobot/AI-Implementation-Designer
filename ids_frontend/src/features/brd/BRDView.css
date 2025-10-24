@@ -59,7 +59,7 @@
 }
 
 .brd-content-section {
-  padding: 24px;
+  padding: 5px;
   background-color: #0D0D0D;
   height: 100%;
   overflow-y: auto;
@@ -307,6 +307,254 @@
   font-size: 14px;
 }
 
+/* Requirements Table */
+.requirements-table-container {
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.requirements-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+  background-color: #1A1A1A;
+}
+
+.requirements-table thead {
+  background-color: #262626;
+}
+
+.requirements-table th {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 14px;
+  color: #FFFFFF;
+  border-bottom: 0.5px solid #404040;
+  white-space: nowrap;
+}
+
+.requirements-table th:first-child {
+  width: 15%;
+  min-width: 120px;
+}
+
+.requirements-table th:nth-child(2) {
+  width: 45%;
+  min-width: 300px;
+}
+
+.requirements-table th:nth-child(3) {
+  width: 12%;
+  min-width: 100px;
+}
+
+.requirements-table th:nth-child(4) {
+  width: 18%;
+  min-width: 140px;
+}
+
+.requirements-table th:last-child {
+  width: 20%;
+  min-width: 160px;
+}
+
+.requirement-row {
+  border-bottom: 0.5px solid #404040;
+  transition: background-color 0.3s ease;
+}
+
+.requirement-row:hover {
+  background-color: #333333;
+}
+
+.requirement-row:last-child {
+  border-bottom: none;
+}
+
+.requirement-type-cell {
+  padding: 16px 20px;
+  vertical-align: top;
+}
+
+.requirement-type-badge {
+  background-color: #C82FFF;
+  color: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.requirement-description-cell {
+  padding: 16px 20px;
+  vertical-align: top;
+}
+
+.requirement-description-text {
+  color: #FFFFFF;
+  line-height: 1.5;
+  font-size: 14px;
+  word-wrap: break-word;
+}
+
+.requirement-status-cell {
+  padding: 16px 20px;
+  vertical-align: top;
+  text-align: center;
+}
+
+.requirement-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.requirement-status.pending {
+  background-color: #F97316;
+  color: #FFFFFF;
+}
+
+.requirement-status.approved {
+  background-color: #10B981;
+  color: #FFFFFF;
+}
+
+.requirement-status.rejected {
+  background-color: #EF4444;
+  color: #FFFFFF;
+}
+
+.requirement-status.review {
+  background-color: #F97316;
+  color: #FFFFFF;
+}
+
+.requirement-created-cell {
+  padding: 16px 20px;
+  vertical-align: top;
+}
+
+.requirement-created {
+  color: #A8A8A8;
+  font-size: 12px;
+}
+
+.requirement-actions-cell {
+  padding: 16px 20px;
+  vertical-align: top;
+}
+
+.requirement-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.requirement-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.requirement-action-btn .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.approve-btn {
+  background-color: #10B981;
+  color: #FFFFFF;
+}
+
+.approve-btn:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
+}
+
+.reject-btn {
+  background-color: #EF4444;
+  color: #FFFFFF;
+}
+
+.reject-btn:hover {
+  background-color: #DC2626;
+  transform: translateY(-1px);
+}
+
+.review-btn {
+  background-color: #F97316;
+  color: #FFFFFF;
+}
+
+.review-btn:hover {
+  background-color: #EA580C;
+  transform: translateY(-1px);
+}
+
+.requirement-action-btn:active {
+  transform: translateY(0);
+}
+
+/* Horizontal scrollbar styling for requirements table */
+.requirements-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.requirements-table-container::-webkit-scrollbar-track {
+  background: #1A1A1A;
+  border-radius: 4px;
+}
+
+.requirements-table-container::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 4px;
+}
+
+.requirements-table-container::-webkit-scrollbar-thumb:hover {
+  background: #4D4D4D;
+}
+
+.requirement-status-text {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.requirement-status-text.approved {
+  background-color: #10B981;
+  color: #FFFFFF;
+}
+
+.requirement-status-text.rejected {
+  background-color: #EF4444;
+  color: #FFFFFF;
+}
+
+.requirement-status-text.review {
+  background-color: #F97316;
+  color: #FFFFFF;
+}
+
 /* Persona Items */
 .persona-item {
   border-left: 4px solid #F97316;
@@ -390,5 +638,19 @@
   
   .brd-content-section {
     padding: 16px;
+  }
+  
+  .requirements-table {
+    min-width: 600px;
+  }
+  
+  .requirement-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .requirement-action-btn {
+    font-size: 11px;
+    padding: 4px 8px;
   }
 }

@@ -14,6 +14,7 @@ const BRDView = () => {
   const [brdData, setBrdData] = useState(null);
   const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState('business-units-teams');
+  const [requirementStatuses, setRequirementStatuses] = useState({});
 
   useEffect(() => {
     fetchBRDData();
@@ -32,6 +33,16 @@ const BRDView = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRequirementAction = (requirementIndex, action) => {
+    setRequirementStatuses(prev => ({
+      ...prev,
+      [requirementIndex]: action
+    }));
+    
+    // Here you could also make an API call to update the requirement status
+    console.log(`Requirement ${requirementIndex} ${action}ed`);
   };
 
 
@@ -62,7 +73,7 @@ const BRDView = () => {
     );
   }
 
-  const sections = generateBRDSections(brdData);
+  const sections = generateBRDSections(brdData, requirementStatuses, handleRequirementAction);
 
   return (
     <div className="brd-viewer-container">
