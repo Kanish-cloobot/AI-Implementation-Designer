@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { dashboardAPI } from '../../services/api';
+import { dashboardAPI, raidAPI } from '../../services/api';
 import Spinner from '../../components/common/Spinner';
 import Button from '../../components/common/Button';
 import './Dashboard.css';
@@ -9,12 +9,20 @@ const Dashboard = () => {
   const { workspaceId } = useParams();
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
+  const [raidData, setRaidData] = useState(null);
+  const [raidLoading, setRaidLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
     fetchDashboardData();
   }, [workspaceId]);
+
+  useEffect(() => {
+    if (activeTab === 'raidd') {
+      fetchRaidData();
+    }
+  }, [activeTab, workspaceId]);
 
   const fetchDashboardData = async () => {
     try {
@@ -28,6 +36,21 @@ const Dashboard = () => {
       setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRaidData = async () => {
+    try {
+      setRaidLoading(true);
+      setError(null);
+      const payload = { workspace_id: workspaceId };
+      const response = await raidAPI.getRAID(payload);
+      setRaidData(response.data);
+    } catch (err) {
+      console.error('Error fetching RAID data:', err);
+      setError('Failed to load RAID data');
+    } finally {
+      setRaidLoading(false);
     }
   };
 
@@ -79,6 +102,50 @@ const Dashboard = () => {
       </div>
     </div>
   );
+
+  const renderRaidSection = (title, data, icon) => {
+    if (!data || data.length === 0) {
+      return (
+        <div className="raid-section">
+          <h3 className="raid-section-title">
+            <span className="material-symbols-outlined">{icon}</span>
+            {title}
+          </h3>
+          <p className="empty-state">No {title.toLowerCase()} found</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="raid-section">
+        <h3 className="raid-section-title">
+          <span className="material-symbols-outlined">{icon}</span>
+          {title} ({data.length})
+        </h3>
+        {data.map((item, index) => (
+          <div key={index} className="raid-item">
+            <div className="raid-item-title">
+              {item.type || item.task_md || 'Item'}
+            </div>
+            <div className="raid-item-description">
+              {item.description_md || item.task_md || 'No description available'}
+            </div>
+            <div className="raid-item-meta">
+              {item.owner_md && (
+                <span className="raid-item-owner">Owner: {item.owner_md}</span>
+              )}
+              {item.due_date && (
+                <span className="raid-item-date">Due: {formatDateTime(item.due_date)}</span>
+              )}
+              {item.created_at && (
+                <span className="raid-item-date">Created: {formatDateTime(item.created_at)}</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -222,19 +289,28 @@ const Dashboard = () => {
 
       {activeTab === 'raidd' && (
         <div className="dashboard-content">
-          <div className="dashboard-section">
-            <h2 className="section-title">Risks & Insights</h2>
-            <div className="section-content">
-              <p className="empty-state">No risks or insights identified yet</p>
+          {raidLoading ? (
+            <div className="dashboard-loading">
+              <Spinner />
+              <p>Loading RAID data...</p>
             </div>
-          </div>
-          
-          <div className="dashboard-section">
-            <h2 className="section-title">Outline</h2>
-            <div className="section-content">
-              <p className="empty-state">No outline content available</p>
+          ) : raidData ? (
+            <>
+              {renderRaidSection('Risks & Issues', raidData.risks_issues, 'warning')}
+              {renderRaidSection('Action Items', raidData.action_items, 'task_alt')}
+              {renderRaidSection('Decisions', raidData.decisions, 'gavel')}
+              {renderRaidSection('Dependencies', raidData.dependencies, 'link')}
+              {renderRaidSection('Pain Points', raidData.pain_points, 'report_problem')}
+            </>
+          ) : (
+            <div className="dashboard-section">
+              <h2 className="section-title">RAIDD Data</h2>
+              <div className="section-content">
+                <p className="empty-state">No RAID data available</p>
+                <Button onClick={fetchRaidData}>Load RAID Data</Button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>

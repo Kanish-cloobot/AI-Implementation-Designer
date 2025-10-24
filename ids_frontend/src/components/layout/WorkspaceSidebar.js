@@ -10,11 +10,11 @@ const WorkspaceSidebar = () => {
   const { sidebarCollapsed, toggleSidebar, expandSidebar, currentWorkspace } = useWorkspace();
   
   const workspaceMenuItems = [
-    { icon: 'visibility', label: 'View', path: `/workspace/${workspaceId}/view` },
     { icon: 'dashboard', label: 'Dashboard', path: `/workspace/${workspaceId}/dashboard` },
     { icon: 'event', label: 'Meetings', path: `/workspace/${workspaceId}/meetings` },
+    { icon: 'visibility', label: 'SOW', path: `/workspace/${workspaceId}/view` },
     { icon: 'description', label: 'BRD', path: `/workspace/${workspaceId}/brd` },
-    { icon: 'assignment', label: 'RAID', path: `/workspace/${workspaceId}/raid` },
+    // { icon: 'assignment', label: 'RAID', path: `/workspace/${workspaceId}/raid` },
   ];
 
   const isActive = (path) => {

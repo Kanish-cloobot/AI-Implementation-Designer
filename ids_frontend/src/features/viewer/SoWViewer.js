@@ -7,7 +7,7 @@ import DocumentationDetails from './components/DocumentationDetails';
 import { generateDocumentationSections } from './utils/documentationSections';
 
 
-const SoWViewer = ({ onBack }) => {
+const SoWViewer = ({ onBack = () => {} }) => {
   const { sowData, currentWorkspace, currentDocument, expandSidebar } = useWorkspace();
   const [activeSection, setActiveSection] = useState('project-overview');
 

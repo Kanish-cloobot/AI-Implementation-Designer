@@ -57,7 +57,9 @@
 .doc-details-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 24px;
+  max-height: calc(100vh - 120px);
 }
 
 .doc-details-section {
@@ -127,18 +129,35 @@
 
 /* Scrollbar styling */
 .doc-details-content::-webkit-scrollbar {
-  width: 4px;
+  width: 8px;
 }
 
 .doc-details-content::-webkit-scrollbar-track {
-  background: #0D0D0D;
+  background: #1A1A1A;
+  border-radius: 4px;
 }
 
 .doc-details-content::-webkit-scrollbar-thumb {
   background: #404040;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 .doc-details-content::-webkit-scrollbar-thumb:hover {
   background: #4D4D4D;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .doc-details-content {
+    max-height: calc(100vh - 160px);
+    padding: 16px;
+  }
+  
+  .doc-details-section {
+    max-width: 100%;
+  }
+  
+  .doc-details-main-title {
+    font-size: 20px;
+  }
 }
