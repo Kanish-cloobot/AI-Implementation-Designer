@@ -15,45 +15,61 @@ class UnifiedExtractionService:
     def __init__(self, db_manager):
         self.db_manager = db_manager
 
+    
     def store_unified_extraction(self, meeting_id, workspace_id, org_id, extraction_data, created_by=None):
         """
-        Store all extraction data in a single unified table row
-        
-        Args:
-            meeting_id: ID of the meeting
-            workspace_id: ID of the workspace
-            org_id: Organization ID
-            extraction_data: Dictionary containing all extraction data
-            created_by: User who created the extraction
+        Store each extraction data key and sub-item in separate rows.
+        If a key contains multiple list items, each list item will be a separate row.
         """
+
         try:
-            # Calculate total items extracted
-            total_items = self._count_total_extracted_items(extraction_data)
-            
-            # Store all extraction data as JSON in a single column
+            print("--------------------------------")
+            print("Extracting and flattening data for insertion...")
+            print("--------------------------------")
+
+            # Prepare list to store all rows to insert
+            rows_to_insert = []
+
+            # Iterate through all top-level keys
+            for key, value in extraction_data.items():
+                if isinstance(value, list):
+                    # Each item in the list becomes its own row
+                    for item in value:
+                        rows_to_insert.append({
+                            "data_key": key,
+                            "data_value": json.dumps(item, ensure_ascii=False)
+                        })
+                else:
+                    # For non-list values, store directly
+                    rows_to_insert.append({
+                        "data_key": key,
+                        "data_value": json.dumps(value, ensure_ascii=False)
+                    })
+
+            # Insert each row into the database
             columns = [
                 'meeting_id', 'workspace_id', 'org_id', 'created_by',
-                'extraction_data', 'total_items_extracted', 'extraction_status'
+                'type', 'extraction_data', 'extraction_status', 'latest_status'
             ]
-            
-            values = [
-                meeting_id, workspace_id, org_id, created_by,
-                json.dumps(extraction_data),
-                total_items,
-                'completed'
-            ]
-            
-            placeholders = ', '.join(['?' for _ in values])
+
+            placeholders = ', '.join(['?' for _ in columns])
             query = f'''
                 INSERT INTO unified_extractions ({', '.join(columns)})
                 VALUES ({placeholders})
             '''
-            
-            self.db_manager.execute_query(query, tuple(values))
-            print(f"Successfully stored unified extraction for meeting {meeting_id}")
-            
+
+            # Execute batch insert
+            for row in rows_to_insert:
+                values = [
+                    meeting_id, workspace_id, org_id, created_by,
+                    row['data_key'], row['data_value'], 'completed', 1
+                ]
+                self.db_manager.execute_query(query, tuple(values))
+
+            print(f"✅ Successfully stored {len(rows_to_insert)} rows for meeting {meeting_id}")
+
         except Exception as e:
-            print(f"Error storing unified extraction: {str(e)}")
+            print(f"❌ Error storing unified extraction: {str(e)}")
             traceback.print_exc()
             raise
 
