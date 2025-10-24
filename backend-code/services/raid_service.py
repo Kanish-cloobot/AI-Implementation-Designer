@@ -12,12 +12,16 @@ class RAIDService:
         Get consolidated RAID (Risks, Actions, Issues, Dependencies) log for a workspace
         """
         try:
+            # Get all unified extractions for the workspace
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            
+            # Consolidate data from all extractions
             raid_data = {
-                'risks_issues': self._get_risks_issues(workspace_id, org_id),
-                'action_items': self._get_action_items(workspace_id, org_id),
-                'decisions': self._get_decisions(workspace_id, org_id),
-                'dependencies': self._get_dependencies(workspace_id, org_id),
-                'pain_points': self._get_pain_points(workspace_id, org_id)
+                'risks_issues': self._consolidate_risks_issues(extractions),
+                'action_items': self._consolidate_action_items(extractions),
+                'decisions': self._consolidate_decisions(extractions),
+                'dependencies': self._consolidate_dependencies(extractions),
+                'pain_points': self._consolidate_pain_points(extractions)
             }
             
             return raid_data
@@ -26,55 +30,89 @@ class RAIDService:
             print(f"Error getting workspace RAID: {str(e)}")
             return None
 
-    def _get_risks_issues(self, workspace_id, org_id):
-        """Get consolidated risks and issues"""
+    def _get_workspace_unified_extractions(self, workspace_id, org_id):
+        """Get all unified extractions for a workspace"""
         query = '''
-            SELECT type, description_md, impact_md, mitigation_md, owner_md, due_date, created_at
-            FROM extraction_risks_issues
+            SELECT * FROM unified_extractions
             WHERE workspace_id = ? AND org_id = ? AND status = 'active'
             ORDER BY created_at DESC
         '''
         return self.db_manager.fetch_all(query, (workspace_id, org_id))
 
-    def _get_action_items(self, workspace_id, org_id):
-        """Get consolidated action items"""
-        query = '''
-            SELECT task_md, owner_md, due_date, item_status, created_at
-            FROM extraction_action_items
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_risks_issues(self, extractions):
+        """Consolidate risks and issues from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'risks_issues' in data and isinstance(data['risks_issues'], list):
+                        for item in data['risks_issues']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_decisions(self, workspace_id, org_id):
-        """Get consolidated decisions"""
-        query = '''
-            SELECT decision_md, rationale_md, decided_on, approver_md, created_at
-            FROM extraction_decisions
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_action_items(self, extractions):
+        """Consolidate action items from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'action_items' in data and isinstance(data['action_items'], list):
+                        for item in data['action_items']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_dependencies(self, workspace_id, org_id):
-        """Get consolidated dependencies"""
-        query = '''
-            SELECT description_md, type, depends_on_md, owner_md, created_at
-            FROM extraction_dependencies
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_decisions(self, extractions):
+        """Consolidate decisions from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'decisions' in data and isinstance(data['decisions'], list):
+                        for item in data['decisions']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_pain_points(self, workspace_id, org_id):
-        """Get consolidated pain points"""
-        query = '''
-            SELECT pain_point_md, affected_bu_md, impact_md, created_at
-            FROM extraction_pain_points
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_dependencies(self, extractions):
+        """Consolidate dependencies from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'dependencies' in data and isinstance(data['dependencies'], list):
+                        for item in data['dependencies']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
+
+    def _consolidate_pain_points(self, extractions):
+        """Consolidate pain points from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'pain_points' in data and isinstance(data['pain_points'], list):
+                        for item in data['pain_points']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
     def get_raid_summary(self, workspace_id, org_id='default_org'):
         """
@@ -104,32 +142,44 @@ class RAIDService:
         Get RAID items grouped by status for better tracking
         """
         try:
-            # Get action items by status
-            action_status_query = '''
-                SELECT item_status, COUNT(*) as count
-                FROM extraction_action_items
-                WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-                GROUP BY item_status
-            '''
-            action_status = self.db_manager.fetch_all(action_status_query, (workspace_id, org_id))
+            # Get all unified extractions for the workspace
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
             
-            # Get risks by type
-            risk_type_query = '''
-                SELECT type, COUNT(*) as count
-                FROM extraction_risks_issues
-                WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-                GROUP BY type
-            '''
-            risk_types = self.db_manager.fetch_all(risk_type_query, (workspace_id, org_id))
+            # Count action items by status
+            action_status_counts = {}
+            risk_type_counts = {}
+            dependency_type_counts = {}
             
-            # Get dependencies by type
-            dependency_type_query = '''
-                SELECT type, COUNT(*) as count
-                FROM extraction_dependencies
-                WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-                GROUP BY type
-            '''
-            dependency_types = self.db_manager.fetch_all(dependency_type_query, (workspace_id, org_id))
+            for extraction in extractions:
+                if extraction.get('extraction_data'):
+                    try:
+                        data = json.loads(extraction['extraction_data'])
+                        
+                        # Count action items by status
+                        if 'action_items' in data and isinstance(data['action_items'], list):
+                            for item in data['action_items']:
+                                status = item.get('item_status', 'unknown')
+                                action_status_counts[status] = action_status_counts.get(status, 0) + 1
+                        
+                        # Count risks by type
+                        if 'risks_issues' in data and isinstance(data['risks_issues'], list):
+                            for item in data['risks_issues']:
+                                risk_type = item.get('type', 'unknown')
+                                risk_type_counts[risk_type] = risk_type_counts.get(risk_type, 0) + 1
+                        
+                        # Count dependencies by type
+                        if 'dependencies' in data and isinstance(data['dependencies'], list):
+                            for item in data['dependencies']:
+                                dep_type = item.get('type', 'unknown')
+                                dependency_type_counts[dep_type] = dependency_type_counts.get(dep_type, 0) + 1
+                                
+                    except json.JSONDecodeError:
+                        continue
+            
+            # Convert to list format for consistency
+            action_status = [{'item_status': status, 'count': count} for status, count in action_status_counts.items()]
+            risk_types = [{'type': risk_type, 'count': count} for risk_type, count in risk_type_counts.items()]
+            dependency_types = [{'type': dep_type, 'count': count} for dep_type, count in dependency_type_counts.items()]
             
             return {
                 'action_status': action_status,

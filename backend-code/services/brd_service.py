@@ -12,18 +12,22 @@ class BRDService:
         Get consolidated BRD (Business Requirements Document) for a workspace
         """
         try:
+            # Get all unified extractions for the workspace
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            
+            # Consolidate data from all extractions
             brd_data = {
-                'business_units_teams': self._get_business_units_teams(workspace_id, org_id),
-                'modules_processes': self._get_modules_processes(workspace_id, org_id),
-                'license_list': self._get_license_list(workspace_id, org_id),
-                'personas': self._get_personas(workspace_id, org_id),
-                'requirements': self._get_requirements(workspace_id, org_id),
-                'current_state': self._get_current_state(workspace_id, org_id),
-                'target_state': self._get_target_state(workspace_id, org_id),
-                'applications_to_integrate': self._get_integrations(workspace_id, org_id),
-                'data_migration': self._get_data_migration(workspace_id, org_id),
-                'data_model': self._get_data_model(workspace_id, org_id),
-                'metadata_updates': self._get_metadata_updates(workspace_id, org_id)
+                'business_units_teams': self._consolidate_business_units_teams(extractions),
+                'modules_processes': self._consolidate_modules_processes(extractions),
+                'license_list': self._consolidate_license_list(extractions),
+                'personas': self._consolidate_personas(extractions),
+                'requirements': self._consolidate_requirements(extractions),
+                'current_state': self._consolidate_current_state(extractions),
+                'target_state': self._consolidate_target_state(extractions),
+                'applications_to_integrate': self._consolidate_integrations(extractions),
+                'data_migration': self._consolidate_data_migration(extractions),
+                'data_model': self._consolidate_data_model(extractions),
+                'metadata_updates': self._consolidate_metadata_updates(extractions)
             }
             
             return brd_data
@@ -32,115 +36,179 @@ class BRDService:
             print(f"Error getting workspace BRD: {str(e)}")
             return None
 
-    def _get_business_units_teams(self, workspace_id, org_id):
-        """Get consolidated business units and teams"""
+    def _get_workspace_unified_extractions(self, workspace_id, org_id):
+        """Get all unified extractions for a workspace"""
         query = '''
-            SELECT business_unit, teams, notes_md, created_at
-            FROM extraction_bu_teams
+            SELECT * FROM unified_extractions
             WHERE workspace_id = ? AND org_id = ? AND status = 'active'
             ORDER BY created_at DESC
         '''
         return self.db_manager.fetch_all(query, (workspace_id, org_id))
 
-    def _get_modules_processes(self, workspace_id, org_id):
-        """Get consolidated modules and processes"""
-        query = '''
-            SELECT module_name, processes, scope_tag, notes_md, created_at
-            FROM extraction_modules_processes
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_business_units_teams(self, extractions):
+        """Consolidate business units and teams from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'bu_teams' in data and isinstance(data['bu_teams'], list):
+                        for item in data['bu_teams']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_license_list(self, workspace_id, org_id):
-        """Get consolidated license list"""
-        query = '''
-            SELECT license_type, count, allocation_md, notes_md, created_at
-            FROM extraction_licenses
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_modules_processes(self, extractions):
+        """Consolidate modules and processes from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'modules_processes' in data and isinstance(data['modules_processes'], list):
+                        for item in data['modules_processes']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_personas(self, workspace_id, org_id):
-        """Get consolidated personas"""
-        query = '''
-            SELECT persona_name, responsibilities, primary_modules, created_at
-            FROM extraction_personas
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_license_list(self, extractions):
+        """Consolidate license list from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'licenses' in data and isinstance(data['licenses'], list):
+                        for item in data['licenses']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_requirements(self, workspace_id, org_id):
-        """Get consolidated requirements"""
-        query = '''
-            SELECT requirement_type, description_md, acceptance_criteria, created_at
-            FROM extraction_requirements
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_personas(self, extractions):
+        """Consolidate personas from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'personas' in data and isinstance(data['personas'], list):
+                        for item in data['personas']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_current_state(self, workspace_id, org_id):
-        """Get consolidated current state (As-is)"""
-        query = '''
-            SELECT description_md, created_at
-            FROM extraction_current_state
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_requirements(self, extractions):
+        """Consolidate requirements from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'requirements' in data and isinstance(data['requirements'], list):
+                        for item in data['requirements']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_target_state(self, workspace_id, org_id):
-        """Get consolidated target state (To-be)"""
-        query = '''
-            SELECT description_md, created_at
-            FROM extraction_target_state
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_current_state(self, extractions):
+        """Consolidate current state from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'current_state' in data and isinstance(data['current_state'], list):
+                        for item in data['current_state']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_integrations(self, workspace_id, org_id):
-        """Get consolidated applications to integrate"""
-        query = '''
-            SELECT application_name, purpose_md, integration_type, directionality, notes_md, created_at
-            FROM extraction_integrations
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_target_state(self, extractions):
+        """Consolidate target state from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'target_state' in data and isinstance(data['target_state'], list):
+                        for item in data['target_state']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_data_migration(self, workspace_id, org_id):
-        """Get consolidated data migration information"""
-        query = '''
-            SELECT source_md, mapping_notes_md, cleansing_rules_md, tools_md, created_at
-            FROM extraction_data_migration
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_integrations(self, extractions):
+        """Consolidate integrations from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'integrations' in data and isinstance(data['integrations'], list):
+                        for item in data['integrations']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_data_model(self, workspace_id, org_id):
-        """Get consolidated data model"""
-        query = '''
-            SELECT entity_name, entity_type, key_fields, relationships_md, created_at
-            FROM extraction_data_model
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_data_migration(self, extractions):
+        """Consolidate data migration from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'data_migration' in data and isinstance(data['data_migration'], list):
+                        for item in data['data_migration']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
-    def _get_metadata_updates(self, workspace_id, org_id):
-        """Get consolidated metadata updates"""
-        query = '''
-            SELECT component_type, api_name_md, change_type, scope_md, created_at
-            FROM extraction_metadata_updates
-            WHERE workspace_id = ? AND org_id = ? AND status = 'active'
-            ORDER BY created_at DESC
-        '''
-        return self.db_manager.fetch_all(query, (workspace_id, org_id))
+    def _consolidate_data_model(self, extractions):
+        """Consolidate data model from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'data_model' in data and isinstance(data['data_model'], list):
+                        for item in data['data_model']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
+
+    def _consolidate_metadata_updates(self, extractions):
+        """Consolidate metadata updates from unified extractions"""
+        consolidated = []
+        for extraction in extractions:
+            if extraction.get('extraction_data'):
+                try:
+                    data = json.loads(extraction['extraction_data'])
+                    if 'metadata_updates' in data and isinstance(data['metadata_updates'], list):
+                        for item in data['metadata_updates']:
+                            item['created_at'] = extraction['created_at']
+                            consolidated.append(item)
+                except json.JSONDecodeError:
+                    continue
+        return consolidated
 
     def get_brd_summary(self, workspace_id, org_id='default_org'):
         """
