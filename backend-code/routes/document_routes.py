@@ -79,74 +79,6 @@ def upload_document():
         return jsonify({'error': str(e)}), 500
 
 
-@document_bp.route('/documents/<document_id>/process', methods=['POST'])
-def process_document(document_id):
-    try:
-        db = get_db()
-        
-        document = db.fetch_one(
-            'SELECT * FROM documents WHERE document_id = ? AND status != ?',
-            (document_id, 'deleted')
-        )
-        
-        if not document:
-            return jsonify({'error': 'Document not found'}), 404
-        
-        db.execute_query(
-            'UPDATE documents SET status = ?, updated_at = ? WHERE document_id = ?',
-            ('processing', datetime.utcnow(), document_id)
-        )
-        
-        doc_processor = DocumentProcessor()
-        extracted_text = doc_processor.extract_text(document['storage_path'])
-        
-        if not extracted_text:
-            db.execute_query(
-                'UPDATE documents SET status = ?, updated_at = ? WHERE document_id = ?',
-                ('failed', datetime.utcnow(), document_id)
-            )
-            return jsonify({'error': 'Failed to extract text from document'}), 500
-        
-        llm_service = LLMService()
-        start_time = datetime.utcnow()
-        
-        response_data = llm_service.extract_sow_insights(extracted_text)
-        
-        end_time = datetime.utcnow()
-        latency_ms = int((end_time - start_time).total_seconds() * 1000)
-        
-        stream_id = str(uuid.uuid4())
-        
-        db.execute_query(
-            '''INSERT INTO llm_streams 
-               (stream_id, document_id, request_payload, response_payload,
-                tokens_used, latency_ms, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (stream_id, document_id, extracted_text[:1000], 
-             response_data, 0, latency_ms, 'success',
-             datetime.utcnow(), datetime.utcnow())
-        )
-        
-        db.execute_query(
-            'UPDATE documents SET status = ?, updated_at = ? WHERE document_id = ?',
-            ('completed', datetime.utcnow(), document_id)
-        )
-        
-        stream = db.fetch_one(
-            'SELECT * FROM llm_streams WHERE stream_id = ?',
-            (stream_id,)
-        )
-        
-        return jsonify(stream), 200
-    except Exception as e:
-        db = get_db()
-        db.execute_query(
-            'UPDATE documents SET status = ?, updated_at = ? WHERE document_id = ?',
-            ('failed', datetime.utcnow(), document_id)
-        )
-        return jsonify({'error': str(e)}), 500
-
-
 @document_bp.route('/documents/process', methods=['POST'])
 def process_document_payload():
     try:
@@ -220,23 +152,6 @@ def process_document_payload():
         return jsonify({'error': str(e)}), 500
 
 
-@document_bp.route('/documents/<document_id>', methods=['GET'])
-def get_document(document_id):
-    try:
-        db = get_db()
-        document = db.fetch_one(
-            'SELECT * FROM documents WHERE document_id = ? AND status != ?',
-            (document_id, 'deleted')
-        )
-        
-        if not document:
-            return jsonify({'error': 'Document not found'}), 404
-        
-        return jsonify(document), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
 @document_bp.route('/documents/get-by-id', methods=['POST'])
 def get_document_payload():
     try:
@@ -255,22 +170,6 @@ def get_document_payload():
             return jsonify({'error': 'Document not found'}), 404
         
         return jsonify(document), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@document_bp.route('/documents/workspace/<workspace_id>', methods=['GET'])
-def get_documents_by_workspace(workspace_id):
-    try:
-        db = get_db()
-        documents = db.fetch_all(
-            '''SELECT * FROM documents 
-               WHERE workspace_id = ? AND status != ?
-               ORDER BY created_at DESC''',
-            (workspace_id, 'deleted')
-        )
-        
-        return jsonify(documents), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
