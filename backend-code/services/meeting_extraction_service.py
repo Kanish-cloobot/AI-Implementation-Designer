@@ -4,6 +4,7 @@ import time
 import traceback
 from datetime import datetime
 from services.document_processor import DocumentProcessor
+from services.unified_extraction_service import UnifiedExtractionService
 from config import OPENAI_CONFIG
 
 # Configure OpenAI for Azure GPT-4
@@ -17,6 +18,7 @@ class MeetingExtractionService:
     def __init__(self, db_manager):
         self.db_manager = db_manager
         self.doc_processor = DocumentProcessor()
+        self.unified_extraction_service = UnifiedExtractionService(db_manager)
         self.deployment = OPENAI_CONFIG['deployment']
         self.max_tokens = OPENAI_CONFIG['max_tokens']
         self.temperature = OPENAI_CONFIG['temperature']
@@ -323,308 +325,145 @@ Perform extraction now and return only the JSON object above, enclosed within js
             return response_text.strip()
 
     def _store_extractions(self, meeting_id, workspace_id, org_id, data):
-        """Store all extractions in database tables"""
+        """Store all extractions in unified table"""
         try:
-            # Store metadata
-            if 'document_metadata' in data:
-                for item in data['document_metadata']:
-                    self._insert_extraction(
-                        'extraction_metadata',
-                        meeting_id, workspace_id, org_id, item
-                    )
-
-            # Store V1: BU/Teams
-            if 'V1_list_of_bu_teams' in data:
-                for item in data['V1_list_of_bu_teams']:
-                    self._insert_extraction(
-                        'extraction_bu_teams',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'business_unit': item.get('business_unit', ''),
-                            'teams': json.dumps(item.get('teams', [])),
-                            'notes_md': item.get('notes_md', '')
-                        }
-                    )
-
-            # Store V2: Modules and Processes
-            if 'V2_modules_and_processes' in data:
-                for item in data['V2_modules_and_processes']:
-                    self._insert_extraction(
-                        'extraction_modules_processes',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'module_name': item.get('module_name', ''),
-                            'processes': json.dumps(item.get('processes', [])),
-                            'scope_tag': item.get('scope_tag', ''),
-                            'notes_md': item.get('notes_md', '')
-                        }
-                    )
-
-            # Store V3: Licenses
-            if 'V3_license_list' in data:
-                for item in data['V3_license_list']:
-                    self._insert_extraction(
-                        'extraction_licenses',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'license_type': item.get('license_type', ''),
-                            'count': item.get('count', 0),
-                            'allocation_md': item.get('allocation_md', ''),
-                            'notes_md': item.get('notes_md', '')
-                        }
-                    )
-
-            # Store V4: Personas
-            if 'V4_personas' in data:
-                for item in data['V4_personas']:
-                    self._insert_extraction(
-                        'extraction_personas',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'persona_name': item.get('persona_name', ''),
-                            'responsibilities': json.dumps(item.get('responsibilities', [])),
-                            'primary_modules': json.dumps(item.get('primary_modules', []))
-                        }
-                    )
-
-            # Store V5: Requirements
-            if 'V5_requirements' in data:
-                for item in data['V5_requirements']:
-                    self._insert_extraction(
-                        'extraction_requirements',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'requirement_type': item.get('requirement_type', ''),
-                            'description_md': item.get('description_md', ''),
-                            'acceptance_criteria': json.dumps(item.get('acceptance_criteria', []))
-                        }
-                    )
-
-            # Store V6: Risks and Issues
-            if 'V6_risks_and_issues' in data:
-                for item in data['V6_risks_and_issues']:
-                    self._insert_extraction(
-                        'extraction_risks_issues',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'type': item.get('type', ''),
-                            'description_md': item.get('description_md', ''),
-                            'impact_md': item.get('impact_md', ''),
-                            'mitigation_md': item.get('mitigation_md', ''),
-                            'owner_md': item.get('owner_md', ''),
-                            'due_date': item.get('due_date', '')
-                        }
-                    )
-
-            # Store V7: Action Items
-            if 'V7_action_items' in data:
-                for item in data['V7_action_items']:
-                    self._insert_extraction(
-                        'extraction_action_items',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'task_md': item.get('task_md', ''),
-                            'owner_md': item.get('owner_md', ''),
-                            'due_date': item.get('due_date', ''),
-                            'item_status': item.get('status', 'open')
-                        }
-                    )
-
-            # Store V8: Decisions
-            if 'V8_decisions' in data:
-                for item in data['V8_decisions']:
-                    self._insert_extraction(
-                        'extraction_decisions',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'decision_md': item.get('decision_md', ''),
-                            'rationale_md': item.get('rationale_md', ''),
-                            'decided_on': item.get('decided_on', ''),
-                            'approver_md': item.get('approver_md', '')
-                        }
-                    )
-
-            # Store V9: Dependencies
-            if 'V9_dependencies' in data:
-                for item in data['V9_dependencies']:
-                    self._insert_extraction(
-                        'extraction_dependencies',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'description_md': item.get('description_md', ''),
-                            'type': item.get('type', ''),
-                            'depends_on_md': item.get('depends_on_md', ''),
-                            'owner_md': item.get('owner_md', '')
-                        }
-                    )
-
-            # Store V10: Pain Points
-            if 'V10_pain_points' in data:
-                for item in data['V10_pain_points']:
-                    self._insert_extraction(
-                        'extraction_pain_points',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'pain_point_md': item.get('pain_point_md', ''),
-                            'affected_bu_md': item.get('affected_bu_md', ''),
-                            'impact_md': item.get('impact_md', '')
-                        }
-                    )
-
-            # Store V11: Current State
-            if 'V11_current_state_as_is' in data:
-                for item in data['V11_current_state_as_is']:
-                    self._insert_extraction(
-                        'extraction_current_state',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'description_md': item.get('description_md', '')
-                        }
-                    )
-
-            # Store V12: Target State
-            if 'V12_target_state_to_be' in data:
-                for item in data['V12_target_state_to_be']:
-                    self._insert_extraction(
-                        'extraction_target_state',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'description_md': item.get('description_md', '')
-                        }
-                    )
-
-            # Store V13: Integrations
-            if 'V13_applications_to_be_integrated' in data:
-                for item in data['V13_applications_to_be_integrated']:
-                    self._insert_extraction(
-                        'extraction_integrations',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'application_name': item.get('application_name', ''),
-                            'purpose_md': item.get('purpose_md', ''),
-                            'integration_type': item.get('integration_type', ''),
-                            'directionality': item.get('directionality', ''),
-                            'notes_md': item.get('notes_md', '')
-                        }
-                    )
-
-            # Store V14: Data Migration
-            if 'V14_data_migration' in data:
-                for item in data['V14_data_migration']:
-                    self._insert_extraction(
-                        'extraction_data_migration',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'source_md': item.get('source_md', ''),
-                            'mapping_notes_md': item.get('mapping_notes_md', ''),
-                            'cleansing_rules_md': item.get('cleansing_rules_md', ''),
-                            'tools_md': json.dumps(item.get('tools_md', []))
-                        }
-                    )
-
-            # Store V15: Data Model
-            if 'V15_data_model' in data:
-                for item in data['V15_data_model']:
-                    self._insert_extraction(
-                        'extraction_data_model',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'entity_name': item.get('entity_name', ''),
-                            'entity_type': item.get('entity_type', ''),
-                            'key_fields': json.dumps(item.get('key_fields', [])),
-                            'relationships_md': item.get('relationships_md', '')
-                        }
-                    )
-
-            # Store V16: Metadata Updates
-            if 'V16_metadata_to_update' in data:
-                for item in data['V16_metadata_to_update']:
-                    self._insert_extraction(
-                        'extraction_metadata_updates',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'component_type': item.get('component_type', ''),
-                            'api_name_md': item.get('api_name_md', ''),
-                            'change_type': item.get('change_type', ''),
-                            'scope_md': item.get('scope_md', '')
-                        }
-                    )
-
-            # Store Scope Summary
-            if 'scope_summary' in data:
-                for item in data['scope_summary']:
-                    self._insert_extraction(
-                        'extraction_scope_summary',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'in_scope_md': json.dumps(item.get('in_scope_md', [])),
-                            'out_of_scope_md': json.dumps(item.get('out_of_scope_md', [])),
-                            'future_phase_md': json.dumps(item.get('future_phase_md', []))
-                        }
-                    )
-
-            # Store Assumptions and Gaps
-            if 'assumptions_and_gaps' in data:
-                for item in data['assumptions_and_gaps']:
-                    self._insert_extraction(
-                        'extraction_assumptions_gaps',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'note_md': item.get('note_md', '')
-                        }
-                    )
-
-            # Store Source References
-            if 'source_references' in data:
-                for item in data['source_references']:
-                    self._insert_extraction(
-                        'extraction_source_references',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'reference_md': item.get('reference_md', '')
-                        }
-                    )
-
-            # Store Validation Summary
-            if 'validation_summary' in data:
-                for item in data['validation_summary']:
-                    self._insert_extraction(
-                        'extraction_validation_summary',
-                        meeting_id, workspace_id, org_id,
-                        {
-                            'json_validity': 1 if item.get('json_validity', False) else 0,
-                            'issues_detected': json.dumps(item.get('issues_detected', []))
-                        }
-                    )
-
+            # Transform the data to match the unified structure
+            unified_data = self._transform_to_unified_format(data)
+            
+            # Store using unified extraction service
+            self.unified_extraction_service.store_unified_extraction(
+                meeting_id=meeting_id,
+                workspace_id=workspace_id,
+                org_id=org_id,
+                extraction_data=unified_data,
+                created_by='system'
+            )
+            
+            print(f"Successfully stored unified extraction for meeting {meeting_id}")
+            
         except Exception as e:
             print(f"Error storing extractions: {str(e)}")
             traceback.print_exc()
 
-    def _insert_extraction(self, table_name, meeting_id, workspace_id, org_id, data):
-        """Generic insert for extraction tables"""
-        try:
-            columns = ['meeting_id', 'workspace_id', 'org_id']
-            values = [meeting_id, workspace_id, org_id]
+    def _transform_to_unified_format(self, data):
+        """Transform extraction data to unified format"""
+        unified_data = {
+            'source_type': '',
+            'doc_title': '',
+            'extraction_timestamp': datetime.now().isoformat(),
+            'confidence': 0.0,
+            'bu_teams': [],
+            'modules_processes': [],
+            'licenses': [],
+            'personas': [],
+            'requirements': [],
+            'risks_issues': [],
+            'action_items': [],
+            'decisions': [],
+            'dependencies': [],
+            'pain_points': [],
+            'current_state': [],
+            'target_state': [],
+            'integrations': [],
+            'data_migration': [],
+            'data_model': [],
+            'metadata_updates': [],
+            'scope_summary': [],
+            'assumptions_gaps': [],
+            'source_references': [],
+            'validation_summary': {}
+        }
+        
+        # Transform document metadata
+        if 'document_metadata' in data and data['document_metadata']:
+            metadata = data['document_metadata'][0]
+            unified_data['source_type'] = metadata.get('source_type', '')
+            unified_data['doc_title'] = metadata.get('doc_title', '')
+            unified_data['extraction_timestamp'] = metadata.get('extraction_timestamp', datetime.now().isoformat())
+            unified_data['confidence'] = metadata.get('confidence', 0.0)
+        
+        # Transform V1: BU/Teams
+        if 'V1_list_of_bu_teams' in data:
+            unified_data['bu_teams'] = data['V1_list_of_bu_teams']
+        
+        # Transform V2: Modules and Processes
+        if 'V2_modules_and_processes' in data:
+            unified_data['modules_processes'] = data['V2_modules_and_processes']
+        
+        # Transform V3: Licenses
+        if 'V3_license_list' in data:
+            unified_data['licenses'] = data['V3_license_list']
+        
+        # Transform V4: Personas
+        if 'V4_personas' in data:
+            unified_data['personas'] = data['V4_personas']
+        
+        # Transform V5: Requirements
+        if 'V5_requirements' in data:
+            unified_data['requirements'] = data['V5_requirements']
+        
+        # Transform V6: Risks and Issues
+        if 'V6_risks_and_issues' in data:
+            unified_data['risks_issues'] = data['V6_risks_and_issues']
+        
+        # Transform V7: Action Items
+        if 'V7_action_items' in data:
+            unified_data['action_items'] = data['V7_action_items']
+        
+        # Transform V8: Decisions
+        if 'V8_decisions' in data:
+            unified_data['decisions'] = data['V8_decisions']
+        
+        # Transform V9: Dependencies
+        if 'V9_dependencies' in data:
+            unified_data['dependencies'] = data['V9_dependencies']
+        
+        # Transform V10: Pain Points
+        if 'V10_pain_points' in data:
+            unified_data['pain_points'] = data['V10_pain_points']
+        
+        # Transform V11: Current State
+        if 'V11_current_state_as_is' in data:
+            unified_data['current_state'] = data['V11_current_state_as_is']
+        
+        # Transform V12: Target State
+        if 'V12_target_state_to_be' in data:
+            unified_data['target_state'] = data['V12_target_state_to_be']
+        
+        # Transform V13: Integrations
+        if 'V13_applications_to_be_integrated' in data:
+            unified_data['integrations'] = data['V13_applications_to_be_integrated']
+        
+        # Transform V14: Data Migration
+        if 'V14_data_migration' in data:
+            unified_data['data_migration'] = data['V14_data_migration']
+        
+        # Transform V15: Data Model
+        if 'V15_data_model' in data:
+            unified_data['data_model'] = data['V15_data_model']
+        
+        # Transform V16: Metadata Updates
+        if 'V16_metadata_to_update' in data:
+            unified_data['metadata_updates'] = data['V16_metadata_to_update']
+        
+        # Transform Scope Summary
+        if 'scope_summary' in data:
+            unified_data['scope_summary'] = data['scope_summary']
+        
+        # Transform Assumptions and Gaps
+        if 'assumptions_and_gaps' in data:
+            unified_data['assumptions_gaps'] = data['assumptions_and_gaps']
+        
+        # Transform Source References
+        if 'source_references' in data:
+            unified_data['source_references'] = data['source_references']
+        
+        # Transform Validation Summary
+        if 'validation_summary' in data and data['validation_summary']:
+            unified_data['validation_summary'] = data['validation_summary'][0]
+        
+        return unified_data
 
-            for key, value in data.items():
-                columns.append(key)
-                values.append(value)
-
-            columns.append('created_at')
-            values.append(datetime.now())
-
-            placeholders = ', '.join(['?' for _ in values])
-            query = f'''
-                INSERT INTO {table_name} ({', '.join(columns)})
-                VALUES ({placeholders})
-            '''
-
-            self.db_manager.execute_query(query, tuple(values))
-
-        except Exception as e:
-            print(f"Error inserting into {table_name}: {str(e)}")
-            traceback.print_exc()
 
     def _count_extractions(self, data):
         """Count number of items in each extraction category"""
@@ -635,56 +474,37 @@ Perform extraction now and return only the JSON object above, enclosed within js
         return counts
 
     def get_meeting_extractions(self, meeting_id, org_id):
-        """Retrieve all extractions for a meeting"""
+        """Retrieve all extractions for a meeting from unified table"""
         try:
-            extractions = {}
-
-            # Define all extraction tables and their keys
-            extraction_tables = {
-                'bu_teams': 'extraction_bu_teams',
-                'modules_processes': 'extraction_modules_processes',
-                'licenses': 'extraction_licenses',
-                'personas': 'extraction_personas',
-                'requirements': 'extraction_requirements',
-                'risks_issues': 'extraction_risks_issues',
-                'action_items': 'extraction_action_items',
-                'decisions': 'extraction_decisions',
-                'dependencies': 'extraction_dependencies',
-                'pain_points': 'extraction_pain_points',
-                'current_state': 'extraction_current_state',
-                'target_state': 'extraction_target_state',
-                'integrations': 'extraction_integrations',
-                'data_migration': 'extraction_data_migration',
-                'data_model': 'extraction_data_model',
-                'metadata_updates': 'extraction_metadata_updates',
-                'scope_summary': 'extraction_scope_summary',
-                'assumptions_gaps': 'extraction_assumptions_gaps',
-                'source_references': 'extraction_source_references',
-                'validation_summary': 'extraction_validation_summary'
+            # Get unified extraction data
+            extraction_data = self.unified_extraction_service.get_unified_extraction(meeting_id, org_id)
+            
+            if not extraction_data:
+                return {}
+            
+            # Return the extraction data in the expected format
+            return {
+                'bu_teams': extraction_data.get('bu_teams', []),
+                'modules_processes': extraction_data.get('modules_processes', []),
+                'licenses': extraction_data.get('licenses', []),
+                'personas': extraction_data.get('personas', []),
+                'requirements': extraction_data.get('requirements', []),
+                'risks_issues': extraction_data.get('risks_issues', []),
+                'action_items': extraction_data.get('action_items', []),
+                'decisions': extraction_data.get('decisions', []),
+                'dependencies': extraction_data.get('dependencies', []),
+                'pain_points': extraction_data.get('pain_points', []),
+                'current_state': extraction_data.get('current_state', []),
+                'target_state': extraction_data.get('target_state', []),
+                'integrations': extraction_data.get('integrations', []),
+                'data_migration': extraction_data.get('data_migration', []),
+                'data_model': extraction_data.get('data_model', []),
+                'metadata_updates': extraction_data.get('metadata_updates', []),
+                'scope_summary': extraction_data.get('scope_summary', []),
+                'assumptions_gaps': extraction_data.get('assumptions_gaps', []),
+                'source_references': extraction_data.get('source_references', []),
+                'validation_summary': extraction_data.get('validation_summary', {})
             }
-
-            for key, table_name in extraction_tables.items():
-                query = f'''
-                    SELECT * FROM {table_name}
-                    WHERE meeting_id = ? AND org_id = ? AND status = 'active'
-                '''
-                results = self.db_manager.fetch_all(query, (meeting_id, org_id))
-
-                # Parse JSON fields
-                for result in results:
-                    for field_key in result.keys():
-                        if field_key in ['teams', 'processes', 'primary_modules',
-                                         'responsibilities', 'acceptance_criteria',
-                                         'key_fields', 'tools_md', 'issues_detected',
-                                         'in_scope_md', 'out_of_scope_md', 'future_phase_md']:
-                            try:
-                                result[field_key] = json.loads(result[field_key])
-                            except (json.JSONDecodeError, TypeError):
-                                result[field_key] = []
-
-                extractions[key] = results
-
-            return extractions
 
         except Exception as e:
             print(f"Error getting meeting extractions: {str(e)}")
