@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
     fetchDashboardData();
@@ -124,83 +125,118 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="dashboard-summary">
-        <h2 className="section-title">Project Summary</h2>
-        <div className="summary-cards-grid">
-          {renderSummaryCard(
-            'Meetings',
-            safeSummary.meeting_count || 0,
-            'event',
-            'blue'
-          )}
-          {renderSummaryCard(
-            'Requirements',
-            safeSummary.requirements_count || 0,
-            'assignment',
-            'purple'
-          )}
-          {renderSummaryCard(
-            'Risks & Issues',
-            safeSummary.risks_issues_count || 0,
-            'warning',
-            'red'
-          )}
-          {renderSummaryCard(
-            'Action Items',
-            safeSummary.action_items_count || 0,
-            'task_alt',
-            'orange'
-          )}
-          {renderSummaryCard(
-            'Decisions',
-            safeSummary.decisions_count || 0,
-            'gavel',
-            'green'
-          )}
-          {renderSummaryCard(
-            'Dependencies',
-            safeSummary.dependencies_count || 0,
-            'link',
-            'blue'
-          )}
-        </div>
+      {/* Tab Navigation */}
+      <div className="dashboard-tabs">
+        <button 
+          className={`dashboard-tab ${activeTab === 'overview' ? 'dashboard-tab-active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          Overview
+        </button>
+        <button 
+          className={`dashboard-tab ${activeTab === 'raidd' ? 'dashboard-tab-active' : ''}`}
+          onClick={() => setActiveTab('raidd')}
+        >
+          RAIDD
+        </button>
       </div>
 
-      {/* <div className="dashboard-content">
-        <div className="dashboard-section">
-          <h2 className="section-title">Recent Meetings</h2>
-          <div className="recent-meetings">
-            {safeRecentMeetings.length > 0 ? (
-              safeRecentMeetings.map(renderRecentMeeting)
-            ) : (
-              <p className="empty-state">No recent meetings</p>
-            )}
+      {/* Tab Content */}
+      {activeTab === 'overview' && (
+        <div className="dashboard-content">
+          {/* Summary Cards */}
+          <div className="dashboard-summary">
+            <h2 className="section-title">Project Summary</h2>
+            <div className="summary-cards-grid">
+              {renderSummaryCard(
+                'Meetings',
+                safeSummary.meeting_count || 0,
+                'event',
+                'blue'
+              )}
+              {renderSummaryCard(
+                'Requirements',
+                safeSummary.requirements_count || 0,
+                'assignment',
+                'purple'
+              )}
+              {renderSummaryCard(
+                'Risks & Issues',
+                safeSummary.risks_issues_count || 0,
+                'warning',
+                'red'
+              )}
+              {renderSummaryCard(
+                'Action Items',
+                safeSummary.action_items_count || 0,
+                'task_alt',
+                'orange'
+              )}
+              {renderSummaryCard(
+                'Decisions',
+                safeSummary.decisions_count || 0,
+                'gavel',
+                'green'
+              )}
+              {renderSummaryCard(
+                'Dependencies',
+                safeSummary.dependencies_count || 0,
+                'link',
+                'blue'
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className="dashboard-section">
-          <h2 className="section-title">Upcoming Meetings</h2>
-          <div className="upcoming-meetings">
-            {safeUpcomingMeetings.length > 0 ? (
-              safeUpcomingMeetings.map(renderRecentMeeting)
-            ) : (
-              <p className="empty-state">No upcoming meetings</p>
-            )}
+          {/* Content Sections */}
+          <div className="dashboard-sections">
+            <div className="dashboard-section">
+              <h3 className="section-subtitle">Requirements</h3>
+              <div className="section-content">
+                <p className="empty-state">No requirements defined yet</p>
+              </div>
+            </div>
+            
+            <div className="dashboard-section">
+              <h3 className="section-subtitle">Personas</h3>
+              <div className="section-content">
+                <p className="empty-state">No personas defined yet</p>
+              </div>
+            </div>
+            
+            <div className="dashboard-section">
+              <h3 className="section-subtitle">Data Model</h3>
+              <div className="section-content">
+                <p className="empty-state">No data model defined yet</p>
+              </div>
+            </div>
+            
+            <div className="dashboard-section">
+              <h3 className="section-subtitle">Bo-list</h3>
+              <div className="section-content">
+                <p className="empty-state">No backlog items defined yet</p>
+              </div>
+            </div>
           </div>
         </div>
+      )}
 
-        <div className="dashboard-section">
-          <h2 className="section-title">Recent Activity</h2>
-          <div className="recent-activity">
-            {recent_activity && recent_activity.length > 0 ? (
-              recent_activity.map(renderActivityItem)
-            ) : (
-              <p className="empty-state">No recent activity</p>
-            )}
+      {activeTab === 'raidd' && (
+        <div className="dashboard-content">
+          <div className="dashboard-section">
+            <h2 className="section-title">Risks & Insights</h2>
+            <div className="section-content">
+              <p className="empty-state">No risks or insights identified yet</p>
+            </div>
+          </div>
+          
+          <div className="dashboard-section">
+            <h2 className="section-title">Outline</h2>
+            <div className="section-content">
+              <p className="empty-state">No outline content available</p>
+            </div>
           </div>
         </div>
-      </div> */}
+      )}
     </div>
   );
 };

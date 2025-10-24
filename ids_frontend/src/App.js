@@ -5,10 +5,12 @@ import { WorkspaceProvider, useWorkspace } from './contexts/WorkspaceContext';
 import PageWrapper from './components/layout/PageWrapper';
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
+import SecondarySidebar from './components/layout/SecondarySidebar';
 import WorkspaceList from './features/workspaces/WorkspaceList';
 import MeetingList from './features/meetings/MeetingList';
 import MeetingDetail from './features/meetings/MeetingDetail';
 import Dashboard from './features/dashboard/Dashboard';
+import SoWViewer from './features/viewer/SoWViewer';
 import BRDView from './features/brd/BRDView';
 import RAIDView from './features/raid/RAIDView';
 import Snackbar from './components/common/Snackbar';
@@ -21,6 +23,7 @@ const AppContent = () => {
       <Header />
       <div className="app-body">
         <Sidebar />
+        <SecondarySidebar />
         <PageWrapper>
           <Routes>
             <Route path="/" element={<Navigate to="/workspaces" replace />} />
@@ -36,6 +39,10 @@ const AppContent = () => {
             <Route
               path="/workspace/:workspaceId/meeting/:meetingId"
               element={<MeetingDetail />}
+            />
+            <Route
+              path="/workspace/:workspaceId/sow"
+              element={<SoWViewer />}
             />
             <Route
               path="/workspace/:workspaceId/brd"

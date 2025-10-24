@@ -2,7 +2,7 @@ import React from 'react';
 import './WorkspaceList.css';
 import Button from '../../components/common/Button';
 
-const WorkspaceCard = ({ workspace, onView, onEdit, onDelete, onMeetings, onDashboard, onBRD, onRAID }) => {
+const WorkspaceCard = ({ workspace, onView, onEdit, onDelete, onDashboard }) => {
   return (
     <div className="workspace-card">
       <div className="workspace-card-header">
@@ -30,15 +30,16 @@ const WorkspaceCard = ({ workspace, onView, onEdit, onDelete, onMeetings, onDash
         )}
       </div>
       <div className="workspace-card-actions">
-        <Button onClick={onView} variant="secondary" size="small" icon="visibility">View</Button>
-        <Button onClick={onDashboard} variant="secondary" size="small" icon="dashboard">Dashboard</Button>
-        <Button onClick={onMeetings} variant="secondary" size="small" icon="event">Meetings</Button>
-        <Button onClick={onBRD} variant="secondary" size="small" icon="description">BRD</Button>
-        <Button onClick={onRAID} variant="secondary" size="small" icon="assignment">RAID</Button>
-        <Button onClick={() => onEdit(workspace)} variant="secondary" size="small" icon="edit">Edit</Button>
-        <Button onClick={() => onDelete(workspace.workspace_id)} variant="danger" size="small" icon="delete">
-          Delete
+        <Button onClick={onDashboard} variant="primary" size="medium" icon="arrow_forward">
+          Enter Workspace
         </Button>
+        <div className="workspace-card-secondary-actions">
+          <Button onClick={onView} variant="secondary" size="small" icon="visibility">View</Button>
+          <Button onClick={() => onEdit(workspace)} variant="secondary" size="small" icon="edit">Edit</Button>
+          <Button onClick={() => onDelete(workspace.workspace_id)} variant="danger" size="small" icon="delete">
+            Delete
+          </Button>
+        </div>
       </div>
     </div>
   );

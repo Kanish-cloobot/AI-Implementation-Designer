@@ -129,11 +129,51 @@
   margin: 0;
 }
 
+/* Dashboard Tabs */
+.dashboard-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #333333;
+}
+
+.dashboard-tab {
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: #A8A8A8;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.dashboard-tab:hover {
+  background-color: #262626;
+  color: #FFFFFF;
+}
+
+.dashboard-tab-active {
+  background-color: #262626;
+  color: #FFFFFF;
+  border-bottom: 2px solid #C82FFF;
+  box-shadow: 0 2px 8px rgba(200, 47, 255, 0.2);
+}
+
 /* Dashboard Content */
 .dashboard-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 32px;
+}
+
+.dashboard-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
 }
 
 .dashboard-section {
@@ -141,11 +181,33 @@
   border: 0.5px solid #A8A8A8;
   border-radius: 12px;
   padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.dashboard-section:hover {
+  background-color: #262626;
+  border-color: #C82FFF;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .dashboard-section .section-title {
   font-size: 20px;
   margin-bottom: 20px;
+}
+
+.section-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+}
+
+.section-content {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Recent Meetings */
