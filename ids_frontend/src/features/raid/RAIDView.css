@@ -1,23 +1,84 @@
-.raid-container {
-  padding: 24px;
-  background-color: #0D0D0D;
-  min-height: 100vh;
-  color: #FFFFFF;
+.raid-viewer-container {
+  width: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.raid-header {
+.raid-viewer-header {
+  padding: 20px 24px;
+  border-bottom: 0.5px solid #A8A8A8;
+  background-color: #0D0D0D;
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
 }
 
-.raid-title {
-  font-family: 'Montserrat', sans-serif;
+.raid-viewer-header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.raid-viewer-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.raid-viewer-title {
+  font-size: 28px;
   font-weight: 600;
-  font-size: 32px;
   color: #FFFFFF;
   margin: 0;
+}
+
+.raid-viewer-documentation {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.raid-viewer-navigation {
+  width: 25%;
+  min-width: 300px;
+  max-width: 400px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.raid-viewer-details {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.raid-content-section {
+  padding: 24px;
+  background-color: #0D0D0D;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.raid-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.raid-section-title .material-symbols-outlined {
+  color: #C82FFF;
+  font-size: 26px;
 }
 
 .raid-loading,
@@ -399,32 +460,50 @@
   margin-bottom: 4px;
 }
 
+/* Custom Scrollbar for RAID Viewer */
+.raid-viewer-navigation::-webkit-scrollbar {
+  width: 8px;
+}
+
+.raid-viewer-navigation::-webkit-scrollbar-track {
+  background: #1A1A1A;
+  border-radius: 4px;
+}
+
+.raid-viewer-navigation::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 4px;
+}
+
+.raid-viewer-navigation::-webkit-scrollbar-thumb:hover {
+  background: #4D4D4D;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
-  .raid-container {
-    padding: 16px;
+  .raid-viewer-container {
+    height: 100vh;
   }
   
-  .raid-header {
+  .raid-viewer-documentation {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
   }
   
-  .raid-section-header {
+  .raid-viewer-navigation {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
+    max-height: 200px;
+    border-bottom: 0.5px solid #A8A8A8;
+  }
+  
+  .raid-viewer-details {
+    flex: 1;
+    min-height: 0;
+  }
+  
+  .raid-content-section {
     padding: 16px;
-  }
-  
-  .raid-section-content {
-    padding: 16px;
-  }
-  
-  .raid-section-title {
-    gap: 8px;
-  }
-  
-  .raid-section-title h3 {
-    font-size: 16px;
   }
   
   .risk-header,

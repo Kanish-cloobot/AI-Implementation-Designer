@@ -158,74 +158,67 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
         </div>
       ) : (
         <div className="meeting-list-grid">
-          {filteredMeetings.map((meeting) => (
-            <div key={meeting.meeting_id} className="meeting-card">
-              <div className="meeting-card-header">
-                <div className="meeting-card-status">
-                  <span className={`meeting-status-badge ${meeting.status}`}>
-                    {meeting.status}
-                  </span>
-                </div>
-                <div className="meeting-card-actions">
-                  <button
-                    className="meeting-action-btn"
-                    onClick={() => handleEditMeeting(meeting)}
-                    title="Edit Meeting"
-                  >
-                    <span className="material-symbols-outlined">edit</span>
-                  </button>
-                  <button
-                    className="meeting-action-btn"
-                    onClick={() => handleDeleteClick(meeting)}
-                    title="Delete Meeting"
-                  >
-                    <span className="material-symbols-outlined">delete</span>
-                  </button>
-                </div>
-              </div>
-
-              <div
-                className="meeting-card-body"
-                onClick={() => handleViewDetails(meeting.meeting_id)}
-              >
-                <h3 className="meeting-card-name">{meeting.meeting_name}</h3>
-
-                <div className="meeting-card-info">
-                  <div className="meeting-info-item">
-                    <span className="material-symbols-outlined">schedule</span>
-                    <span>{formatDateTime(meeting.meeting_datetime)}</span>
-                  </div>
-
-                  {meeting.stakeholders && (
-                    <div className="meeting-info-item">
-                      <span className="material-symbols-outlined">group</span>
-                      <span>{meeting.stakeholders}</span>
+          <table className="meeting-table">
+            <thead className="meeting-table-header">
+              <tr>
+                <th>Meeting Name</th>
+                <th>Date & Time</th>
+                <th>Status</th>
+                <th>Stakeholders</th>
+                <th>Files</th>
+                <th>Details</th>
+                <th className="actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredMeetings.map((meeting) => (
+                <tr key={meeting.meeting_id} className="meeting-table-row">
+                  <td className="meeting-table-cell">
+                    <div className="meeting-name" onClick={() => handleViewDetails(meeting.meeting_id)}>
+                      {meeting.meeting_name}
                     </div>
-                  )}
-
-                  {meeting.file_count > 0 && (
-                    <div className="meeting-info-item">
-                      <span className="material-symbols-outlined">attach_file</span>
-                      <span>{meeting.file_count} file{meeting.file_count !== 1 ? 's' : ''}</span>
-                    </div>
-                  )}
-                </div>
-
-                {meeting.meeting_details && (
-                  <p className="meeting-card-details">
-                    {meeting.meeting_details.substring(0, 100)}
-                    {meeting.meeting_details.length > 100 ? '...' : ''}
-                  </p>
-                )}
-              </div>
-
-              <div className="meeting-card-footer">
-                <Button variant="secondary" onClick={() => handleViewDetails(meeting.meeting_id)}>
-                  View Details
-                </Button>
-              </div>
-            </div>
-          ))}
+                  </td>
+                  <td className="meeting-table-cell">
+                    <div className="meeting-datetime">{formatDateTime(meeting.meeting_datetime)}</div>
+                  </td>
+                  <td className="meeting-table-cell status">
+                    <span className={`meeting-status-badge ${meeting.status}`}>
+                      {meeting.status}
+                    </span>
+                  </td>
+                  <td className="meeting-table-cell">
+                    {meeting.stakeholders || '-'}
+                  </td>
+                  <td className="meeting-table-cell">
+                    {meeting.file_count > 0 ? `${meeting.file_count} file${meeting.file_count !== 1 ? 's' : ''}` : '-'}
+                  </td>
+                  <td className="meeting-table-cell">
+                    {meeting.meeting_details ? (
+                      meeting.meeting_details.length > 50
+                        ? `${meeting.meeting_details.substring(0, 50)}...`
+                        : meeting.meeting_details
+                    ) : '-'}
+                  </td>
+                  <td className="meeting-table-cell actions">
+                    <button
+                      className="meeting-action-btn"
+                      onClick={() => handleEditMeeting(meeting)}
+                      title="Edit Meeting"
+                    >
+                      <span className="material-symbols-outlined">edit</span>
+                    </button>
+                    <button
+                      className="meeting-action-btn"
+                      onClick={() => handleDeleteClick(meeting)}
+                      title="Delete Meeting"
+                    >
+                      <span className="material-symbols-outlined">delete</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
