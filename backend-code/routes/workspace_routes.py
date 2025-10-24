@@ -132,17 +132,22 @@ def create_workspace():
         if not data.get('licenses') or len(data.get('licenses', [])) == 0:
             return jsonify({'error': 'At least one license is required'}), 400
         
-        workspace_id = str(uuid.uuid4())
         licenses_json = json.dumps(data['licenses'])
         
         db = get_db()
         db.execute_query(
             '''INSERT INTO workspaces 
-               (workspace_id, name, project_type, licenses, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?)''',
-            (workspace_id, data['name'], data['project_type'], 
+               (name, project_type, licenses, status, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?)''',
+            (data['name'], data['project_type'], 
              licenses_json, 'active', datetime.utcnow(), datetime.utcnow())
         )
+        
+        # Get the auto-generated workspace_id
+        workspace_record = db.fetch_one(
+            'SELECT * FROM workspaces ORDER BY workspace_id DESC LIMIT 1'
+        )
+        workspace_id = workspace_record['workspace_id']
         
         workspace = db.fetch_one(
             'SELECT * FROM workspaces WHERE workspace_id = ?',
@@ -223,3 +228,35 @@ def delete_workspace_payload():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+@workspace_bp.route('/files/get-by-workspace', methods=['POST'])
+def get_workspace_files_payload():
+    """Get files by workspace and type using payload"""
+    try:
+        data = request.get_json()
+        if not data or not data.get('workspace_id'):
+            return jsonify({'error': 'workspace_id is required'}), 400
+            
+        workspace_id = data['workspace_id']
+        file_type = data.get('file_type')  # 'workspace' or 'meetings'
+        
+        db = get_db()
+        
+        if file_type:
+            files = db.fetch_all(
+                '''SELECT * FROM files 
+                   WHERE workspace_id = ? AND file_type = ? AND status != ?
+                   ORDER BY created_at DESC''',
+                (workspace_id, file_type, 'deleted')
+            )
+        else:
+            files = db.fetch_all(
+                '''SELECT * FROM files 
+                   WHERE workspace_id = ? AND status != ?
+                   ORDER BY created_at DESC''',
+                (workspace_id, 'deleted')
+            )
+        
+        return jsonify(files), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

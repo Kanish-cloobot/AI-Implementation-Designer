@@ -12,9 +12,7 @@ meeting_routes = Blueprint('meeting_routes', __name__)
 DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'database', 'ids.db')
 db_manager = DatabaseManager(DB_PATH)
 
-# Upload directory for meeting files
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'meeting_uploads')
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# No file storage needed - only database metadata
 
 # Meeting extraction service
 extraction_service = MeetingExtractionService(db_manager)
@@ -39,43 +37,65 @@ def create_meeting():
         # Insert meeting record
         query = '''
             INSERT INTO meetings (
-                meeting_id, workspace_id, org_id, meeting_name,
+                workspace_id, org_id, meeting_name,
                 stakeholders, meeting_datetime, meeting_details,
                 status, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         '''
         params = (
-            meeting_id, workspace_id, org_id, meeting_name,
+            workspace_id, org_id, meeting_name,
             stakeholders, meeting_datetime, meeting_details,
             status, datetime.now(), datetime.now()
         )
         db_manager.execute_query(query, params)
+        
+        # Get the auto-generated meeting_id
+        meeting_id = db_manager.fetch_one(
+            'SELECT meeting_id FROM meetings ORDER BY meeting_id DESC LIMIT 1'
+        )['meeting_id']
 
-        # Handle file uploads
+        # Handle file metadata (no file storage)
         uploaded_files = []
         files = request.files.getlist('files')
 
         for file in files:
             if file and file.filename:
-                file_id = str(uuid.uuid4())
                 file_ext = os.path.splitext(file.filename)[1]
-                storage_filename = f"{file_id}{file_ext}"
-                storage_path = os.path.join(UPLOAD_FOLDER, storage_filename)
+                # No storage_path needed - only metadata
+                file_size = len(file.read()) if hasattr(file, 'read') else 0
+                file.seek(0)  # Reset file pointer
 
-                file.save(storage_path)
-                file_size = os.path.getsize(storage_path)
-
-                # Insert file record
+                # Insert into unified files table (metadata only)
+                unified_file_query = '''
+                    INSERT INTO files (
+                        workspace_id, file_type, file_name,
+                        storage_path, file_extension, file_size, status,
+                        created_at, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                '''
+                unified_file_params = (
+                    workspace_id, 'meetings', file.filename,
+                    'metadata_only', file_ext, file_size, 'uploaded',
+                    datetime.now(), datetime.now()
+                )
+                db_manager.execute_query(unified_file_query, unified_file_params)
+                
+                # Get the auto-generated file_id from unified files table
+                file_id = db_manager.fetch_one(
+                    'SELECT file_id FROM files ORDER BY file_id DESC LIMIT 1'
+                )['file_id']
+                
+                # Also insert into meeting_files table for backward compatibility
                 file_query = '''
                     INSERT INTO meeting_files (
-                        file_id, meeting_id, workspace_id, org_id,
+                        meeting_id, workspace_id, org_id,
                         file_name, storage_path, file_type, file_size,
                         status, created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 '''
                 file_params = (
-                    file_id, meeting_id, workspace_id, org_id,
-                    file.filename, storage_path, file_ext, file_size,
+                    meeting_id, workspace_id, org_id,
+                    file.filename, 'metadata_only', file_ext, file_size,
                     'uploaded', datetime.now(), datetime.now()
                 )
                 db_manager.execute_query(file_query, file_params)
@@ -321,6 +341,33 @@ def delete_meeting_payload():
 
     except Exception as e:
         print(f"Error deleting meeting: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@meeting_routes.route('/files/get-by-workspace', methods=['POST'])
+def get_meeting_files_by_workspace_payload():
+    """Get files by workspace and type using payload"""
+    try:
+        data = request.get_json()
+        if not data or not data.get('workspace_id'):
+            return jsonify({'error': 'workspace_id is required'}), 400
+            
+        workspace_id = data['workspace_id']
+        file_type = data.get('file_type', 'meetings')  # Default to 'meetings' for meeting routes
+        
+        # Get files from unified files table
+        files_query = '''
+            SELECT * FROM files
+            WHERE workspace_id = ? AND file_type = ? AND status != ?
+            ORDER BY created_at DESC
+        '''
+        files = db_manager.fetch_all(files_query, (workspace_id, file_type, 'deleted'))
+        
+        return jsonify(files), 200
+
+    except Exception as e:
+        print(f"Error fetching files: {str(e)}")
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 

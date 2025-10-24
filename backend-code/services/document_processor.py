@@ -1,41 +1,47 @@
 import os
+import io
 import PyPDF2
 import docx
 
 
 class DocumentProcessor:
-    def extract_text(self, file_path):
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"File not found: {file_path}")
+    def extract_text(self, file_content, file_extension):
+        """
+        Extract text from file content stored in database
+        Args:
+            file_content: Binary file content from database
+            file_extension: File extension (e.g., 'pdf', 'docx', 'txt')
+        """
+        if not file_content:
+            raise ValueError("File content is empty")
         
-        file_extension = file_path.rsplit('.', 1)[1].lower()
+        file_extension = file_extension.lower()
         
         if file_extension == 'pdf':
-            return self._extract_from_pdf(file_path)
+            return self._extract_from_pdf(file_content)
         elif file_extension in ['doc', 'docx']:
-            return self._extract_from_docx(file_path)
+            return self._extract_from_docx(file_content)
         elif file_extension == 'txt':
-            return self._extract_from_txt(file_path)
+            return self._extract_from_txt(file_content)
         else:
             raise ValueError(f"Unsupported file type: {file_extension}")
 
-    def _extract_from_pdf(self, file_path):
+    def _extract_from_pdf(self, file_content):
         try:
             text = ""
-            with open(file_path, 'rb') as file:
-                pdf_reader = PyPDF2.PdfReader(file)
-                for page in pdf_reader.pages:
-                    extracted = page.extract_text()
-                    if extracted:
-                        text += extracted + "\n"
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_content))
+            for page in pdf_reader.pages:
+                extracted = page.extract_text()
+                if extracted:
+                    text += extracted + "\n"
             return text.strip()
         except Exception as e:
             print(f"Error extracting from PDF: {str(e)}")
             raise
 
-    def _extract_from_docx(self, file_path):
+    def _extract_from_docx(self, file_content):
         try:
-            doc = docx.Document(file_path)
+            doc = docx.Document(io.BytesIO(file_content))
             text = ""
             for paragraph in doc.paragraphs:
                 text += paragraph.text + "\n"
@@ -44,10 +50,11 @@ class DocumentProcessor:
             print(f"Error extracting from DOCX: {str(e)}")
             raise
 
-    def _extract_from_txt(self, file_path):
+    def _extract_from_txt(self, file_content):
         try:
-            with open(file_path, 'r', encoding='utf-8') as file:
-                return file.read().strip()
+            # Decode binary content to text
+            text_content = file_content.decode('utf-8')
+            return text_content.strip()
         except Exception as e:
             print(f"Error extracting from TXT: {str(e)}")
             raise
