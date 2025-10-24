@@ -14,6 +14,7 @@ const RAIDView = () => {
   const [raidData, setRaidData] = useState(null);
   const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState('risks-issues');
+  const [riskIssueStatuses, setRiskIssueStatuses] = useState({});
 
   useEffect(() => {
     fetchRAIDData();
@@ -32,6 +33,16 @@ const RAIDView = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRiskIssueAction = (riskIssueIndex, action) => {
+    setRiskIssueStatuses(prev => ({
+      ...prev,
+      [riskIssueIndex]: action
+    }));
+    
+    // Here you could also make an API call to update the risk/issue status
+    console.log(`Risk/Issue ${riskIssueIndex} ${action}ed`);
   };
 
 
@@ -62,7 +73,7 @@ const RAIDView = () => {
     );
   }
 
-  const sections = generateRAIDSections(raidData);
+  const sections = generateRAIDSections(raidData, riskIssueStatuses, handleRiskIssueAction);
 
   return (
     <div className="raid-viewer-container">

@@ -518,3 +518,108 @@
     gap: 4px;
   }
 }
+
+/* Risk Header Layout */
+.risk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 16px;
+}
+
+.risk-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.risk-header-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Risk Actions */
+.risk-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.risk-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.risk-action-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.resolve-btn {
+  background-color: #10B981;
+  color: #FFFFFF;
+}
+
+.resolve-btn:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
+}
+
+.review-btn {
+  background-color: #F97316;
+  color: #FFFFFF;
+}
+
+.review-btn:hover {
+  background-color: #EA580C;
+  transform: translateY(-1px);
+}
+
+.ignore-btn {
+  background-color: #6B7280;
+  color: #FFFFFF;
+}
+
+.ignore-btn:hover {
+  background-color: #4B5563;
+  transform: translateY(-1px);
+}
+
+.risk-action-btn:active {
+  transform: translateY(0);
+}
+
+/* Risk Status Indicators */
+.risk-status-indicator {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.risk-status-indicator.resolved {
+  background-color: #10B981;
+  color: #FFFFFF;
+}
+
+.risk-status-indicator.ignored {
+  background-color: #6B7280;
+  color: #FFFFFF;
+}
+
+.risk-status-indicator.review {
+  background-color: #F97316;
+  color: #FFFFFF;
+}

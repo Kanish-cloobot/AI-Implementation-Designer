@@ -1,4 +1,4 @@
-export const generateRAIDSections = (raidData) => {
+export const generateRAIDSections = (raidData, riskIssueStatuses = {}, handleRiskIssueAction = () => {}) => {
   if (!raidData) return [];
 
   const sections = [];
@@ -16,34 +16,77 @@ export const generateRAIDSections = (raidData) => {
             Risks & Issues
           </h2>
           <div className="raid-items">
-            {raidData.risks_issues.map((item, index) => (
-              <div key={index} className="raid-item risk-item">
-                <div className="risk-header">
-                  <span className={`risk-type ${item.type}`}>{item.type}</span>
-                  {item.due_date && <span className="risk-date">{item.due_date}</span>}
+            {raidData.risks_issues.map((item, index) => {
+              const currentStatus = riskIssueStatuses[index] || 'pending';
+              return (
+                <div key={index} className="raid-item risk-item">
+                  <div className="risk-header">
+                    <div className="risk-header-left">
+                      <span className={`risk-type ${item.type}`}>{item.type}</span>
+                      {item.due_date && <span className="risk-date">{item.due_date}</span>}
+                    </div>
+                    <div className="risk-header-right">
+                      <div className="risk-actions">
+                        {currentStatus === 'pending' && (
+                          <>
+                            <button 
+                              className="risk-action-btn resolve-btn"
+                              onClick={() => handleRiskIssueAction(index, 'resolved')}
+                              title="Resolve"
+                            >
+                              <span className="material-symbols-outlined">check_circle</span>
+                            </button>
+                            <button 
+                              className="risk-action-btn review-btn"
+                              onClick={() => handleRiskIssueAction(index, 'review')}
+                              title="Under Review"
+                            >
+                              <span className="material-symbols-outlined">visibility</span>
+                            </button>
+                            <button 
+                              className="risk-action-btn ignore-btn"
+                              onClick={() => handleRiskIssueAction(index, 'ignored')}
+                              title="Ignore"
+                            >
+                              <span className="material-symbols-outlined">block</span>
+                            </button>
+                          </>
+                        )}
+                        {currentStatus === 'resolved' && (
+                          <span className="risk-status-indicator resolved">✓ Resolved</span>
+                        )}
+                        {currentStatus === 'ignored' && (
+                          <span className="risk-status-indicator ignored">⊘ Ignored</span>
+                        )}
+                        {currentStatus === 'review' && (
+                          <span className="risk-status-indicator review">👁 Under Review</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="risk-description">{item.description_md}</p>
+                  {item.impact_md && (
+                    <div className="risk-detail">
+                      <strong>Impact:</strong> {item.impact_md}
+                    </div>
+                  )}
+                  {item.mitigation_md && (
+                    <div className="risk-detail">
+                      <strong>Mitigation:</strong> {item.mitigation_md}
+                    </div>
+                  )}
+                  {item.owner_md && (
+                    <div className="risk-owner">
+                      <span className="material-symbols-outlined">person</span>
+                      {item.owner_md}
+                    </div>
+                  )}
+                  <div className="raid-item-meta">
+                    <span className="created-at">{formatDateTime(item.created_at)}</span>
+                  </div>
                 </div>
-                <p className="risk-description">{item.description_md}</p>
-                {item.impact_md && (
-                  <div className="risk-detail">
-                    <strong>Impact:</strong> {item.impact_md}
-                  </div>
-                )}
-                {item.mitigation_md && (
-                  <div className="risk-detail">
-                    <strong>Mitigation:</strong> {item.mitigation_md}
-                  </div>
-                )}
-                {item.owner_md && (
-                  <div className="risk-owner">
-                    <span className="material-symbols-outlined">person</span>
-                    {item.owner_md}
-                  </div>
-                )}
-                <div className="raid-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )
