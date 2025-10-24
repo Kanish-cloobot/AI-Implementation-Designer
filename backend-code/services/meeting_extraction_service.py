@@ -483,27 +483,37 @@ Perform extraction now and return only the JSON object above, enclosed within js
                 return {}
             
             # Return the extraction data in the expected format
+            # Handle cases where data might be objects instead of arrays
+            def ensure_array(data):
+                if data is None:
+                    return []
+                if isinstance(data, dict):
+                    return [data]
+                if isinstance(data, list):
+                    return data
+                return []
+            
             return {
-                'bu_teams': extraction_data.get('bu_teams', []),
-                'modules_processes': extraction_data.get('modules_processes', []),
-                'licenses': extraction_data.get('licenses', []),
-                'personas': extraction_data.get('personas', []),
-                'requirements': extraction_data.get('requirements', []),
-                'risks_issues': extraction_data.get('risks_issues', []),
-                'action_items': extraction_data.get('action_items', []),
-                'decisions': extraction_data.get('decisions', []),
-                'dependencies': extraction_data.get('dependencies', []),
-                'pain_points': extraction_data.get('pain_points', []),
-                'current_state': extraction_data.get('current_state', []),
-                'target_state': extraction_data.get('target_state', []),
-                'integrations': extraction_data.get('integrations', []),
-                'data_migration': extraction_data.get('data_migration', []),
-                'data_model': extraction_data.get('data_model', []),
-                'metadata_updates': extraction_data.get('metadata_updates', []),
-                'scope_summary': extraction_data.get('scope_summary', []),
-                'assumptions_gaps': extraction_data.get('assumptions_gaps', []),
-                'source_references': extraction_data.get('source_references', []),
-                'validation_summary': extraction_data.get('validation_summary', {})
+                'bu_teams': ensure_array(extraction_data.get('bu_teams')),
+                'modules_processes': ensure_array(extraction_data.get('modules_processes')),
+                'licenses': ensure_array(extraction_data.get('licenses')),
+                'personas': ensure_array(extraction_data.get('personas')),
+                'requirements': ensure_array(extraction_data.get('requirements')),
+                'risks_issues': ensure_array(extraction_data.get('risks_issues')),
+                'action_items': ensure_array(extraction_data.get('action_items')),
+                'decisions': ensure_array(extraction_data.get('decisions')),
+                'dependencies': ensure_array(extraction_data.get('dependencies')),
+                'pain_points': ensure_array(extraction_data.get('pain_points')),
+                'current_state': ensure_array(extraction_data.get('current_state')),
+                'target_state': ensure_array(extraction_data.get('target_state')),
+                'integrations': ensure_array(extraction_data.get('integrations')),
+                'data_migration': ensure_array(extraction_data.get('data_migration')),
+                'data_model': ensure_array(extraction_data.get('data_model')),
+                'metadata_updates': ensure_array(extraction_data.get('metadata_updates')),
+                'scope_summary': ensure_array(extraction_data.get('scope_summary')),
+                'assumptions_gaps': ensure_array(extraction_data.get('assumptions_gaps')),
+                'source_references': ensure_array(extraction_data.get('source_references')),
+                'validation_summary': ensure_array(extraction_data.get('validation_summary'))
             }
 
         except Exception as e:

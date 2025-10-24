@@ -216,7 +216,7 @@ const Dashboard = () => {
           </div>
 
           {/* Content Sections */}
-          <div className="dashboard-sections">
+          {/* <div className="dashboard-sections">
             <div className="dashboard-section">
               <h3 className="section-subtitle">Requirements</h3>
               <div className="section-content">
@@ -244,7 +244,7 @@ const Dashboard = () => {
                 <p className="empty-state">No backlog items defined yet</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
 
