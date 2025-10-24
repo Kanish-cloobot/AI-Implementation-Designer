@@ -21,7 +21,8 @@ const BRDView = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await brdAPI.getBRD(workspaceId);
+      const payload = { workspace_id: workspaceId };
+      const response = await brdAPI.getBRD(payload);
       setBrdData(response.data);
     } catch (err) {
       console.error('Error fetching BRD data:', err);

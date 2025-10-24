@@ -49,7 +49,8 @@ const useUpdateWorkspace = (setWorkspaces, setLoading, setError) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await workspaceAPI.update(id, workspaceData);
+      const payload = { id, ...workspaceData };
+      const response = await workspaceAPI.update(payload);
       setWorkspaces((prev) =>
         prev.map((ws) => (ws.workspace_id === id ? response.data : ws))
       );
@@ -68,7 +69,8 @@ const useDeleteWorkspace = (setWorkspaces, setLoading, setError) => {
     try {
       setLoading(true);
       setError(null);
-      await workspaceAPI.delete(id);
+      const payload = { id };
+      await workspaceAPI.delete(payload);
       setWorkspaces((prev) => prev.filter((ws) => ws.workspace_id !== id));
     } catch (err) {
       setError(err.message || 'Failed to delete workspace');
@@ -87,10 +89,12 @@ const useUploadAndProcess = (setCurrentDocument, setSowData, setLoading, setErro
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'SOW');
-      const uploadResponse = await documentAPI.upload(workspaceId, formData);
+      formData.append('workspace_id', workspaceId);
+      const uploadResponse = await documentAPI.upload(formData);
       const document = uploadResponse.data;
       setCurrentDocument(document);
-      const processResponse = await documentAPI.process(document.document_id);
+      const processPayload = { document_id: document.document_id };
+      const processResponse = await documentAPI.process(processPayload);
       const streamData = processResponse.data;
       if (streamData.response_payload) {
         setSowData(JSON.parse(streamData.response_payload));
@@ -110,7 +114,8 @@ const useLoadSowData = (setSowData, setLoading, setError) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await llmAPI.getLatestStream(documentId);
+      const payload = { document_id: documentId };
+      const response = await llmAPI.getLatestStream(payload);
       if (response.data.response_payload) {
         setSowData(JSON.parse(response.data.response_payload));
       }
@@ -136,7 +141,8 @@ const useLoadWorkspaceData = (setCurrentWorkspace, setSowData, setCurrentDocumen
       console.log(`Loading workspace data for ${workspace.workspace_id}:`, workspace);
       
       // Use the new API endpoint that gets all data in one call
-      const response = await workspaceAPI.getData(workspace.workspace_id);
+      const payload = { workspace_id: workspace.workspace_id };
+      const response = await workspaceAPI.getData(payload);
       const data = response.data;
       
       console.log(`Workspace data response for ${workspace.workspace_id}:`, data);

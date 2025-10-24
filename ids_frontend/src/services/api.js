@@ -9,30 +9,29 @@ const api = axios.create({
 });
 
 export const workspaceAPI = {
-  getAll: () => api.get('/workspaces'),
-  getById: (id) => api.get(`/workspaces/${id}`),
-  getData: (id) => api.get(`/workspaces/${id}/data`),
+  getAll: (payload = {}) => api.post('/workspaces/get-all', payload),
+  getById: (payload) => api.post('/workspaces/get-by-id', payload),
+  getData: (payload) => api.post('/workspaces/get-data', payload),
   create: (data) => api.post('/workspaces', data),
-  update: (id, data) => api.put(`/workspaces/${id}`, data),
-  delete: (id) => api.delete(`/workspaces/${id}`),
+  update: (payload) => api.put('/workspaces/update', payload),
+  delete: (payload) => api.delete('/workspaces/delete', { data: payload }),
 };
 
 export const documentAPI = {
-  upload: (workspaceId, formData) => {
-    return api.post(`/documents/upload`, formData, {
+  upload: (formData) => {
+    return api.post('/documents/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      params: { workspace_id: workspaceId },
     });
   },
-  process: (documentId) => api.post(`/documents/${documentId}/process`),
-  getById: (documentId) => api.get(`/documents/${documentId}`),
-  getByWorkspace: (workspaceId) => api.get(`/documents/workspace/${workspaceId}`),
+  process: (payload) => api.post('/documents/process', payload),
+  getById: (payload) => api.post('/documents/get-by-id', payload),
+  getByWorkspace: (payload) => api.post('/documents/get-by-workspace', payload),
 };
 
 export const llmAPI = {
-  getLatestStream: (documentId) => api.get(`/llm-streams/document/${documentId}/latest`),
+  getLatestStream: (payload) => api.post('/llm-streams/get-latest', payload),
 };
 
 export const meetingAPI = {
@@ -52,82 +51,54 @@ export const meetingAPI = {
       },
     });
   },
-  getAll: (workspaceId, orgId = 'default_org', status = null) => {
-    const params = { org_id: orgId };
-    if (status) {
-      params.status = status;
-    }
-    return api.get(`/meetings/${workspaceId}`, { params });
+  getAll: (payload) => {
+    return api.post('/meetings/get-all', payload);
   },
-  getDetail: (meetingId, orgId = 'default_org') => {
-    return api.get(`/meetings/${meetingId}/detail`, {
-      params: { org_id: orgId },
-    });
+  getDetail: (payload) => {
+    return api.post('/meetings/get-detail', payload);
   },
-  update: (meetingId, data) => api.put(`/meetings/${meetingId}`, data),
-  delete: (meetingId, orgId = 'default_org') => {
-    return api.delete(`/meetings/${meetingId}`, {
-      params: { org_id: orgId },
-    });
+  update: (payload) => api.put('/meetings/update', payload),
+  delete: (payload) => {
+    return api.delete('/meetings/delete', { data: payload });
   },
 };
 
 export const dashboardAPI = {
-  getDashboard: (workspaceId, orgId = 'default_org') => {
-    return api.get(`/dashboard/${workspaceId}`, {
-      params: { org_id: orgId },
-    });
+  getDashboard: (payload) => {
+    return api.post('/dashboard/get-dashboard', payload);
   },
-  getSummary: (workspaceId, orgId = 'default_org') => {
-    return api.get(`/dashboard/${workspaceId}/summary`, {
-      params: { org_id: orgId },
-    });
+  getSummary: (payload) => {
+    return api.post('/dashboard/get-summary', payload);
   },
-  getActivity: (workspaceId, orgId = 'default_org', limit = 10) => {
-    return api.get(`/dashboard/${workspaceId}/activity`, {
-      params: { org_id: orgId, limit },
-    });
+  getActivity: (payload) => {
+    return api.post('/dashboard/get-activity', payload);
   },
 };
 
 export const brdAPI = {
-  getBRD: (workspaceId, orgId = 'default_org') => {
-    return api.get(`/brd/${workspaceId}`, {
-      params: { org_id: orgId },
-    });
+  getBRD: (payload) => {
+    return api.post('/brd/get-brd', payload);
   },
-  getSummary: (workspaceId, orgId = 'default_org') => {
-    return api.get(`/brd/${workspaceId}/summary`, {
-      params: { org_id: orgId },
-    });
+  getSummary: (payload) => {
+    return api.post('/brd/get-summary', payload);
   },
-  getSection: (workspaceId, sectionName, orgId = 'default_org') => {
-    return api.get(`/brd/${workspaceId}/section/${sectionName}`, {
-      params: { org_id: orgId },
-    });
+  getSection: (payload) => {
+    return api.post('/brd/get-section', payload);
   },
 };
 
 export const raidAPI = {
-  getRAID: (workspaceId, orgId = 'default_org') => {
-    return api.get(`/raid/${workspaceId}`, {
-      params: { org_id: orgId },
-    });
+  getRAID: (payload) => {
+    return api.post('/raid/get-raid', payload);
   },
-  getSummary: (workspaceId, orgId = 'default_org') => {
-    return api.get(`/raid/${workspaceId}/summary`, {
-      params: { org_id: orgId },
-    });
+  getSummary: (payload) => {
+    return api.post('/raid/get-summary', payload);
   },
-  getStatus: (workspaceId, orgId = 'default_org') => {
-    return api.get(`/raid/${workspaceId}/status`, {
-      params: { org_id: orgId },
-    });
+  getStatus: (payload) => {
+    return api.post('/raid/get-status', payload);
   },
-  getSection: (workspaceId, sectionName, orgId = 'default_org') => {
-    return api.get(`/raid/${workspaceId}/section/${sectionName}`, {
-      params: { org_id: orgId },
-    });
+  getSection: (payload) => {
+    return api.post('/raid/get-section', payload);
   },
 };
 

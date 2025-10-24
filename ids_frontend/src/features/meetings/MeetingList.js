@@ -26,7 +26,12 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
     try {
       setLoading(true);
       const status = activeTab === 'scheduled' ? 'scheduled' : activeTab === 'completed' ? 'completed' : null;
-      const response = await meetingAPI.getAll(workspaceId, orgId, status);
+      const payload = { 
+        workspace_id: workspaceId, 
+        org_id: orgId, 
+        status: status 
+      };
+      const response = await meetingAPI.getAll(payload);
       setMeetings(response.data);
     } catch (error) {
       console.error('Error fetching meetings:', error);
@@ -52,7 +57,11 @@ const MeetingList = ({ workspaceId, orgId = 'default_org' }) => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await meetingAPI.delete(deletingMeeting.meeting_id, orgId);
+      const payload = { 
+        meeting_id: deletingMeeting.meeting_id, 
+        org_id: orgId 
+      };
+      await meetingAPI.delete(payload);
       showSnackbar('Meeting deleted successfully', 'success');
       setDeletingMeeting(null);
       fetchMeetings();

@@ -19,7 +19,8 @@ const Dashboard = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await dashboardAPI.getDashboard(workspaceId);
+      const payload = { workspace_id: workspaceId };
+      const response = await dashboardAPI.getDashboard(payload);
       setDashboardData(response.data);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);

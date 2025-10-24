@@ -20,7 +20,8 @@ const MeetingDetail = () => {
   const fetchMeetingDetail = async () => {
     try {
       setLoading(true);
-      const response = await meetingAPI.getDetail(meetingId);
+      const payload = { meeting_id: meetingId };
+      const response = await meetingAPI.getDetail(payload);
       setMeetingData(response.data);
     } catch (error) {
       console.error('Error fetching meeting detail:', error);

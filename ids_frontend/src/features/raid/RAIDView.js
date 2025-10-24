@@ -20,7 +20,8 @@ const RAIDView = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await raidAPI.getRAID(workspaceId);
+      const payload = { workspace_id: workspaceId };
+      const response = await raidAPI.getRAID(payload);
       setRaidData(response.data);
     } catch (err) {
       console.error('Error fetching RAID data:', err);

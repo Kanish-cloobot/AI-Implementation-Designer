@@ -30,6 +30,31 @@ def get_latest_stream(document_id):
         return jsonify({'error': str(e)}), 500
 
 
+@llm_bp.route('/llm-streams/get-latest', methods=['POST'])
+def get_latest_stream_payload():
+    try:
+        data = request.get_json()
+        if not data or not data.get('document_id'):
+            return jsonify({'error': 'document_id is required'}), 400
+            
+        document_id = data['document_id']
+        db = get_db()
+        
+        stream = db.fetch_one(
+            '''SELECT * FROM llm_streams 
+               WHERE document_id = ? AND status = ?
+               ORDER BY created_at DESC LIMIT 1''',
+            (document_id, 'success')
+        )
+        
+        if not stream:
+            return jsonify({'error': 'No stream found for document'}), 404
+        
+        return jsonify(stream), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @llm_bp.route('/llm-streams/<stream_id>', methods=['GET'])
 def get_stream(stream_id):
     try:

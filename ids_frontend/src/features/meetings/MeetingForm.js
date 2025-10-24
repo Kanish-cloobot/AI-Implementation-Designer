@@ -93,10 +93,12 @@ const MeetingForm = ({ workspaceId, orgId = 'default_org', meeting, onClose, onS
 
       if (meeting) {
         console.log('Updating existing meeting');
-        await meetingAPI.update(meeting.meeting_id, {
+        const payload = {
+          meeting_id: meeting.meeting_id,
           ...formData,
           org_id: orgId,
-        });
+        };
+        await meetingAPI.update(payload);
       } else {
         console.log('Creating new meeting');
         setProcessingFiles(files.length > 0);

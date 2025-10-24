@@ -147,11 +147,100 @@ def get_meetings(workspace_id):
         return jsonify({'error': str(e)}), 500
 
 
+@meeting_routes.route('/meetings/get-all', methods=['POST'])
+def get_meetings_payload():
+    """Get all meetings for a workspace using payload"""
+    try:
+        data = request.get_json()
+        if not data or not data.get('workspace_id'):
+            return jsonify({'error': 'workspace_id is required'}), 400
+            
+        workspace_id = data['workspace_id']
+        org_id = data.get('org_id', 'default_org')
+        status = data.get('status')
+
+        query = '''
+            SELECT * FROM meetings
+            WHERE workspace_id = ? AND org_id = ?
+        '''
+        params = [workspace_id, org_id]
+
+        if status:
+            query += ' AND status = ?'
+            params.append(status)
+
+        query += ' ORDER BY meeting_datetime DESC, created_at DESC'
+
+        meetings = db_manager.fetch_all(query, tuple(params))
+
+        # Get file count for each meeting
+        for meeting in meetings:
+            file_count_query = '''
+                SELECT COUNT(*) as count FROM meeting_files
+                WHERE meeting_id = ? AND org_id = ? AND status = 'uploaded'
+            '''
+            file_count = db_manager.fetch_one(
+                file_count_query,
+                (meeting['meeting_id'], org_id)
+            )
+            meeting['file_count'] = file_count['count'] if file_count else 0
+
+        return jsonify(meetings), 200
+
+    except Exception as e:
+        print(f"Error fetching meetings: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
 @meeting_routes.route('/meetings/<meeting_id>/detail', methods=['GET'])
 def get_meeting_detail(meeting_id):
     """Get detailed meeting information including extractions"""
     try:
         org_id = request.args.get('org_id', 'default_org')
+
+        # Get meeting basic info
+        meeting_query = '''
+            SELECT * FROM meetings
+            WHERE meeting_id = ? AND org_id = ?
+        '''
+        meeting = db_manager.fetch_one(meeting_query, (meeting_id, org_id))
+
+        if not meeting:
+            return jsonify({'error': 'Meeting not found'}), 404
+
+        # Get meeting files
+        files_query = '''
+            SELECT * FROM meeting_files
+            WHERE meeting_id = ? AND org_id = ? AND status = 'uploaded'
+        '''
+        files = db_manager.fetch_all(files_query, (meeting_id, org_id))
+
+        # Get all extractions
+        extractions = extraction_service.get_meeting_extractions(meeting_id, org_id)
+
+        return jsonify({
+            'meeting': meeting,
+            'files': files,
+            'extractions': extractions
+        }), 200
+
+    except Exception as e:
+        print(f"Error fetching meeting detail: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@meeting_routes.route('/meetings/get-detail', methods=['POST'])
+def get_meeting_detail_payload():
+    """Get detailed meeting information including extractions using payload"""
+    try:
+        data = request.get_json()
+        if not data or not data.get('meeting_id'):
+            return jsonify({'error': 'meeting_id is required'}), 400
+            
+        meeting_id = data['meeting_id']
+        org_id = data.get('org_id', 'default_org')
 
         # Get meeting basic info
         meeting_query = '''
@@ -246,11 +335,141 @@ def update_meeting(meeting_id):
         return jsonify({'error': str(e)}), 500
 
 
+@meeting_routes.route('/meetings/update', methods=['PUT'])
+def update_meeting_payload():
+    """Update a meeting using payload"""
+    try:
+        data = request.get_json()
+        if not data or not data.get('meeting_id'):
+            return jsonify({'error': 'meeting_id is required'}), 400
+            
+        meeting_id = data['meeting_id']
+        org_id = data.get('org_id', 'default_org')
+
+        # Verify meeting exists
+        check_query = 'SELECT * FROM meetings WHERE meeting_id = ? AND org_id = ?'
+        existing_meeting = db_manager.fetch_one(check_query, (meeting_id, org_id))
+
+        if not existing_meeting:
+            return jsonify({'error': 'Meeting not found'}), 404
+
+        # Build update query dynamically
+        update_fields = []
+        params = []
+
+        if 'meeting_name' in data:
+            update_fields.append('meeting_name = ?')
+            params.append(data['meeting_name'])
+
+        if 'stakeholders' in data:
+            update_fields.append('stakeholders = ?')
+            params.append(data['stakeholders'])
+
+        if 'meeting_datetime' in data:
+            update_fields.append('meeting_datetime = ?')
+            params.append(data['meeting_datetime'])
+
+        if 'meeting_details' in data:
+            update_fields.append('meeting_details = ?')
+            params.append(data['meeting_details'])
+
+        if 'status' in data:
+            update_fields.append('status = ?')
+            params.append(data['status'])
+
+        if not update_fields:
+            return jsonify({'error': 'No fields to update'}), 400
+
+        update_fields.append('updated_at = ?')
+        params.append(datetime.now())
+        params.extend([meeting_id, org_id])
+
+        query = f'''
+            UPDATE meetings
+            SET {', '.join(update_fields)}
+            WHERE meeting_id = ? AND org_id = ?
+        '''
+
+        db_manager.execute_query(query, tuple(params))
+
+        return jsonify({'message': 'Meeting updated successfully'}), 200
+
+    except Exception as e:
+        print(f"Error updating meeting: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
 @meeting_routes.route('/meetings/<meeting_id>', methods=['DELETE'])
 def delete_meeting(meeting_id):
     """Soft delete a meeting"""
     try:
         org_id = request.args.get('org_id', 'default_org')
+
+        # Verify meeting exists
+        check_query = 'SELECT * FROM meetings WHERE meeting_id = ? AND org_id = ?'
+        existing_meeting = db_manager.fetch_one(check_query, (meeting_id, org_id))
+
+        if not existing_meeting:
+            return jsonify({'error': 'Meeting not found'}), 404
+
+        # Soft delete meeting
+        query = '''
+            UPDATE meetings
+            SET status = 'deleted', updated_at = ?
+            WHERE meeting_id = ? AND org_id = ?
+        '''
+        db_manager.execute_query(query, (datetime.now(), meeting_id, org_id))
+
+        # Soft delete associated files
+        files_query = '''
+            UPDATE meeting_files
+            SET status = 'deleted', updated_at = ?
+            WHERE meeting_id = ? AND org_id = ?
+        '''
+        db_manager.execute_query(files_query, (datetime.now(), meeting_id, org_id))
+
+        # Soft delete all extractions
+        extraction_tables = [
+            'extraction_bu_teams', 'extraction_modules_processes',
+            'extraction_licenses', 'extraction_personas',
+            'extraction_requirements', 'extraction_risks_issues',
+            'extraction_action_items', 'extraction_decisions',
+            'extraction_dependencies', 'extraction_pain_points',
+            'extraction_current_state', 'extraction_target_state',
+            'extraction_integrations', 'extraction_data_migration',
+            'extraction_data_model', 'extraction_metadata_updates',
+            'extraction_scope_summary', 'extraction_assumptions_gaps',
+            'extraction_source_references', 'extraction_validation_summary',
+            'extraction_metadata'
+        ]
+
+        for table in extraction_tables:
+            ext_query = f'''
+                UPDATE {table}
+                SET status = 'deleted'
+                WHERE meeting_id = ? AND org_id = ?
+            '''
+            db_manager.execute_query(ext_query, (meeting_id, org_id))
+
+        return jsonify({'message': 'Meeting deleted successfully'}), 200
+
+    except Exception as e:
+        print(f"Error deleting meeting: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@meeting_routes.route('/meetings/delete', methods=['DELETE'])
+def delete_meeting_payload():
+    """Soft delete a meeting using payload"""
+    try:
+        data = request.get_json()
+        if not data or not data.get('meeting_id'):
+            return jsonify({'error': 'meeting_id is required'}), 400
+            
+        meeting_id = data['meeting_id']
+        org_id = data.get('org_id', 'default_org')
 
         # Verify meeting exists
         check_query = 'SELECT * FROM meetings WHERE meeting_id = ? AND org_id = ?'
