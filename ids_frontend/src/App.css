@@ -9,5 +9,23 @@
   display: flex;
   flex: 1;
   overflow: hidden;
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+}
+
+/* When workspace sidebar is present, adjust the main content */
+.app-body-workspace {
+  margin-left: 280px;
+}
+
+.app-body-workspace.app-body-collapsed {
+  margin-left: 60px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .app-body-workspace {
+    margin-left: 0;
+  }
 }
 

@@ -30,13 +30,13 @@ const WorkspaceCard = ({ workspace, onView, onEdit, onDelete, onMeetings, onDash
         )}
       </div>
       <div className="workspace-card-actions">
-        <Button onClick={onView} variant="secondary" size="small" icon="visibility">View</Button>
-        <Button onClick={onDashboard} variant="secondary" size="small" icon="dashboard">Dashboard</Button>
-        <Button onClick={onMeetings} variant="secondary" size="small" icon="event">Meetings</Button>
-        <Button onClick={onBRD} variant="secondary" size="small" icon="description">BRD</Button>
-        <Button onClick={onRAID} variant="secondary" size="small" icon="assignment">RAID</Button>
+        <Button onClick={() => onView(workspace)} variant="secondary" size="small" icon="visibility">View</Button>
+        <Button onClick={() => onDashboard(workspace)} variant="secondary" size="small" icon="dashboard">Dashboard</Button>
+        <Button onClick={() => onMeetings(workspace)} variant="secondary" size="small" icon="event">Meetings</Button>
+        <Button onClick={() => onBRD(workspace)} variant="secondary" size="small" icon="description">BRD</Button>
+        <Button onClick={() => onRAID(workspace)} variant="secondary" size="small" icon="assignment">RAID</Button>
         <Button onClick={() => onEdit(workspace)} variant="secondary" size="small" icon="edit">Edit</Button>
-        <Button onClick={() => onDelete(workspace.workspace_id)} variant="danger" size="small" icon="delete">
+        <Button onClick={() => onDelete(workspace)} variant="danger" size="small" icon="delete">
           Delete
         </Button>
       </div>

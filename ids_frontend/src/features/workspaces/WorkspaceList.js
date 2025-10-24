@@ -20,7 +20,7 @@ const EmptyState = ({ onCreate }) => (
 );
 
 const useWorkspaceHandlers = (workspaces, loading, error, fetchWorkspaces, deleteWorkspace, 
-  currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar) => {
+  currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar, navigate) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState(null);
@@ -68,8 +68,9 @@ const useWorkspaceHandlers = (workspaces, loading, error, fetchWorkspaces, delet
   
   const handleViewSoW = async (workspace) => {
     try {
+      console.log('handleViewSoW - workspace:', workspace);
       await loadWorkspaceData(workspace);
-      setShowSoWViewer(true);
+      navigate(`/workspace/${workspace.workspace_id}/view`);
       collapseSidebar();
       showSnackbar('Workspace data loaded successfully', 'success');
     } catch (err) {
@@ -105,22 +106,51 @@ const WorkspaceList = () => {
     handleConfirmDelete, handleCancelDelete,
     handleFormSuccess, handleUploadSuccess, handleViewSoW
   } = useWorkspaceHandlers(workspaces, loading, error, fetchWorkspaces, deleteWorkspace, 
-    currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar);
+    currentWorkspace, sowData, loadWorkspaceData, collapseSidebar, showSnackbar, navigate);
 
-  const handleMeetings = (workspace) => {
-    navigate(`/workspace/${workspace.workspace_id}/meetings`);
+  const handleMeetings = async (workspace) => {
+    try {
+      await loadWorkspaceData(workspace);
+      navigate(`/workspace/${workspace.workspace_id}/meetings`);
+      collapseSidebar();
+    } catch (err) {
+      console.error('Failed to load workspace data:', err);
+      showSnackbar('Failed to load workspace data', 'error');
+    }
   };
 
-  const handleDashboard = (workspace) => {
-    navigate(`/workspace/${workspace.workspace_id}/dashboard`);
+  const handleDashboard = async (workspace) => {
+    try {
+      console.log('handleDashboard - workspace:', workspace);
+      await loadWorkspaceData(workspace);
+      navigate(`/workspace/${workspace.workspace_id}/dashboard`);
+      collapseSidebar();
+    } catch (err) {
+      console.error('Failed to load workspace data:', err);
+      showSnackbar('Failed to load workspace data', 'error');
+    }
   };
 
-  const handleBRD = (workspace) => {
-    navigate(`/workspace/${workspace.workspace_id}/brd`);
+  const handleBRD = async (workspace) => {
+    try {
+      await loadWorkspaceData(workspace);
+      navigate(`/workspace/${workspace.workspace_id}/brd`);
+      collapseSidebar();
+    } catch (err) {
+      console.error('Failed to load workspace data:', err);
+      showSnackbar('Failed to load workspace data', 'error');
+    }
   };
 
-  const handleRAID = (workspace) => {
-    navigate(`/workspace/${workspace.workspace_id}/raid`);
+  const handleRAID = async (workspace) => {
+    try {
+      await loadWorkspaceData(workspace);
+      navigate(`/workspace/${workspace.workspace_id}/raid`);
+      collapseSidebar();
+    } catch (err) {
+      console.error('Failed to load workspace data:', err);
+      showSnackbar('Failed to load workspace data', 'error');
+    }
   };
 
   if (showSoWViewer && sowData) {
@@ -142,13 +172,13 @@ const WorkspaceList = () => {
             <WorkspaceCard
               key={workspace.workspace_id}
               workspace={workspace}
-              onView={() => handleViewSoW(workspace)}
-              onDashboard={() => handleDashboard(workspace)}
-              onMeetings={() => handleMeetings(workspace)}
-              onBRD={() => handleBRD(workspace)}
-              onRAID={() => handleRAID(workspace)}
+              onView={handleViewSoW}
+              onDashboard={handleDashboard}
+              onMeetings={handleMeetings}
+              onBRD={handleBRD}
+              onRAID={handleRAID}
               onEdit={handleEdit}
-              onDelete={() => handleDelete(workspace)}
+              onDelete={handleDelete}
             />
           ))}
         </div>
