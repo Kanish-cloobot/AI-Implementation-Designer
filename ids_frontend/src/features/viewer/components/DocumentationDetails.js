@@ -7,7 +7,8 @@ const DocumentationDetails = ({
   sections, 
   sowData, 
   currentWorkspace, 
-  currentDocument 
+  currentDocument,
+  onSourceClick = () => {}
 }) => {
   const getSectionContent = (sectionId) => {
     const section = findSectionById(sections, sectionId);

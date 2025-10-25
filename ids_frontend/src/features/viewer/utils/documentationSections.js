@@ -1,7 +1,7 @@
 import React from 'react';
 import GenericBRDTable from '../../brd/components/GenericBRDTable';
 
-const createProjectOverviewContent = (scopeSummary) => {
+const createProjectOverviewContent = (scopeSummary, onSourceClick = () => {}) => {
   // Create a combined table for scope items
   const scopeData = [];
   
@@ -10,7 +10,8 @@ const createProjectOverviewContent = (scopeSummary) => {
     scopeSummary.in_scope.forEach((item, index) => {
       scopeData.push({
         item: item,
-        scope_type: 'In Scope'
+        scope_type: 'In Scope',
+        source_references: scopeSummary.source_references || []
       });
     });
   }
@@ -20,7 +21,8 @@ const createProjectOverviewContent = (scopeSummary) => {
     scopeSummary.out_of_scope.forEach((item, index) => {
       scopeData.push({
         item: item,
-        scope_type: 'Out of Scope'
+        scope_type: 'Out of Scope',
+        source_references: scopeSummary.source_references || []
       });
     });
   }
@@ -64,13 +66,14 @@ const createProjectOverviewContent = (scopeSummary) => {
         title="Project Scope"
         icon="description"
         showCreatedAt={false}
+        onSourceClick={onSourceClick}
       />
     </div>
   );
 };
 
 
-const createAssumptionsContent = (assumptions) => {
+const createAssumptionsContent = (assumptions, onSourceClick = () => {}) => {
   if (!assumptions || assumptions.length === 0) {
     return (
       <div className="doc-details-content-section">
@@ -83,15 +86,18 @@ const createAssumptionsContent = (assumptions) => {
   const tableData = assumptions.map((assumption, index) => {
     if (typeof assumption === 'string') {
       return {
-        assumption_text: assumption
+        assumption_text: assumption,
+        source_references: []
       };
     } else if (typeof assumption === 'object' && assumption !== null) {
       return {
-        assumption_text: assumption.text || assumption.description || JSON.stringify(assumption)
+        assumption_text: assumption.text || assumption.description || JSON.stringify(assumption),
+        source_references: assumption.source_references || []
       };
     } else {
       return {
-        assumption_text: String(assumption)
+        assumption_text: String(assumption),
+        source_references: []
       };
     }
   });
@@ -112,11 +118,12 @@ const createAssumptionsContent = (assumptions) => {
       title="Assumptions"
       icon="info"
       showCreatedAt={false}
+      onSourceClick={onSourceClick}
     />
   );
 };
 
-const createModulesContent = (modules) => {
+const createModulesContent = (modules, onSourceClick = () => {}) => {
   if (!modules || modules.length === 0) {
     return (
       <div className="doc-details-content-section">
@@ -153,11 +160,12 @@ const createModulesContent = (modules) => {
       title="Modules & Processes"
       icon="widgets"
       showCreatedAt={false}
+      onSourceClick={onSourceClick}
     />
   );
 };
 
-const createLicensesContent = (licenses) => {
+const createLicensesContent = (licenses, onSourceClick = () => {}) => {
   if (!licenses || licenses.length === 0) {
     return (
       <div className="doc-details-content-section">
@@ -172,19 +180,22 @@ const createLicensesContent = (licenses) => {
       return {
         license_type: license,
         count: 1,
-        description: '-'
+        description: '-',
+        source_references: []
       };
     } else if (typeof license === 'object' && license !== null) {
       return {
         license_type: license.license_type || 'License',
         count: license.count || 1,
-        description: license.description || '-'
+        description: license.description || '-',
+        source_references: license.source_references || []
       };
     } else {
       return {
         license_type: String(license),
         count: 1,
-        description: '-'
+        description: '-',
+        source_references: []
       };
     }
   });
@@ -217,11 +228,12 @@ const createLicensesContent = (licenses) => {
       title="Licenses"
       icon="verified_user"
       showCreatedAt={false}
+      onSourceClick={onSourceClick}
     />
   );
 };
 
-const createBusinessUnitsContent = (businessUnits) => {
+const createBusinessUnitsContent = (businessUnits, onSourceClick = () => {}) => {
   if (!businessUnits || businessUnits.length === 0) {
     return (
       <div className="doc-details-content-section">
@@ -239,7 +251,8 @@ const createBusinessUnitsContent = (businessUnits) => {
           business_unit: unit.business_unit_name,
           stakeholder_name: stakeholder.name,
           designation: stakeholder.designation,
-          email: stakeholder.email || '-'
+          email: stakeholder.email || '-',
+          source_references: unit.source_references || []
         });
       });
     } else {
@@ -247,7 +260,8 @@ const createBusinessUnitsContent = (businessUnits) => {
         business_unit: unit.business_unit_name,
         stakeholder_name: '-',
         designation: '-',
-        email: '-'
+        email: '-',
+        source_references: unit.source_references || []
       });
     }
   });
@@ -286,6 +300,7 @@ const createBusinessUnitsContent = (businessUnits) => {
       title="Business Units & Stakeholders"
       icon="groups"
       showCreatedAt={false}
+      onSourceClick={onSourceClick}
     />
   );
 };
@@ -320,7 +335,7 @@ const createValidationContent = (validationSummary) => (
   </div>
 );
 
-const createOverviewSection = (sowData) => ({
+const createOverviewSection = (sowData, onSourceClick = () => {}) => ({
   id: 'overview',
   title: 'Overview',
   icon: 'overview',
@@ -329,19 +344,19 @@ const createOverviewSection = (sowData) => ({
       id: 'project-overview',
       title: 'Project Overview',
       icon: 'description',
-      content: createProjectOverviewContent(sowData.scope_summary)
+      content: createProjectOverviewContent(sowData.scope_summary, onSourceClick)
     },
     {
       id: 'business-units',
       title: 'Business Units & Stakeholders',
       icon: 'groups',
-      content: createBusinessUnitsContent(sowData.business_units)
+      content: createBusinessUnitsContent(sowData.business_units, onSourceClick)
     },
     {
       id: 'assumptions',
       title: 'Assumptions',
       icon: 'info',
-      content: createAssumptionsContent(sowData.assumptions)
+      content: createAssumptionsContent(sowData.assumptions, onSourceClick)
     }
   ]
 });
@@ -366,18 +381,18 @@ const createOverviewSection = (sowData) => ({
 //   ]
 // });
 
-const createModulesSection = (sowData) => ({
+const createModulesSection = (sowData, onSourceClick = () => {}) => ({
   id: 'modules',
   title: 'Modules & Processes',
   icon: 'widgets',
-  content: createModulesContent(sowData.modules)
+  content: createModulesContent(sowData.modules, onSourceClick)
 });
 
-const createLicensesSection = (sowData) => ({
+const createLicensesSection = (sowData, onSourceClick = () => {}) => ({
   id: 'licenses',
   title: 'Licenses',
   icon: 'verified_user',
-  content: createLicensesContent(sowData.salesforce_licenses)
+  content: createLicensesContent(sowData.salesforce_licenses, onSourceClick)
 });
 
 const createValidationSection = (sowData) => ({
@@ -387,13 +402,13 @@ const createValidationSection = (sowData) => ({
   content: createValidationContent(sowData.validation_summary)
 });
 
-export const generateDocumentationSections = (sowData) => {
+export const generateDocumentationSections = (sowData, onSourceClick = () => {}) => {
   if (!sowData) return [];
 
   return [
-    createOverviewSection(sowData),
-    createModulesSection(sowData),
-    createLicensesSection(sowData),
+    createOverviewSection(sowData, onSourceClick),
+    createModulesSection(sowData, onSourceClick),
+    createLicensesSection(sowData, onSourceClick),
     // createValidationSection(sowData)
   ];
 };

@@ -4,12 +4,14 @@ import Button from '../../components/common/Button';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 import DocumentationNavigation from './components/DocumentationNavigation';
 import DocumentationDetails from './components/DocumentationDetails';
+import SourceViewer from '../../components/common/SourceViewer';
 import { generateDocumentationSections } from './utils/documentationSections';
 
 
 const SoWViewer = ({ onBack = () => {} }) => {
   const { sowData, currentWorkspace, currentDocument, expandSidebar } = useWorkspace();
   const [activeSection, setActiveSection] = useState('project-overview');
+  const [selectedSourceReferences, setSelectedSourceReferences] = useState(null);
 
   console.log('SoWViewer - Current workspace:', currentWorkspace);
   console.log('SoWViewer - Current document:', currentDocument);
@@ -26,7 +28,15 @@ const SoWViewer = ({ onBack = () => {} }) => {
     );
   }
 
-  const sections = generateDocumentationSections(sowData);
+  const handleSourceClick = (sourceReferences) => {
+    setSelectedSourceReferences(sourceReferences);
+  };
+
+  const handleCloseSourceViewer = () => {
+    setSelectedSourceReferences(null);
+  };
+
+  const sections = generateDocumentationSections(sowData, handleSourceClick);
 
   return (
     <div className="sow-viewer-container">
@@ -54,9 +64,17 @@ const SoWViewer = ({ onBack = () => {} }) => {
             sowData={sowData}
             currentWorkspace={currentWorkspace}
             currentDocument={currentDocument}
+            onSourceClick={handleSourceClick}
           />
         </div>
       </div>
+      
+      {selectedSourceReferences && (
+        <SourceViewer 
+          sourceReferences={selectedSourceReferences}
+          onClose={handleCloseSourceViewer}
+        />
+      )}
     </div>
   );
 };

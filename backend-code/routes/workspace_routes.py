@@ -87,14 +87,33 @@ def get_workspace_data_payload():
             (workspace_id, 'deleted')
         )
         
-        # Get the most recent completed document and its stream
+        # Get the most recent completed document and its unified file extraction
         completed_docs = [doc for doc in documents if doc['status'] == 'completed']
         if completed_docs:
             # Sort by created_at to get the most recent
             most_recent_doc = sorted(completed_docs, 
                                    key=lambda x: x['created_at'], reverse=True)[0]
             
-            # Get the latest stream for this document
+            # Get the file_id for this document
+            file_record = db.fetch_one(
+                '''SELECT file_id FROM files 
+                   WHERE workspace_id = ? AND file_name = ? AND status != ? 
+                   AND storage_path = ?''',
+                (workspace_id, most_recent_doc['file_name'], 'deleted', 'database_stored')
+            )
+            
+            sow_data = None
+            if file_record and file_record['file_id']:
+                # Get unified file extraction data
+                from services.unified_file_extraction_service import UnifiedFileExtractionService
+                unified_service = UnifiedFileExtractionService(db)
+                
+                sow_data = unified_service.get_unified_file_extraction(
+                    file_id=file_record['file_id'],
+                    org_id='default_org'  # You may need to get this from request or document
+                )
+            
+            # Keep the stream for backward compatibility (get from llm_streams)
             stream = db.fetch_one(
                 '''SELECT * FROM llm_streams 
                    WHERE document_id = ? AND status = ?
@@ -106,7 +125,7 @@ def get_workspace_data_payload():
                 'workspace': workspace,
                 'document': most_recent_doc,
                 'stream': stream,
-                'sow_data': json.loads(stream['response_payload']) if stream and stream.get('response_payload') else None
+                'sow_data': sow_data
             }), 200
         else:
             return jsonify({
@@ -116,6 +135,53 @@ def get_workspace_data_payload():
                 'sow_data': None
             }), 200
             
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@workspace_bp.route('/workspaces/get-file-extractions', methods=['POST'])
+def get_workspace_file_extractions():
+    """Get all unified file extractions for a workspace"""
+    try:
+        data = request.get_json()
+        if not data or not data.get('workspace_id'):
+            return jsonify({'error': 'Workspace ID is required'}), 400
+            
+        workspace_id = data['workspace_id']
+        org_id = data.get('org_id', 'default_org')  # Default org_id if not provided
+        db = get_db()
+        
+        # Get workspace info
+        workspace = db.fetch_one(
+            'SELECT * FROM workspaces WHERE workspace_id = ? AND status = ?',
+            (workspace_id, 'active')
+        )
+        
+        if not workspace:
+            return jsonify({'error': 'Workspace not found'}), 404
+        
+        # Get all unified file extractions for this workspace
+        from services.unified_file_extraction_service import UnifiedFileExtractionService
+        unified_service = UnifiedFileExtractionService(db)
+        
+        file_extractions = unified_service.get_workspace_file_extractions(
+            workspace_id=workspace_id,
+            org_id=org_id
+        )
+        
+        # Get extraction statistics
+        stats = unified_service.get_extraction_statistics(
+            workspace_id=workspace_id,
+            org_id=org_id
+        )
+        
+        return jsonify({
+            'workspace': workspace,
+            'file_extractions': file_extractions,
+            'statistics': stats,
+            'total_extractions': len(file_extractions)
+        }), 200
+        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
