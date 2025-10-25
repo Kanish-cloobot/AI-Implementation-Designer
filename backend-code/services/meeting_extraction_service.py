@@ -92,17 +92,17 @@ class MeetingExtractionService:
         try:
             start_time = time.time()
             
-            prompt = self._build_extraction_prompt(text)
+            prompt = self._build_extraction_prompt()
 
             # Prepare messages for API call
             messages = [
                 {
                     "role": "system",
-                    "content": "You are an expert analyst for Salesforce implementation discovery, design, and build."
+                    "content": prompt
                 },
                 {
                     "role": "user",
-                    "content": prompt
+                    "content": text
                 }
             ]
 
@@ -196,7 +196,7 @@ class MeetingExtractionService:
             traceback.print_exc()
             return None
 
-    def _build_extraction_prompt(self, text):
+    def _build_extraction_prompt(self):
         """Build the extraction prompt"""
         prompt = f"""Objective
 You are an expert analyst for Salesforce implementation discovery, design, and build.
@@ -223,7 +223,7 @@ JSON Structure Required:
     "source_type": "transcript | SoW | contract",
     "doc_title": "document title if known",
     "extraction_timestamp": "YYYY-MM-DD",
-    "confidence": 0.0
+    "confidence": 0.0,
   }}],
   "V1_list_of_bu_teams": [{{
     "business_unit": "business unit name",
@@ -344,9 +344,6 @@ Assumptions Policy
 - Infer carefully; log all assumptions under assumptions_and_gaps.
 - Never fabricate personal data; use generic role placeholders.
 - Leave arrays empty for missing data and record the gap.
-
-INPUT DOCUMENT(S):
-{text}
 
 Final Instruction
 Perform extraction now and return only the JSON object above, enclosed within json code fences.
