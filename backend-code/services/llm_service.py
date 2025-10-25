@@ -3,6 +3,7 @@ import json
 import time
 import traceback
 from config import OPENAI_CONFIG
+from constants.guidelines_constants import SOW_EXTRACTION_PROMPT
 
 # Configure OpenAI for Azure
 openai.api_type = "azure"
@@ -30,14 +31,13 @@ class LLMService:
         Returns:
             tuple: (json_string, messages_array) - JSON string with extracted data and messages array for logging
         """
-        prompt = self._build_sow_extraction_prompt()
         
         try:
             start_time = time.time()
             
             # Prepare messages for API call
             messages = [
-                {"role": "system", "content": prompt},
+                {"role": "system", "content": SOW_EXTRACTION_PROMPT},
                 {"role": "user", "content": document_text}
             ]
             
@@ -101,146 +101,6 @@ class LLMService:
             print(f"Error in LLM extraction: {str(e)}")
             traceback.print_exc()
             return json.dumps(self._get_default_response(str(e))), messages
-
-    def _build_sow_extraction_prompt(self):
-        return """## **Prompt Instruction: Implementation Scope Extractor**
-
-### **Objective**
-
-You are an AI assistant specialized in **Implementation Consulting**.
-Your goal is to **analyze uploaded documents** such as the *Sales Hand-off Package* or *Statement of Work (SoW)* and extract all information needed to define **Project Scope, Modules, Processes, Stakeholders, and License Inventory**.
-
-The final output **must be a single valid JSON block**, wrapped in **Markdown format**, with all content written inside each key's value (not as external commentary).
-
----
-
-### **Input**
-
-* User will upload one or more documents (SoW, Sales hand-off package, BRD, etc.)
-* Each may contain business unit details, module descriptions, in-scope and out-of-scope items, stakeholders, and licensing information.
-
----
-
-### **Task Instructions**
-
-1. **Read and interpret** all uploaded content carefully.
-2. **Extract**:
-
-   * **Scope Summary**
-
-     * `in_scope`: Items, functionalities, modules, integrations, or processes explicitly in scope.
-     * `out_of_scope`: Anything marked as excluded, deferred, or future phase.
-   * **Modules and Processes**
-
-     * Identify each major *business module* (e.g., Lead Management, Order Processing, Case Management).
-     * For each module, extract its *key processes* or *sub-functions*.
-   * **Business Units & Stakeholders**
-
-     * Identify all *business units/departments* mentioned.
-     * Under each BU, list:
-
-       * Stakeholder Name
-       * Designation/Role
-       * Email (if available)
-   * **Licenses**
-
-     * Identify all license types (Sales Cloud, Service Cloud, FSL, Platform, etc.)
-     * Include quantity or allocation if mentioned.
-
----
-
-### **Output Format**
-
-Produce the output **as a single JSON object inside Markdown code fences**:
-
-```json
-{
-  "scope_summary": {
-    "in_scope": [
-      "List each in-scope item here in Markdown bullet format"
-    ],
-    "out_of_scope": [
-      "List each out-of-scope item here in Markdown bullet format"
-    ]
-  },
-  "modules": [
-    {
-      "module_name": "Module 1 Name",
-      "description": "Short description of what this module covers",
-      "processes": [
-        "- Process 1: short description",
-        "- Process 2: short description"
-      ]
-    }
-  ],
-  "business_units": [
-    {
-      "business_unit_name": "BU Name",
-      "stakeholders": [
-        {
-          "name": "Full Name",
-          "designation": "Designation / Role",
-          "email": "email@example.com"
-        }
-      ]
-    }
-  ],
-  "salesforce_licenses": [
-    {
-      "license_type": "Sales Cloud / Service Cloud / Platform / FSL / etc.",
-      "count": "Number if available, else 'unknown'"
-    }
-  ],
-  "assumptions": [
-    "State all assumptions made to fill gaps in missing data"
-  ],
-  "validation_summary": {
-    "json_validity": "true/false",
-    "issues_detected": [
-      "List any issues or inconsistencies found in the extracted data"
-    ]
-  }
-}
-```
-
----
-
-### **Validation Rules**
-
-1. Output must be **strictly valid JSON**:
-
-   * All keys must be **double-quoted**.
-   * Arrays and objects must be **properly closed**.
-   * No trailing commas.
-   * No comments outside JSON (everything must be within Markdown code fences).
-2. All string values must be properly escaped (`\\"`, `\\\\n`).
-3. If any field cannot be found, include a **placeholder** with `"unknown"` or `"not specified"`.
-4. If you infer something, list the **assumption** explicitly in the `"assumptions"` array.
-
----
-
-### **Assumption Rules**
-
-* If business units are not explicitly named, infer them from context (e.g., "Sales," "Service," "Finance," etc.).
-* If stakeholder details are incomplete, infer plausible placeholders:
-
-  * `"name": "Not Provided"`
-  * `"designation": "Inferred based on context"`
-  * `"email": "unknown@example.com"`
-* If license type is unclear, infer `"Platform"` as a default placeholder but note it under `"assumptions"`.
-* Maintain logical consistency (e.g., do not assign Service Cloud features to a client with only Sales Cloud licenses).
-
----
-
-### **Tone and Format Requirements**
-
-* Use **Markdown** formatting for the entire JSON output block.
-* Do **not** include any prose, commentary, or explanation outside the JSON block.
-* Ensure the structure is **complete, human-readable, and machine-parsable**.
-
----
-
-**IMPORTANT**: Only return the JSON object. Do not include any additional text, explanation, or markdown formatting outside the JSON code fence."""
 
     def _extract_json_from_response(self, content):
         if '```json' in content:
