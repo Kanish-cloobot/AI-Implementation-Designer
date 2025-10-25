@@ -1,44 +1,72 @@
 import React from 'react';
 import './WorkspaceList.css';
-import Button from '../../components/common/Button';
 
 const WorkspaceCard = ({ workspace, onView, onEdit, onDelete, onDashboard }) => {
+  const handleCardClick = () => {
+    onDashboard();
+  };
+
+  const handleActionClick = (e, action) => {
+    e.stopPropagation();
+    action();
+  };
+
   return (
-    <div className="workspace-card">
-      <div className="workspace-card-header">
-        <span className="material-symbols-outlined workspace-card-icon">folder</span>
-        <h3 className="workspace-card-title">{workspace.name}</h3>
-      </div>
-      <div className="workspace-card-body">
-        <div className="workspace-card-info">
-          <span className="workspace-card-label">Project Type:</span>
-          <span className="workspace-card-value">{workspace.project_type}</span>
+    <div className="workspace-card" onClick={handleCardClick}>
+      <div className="workspace-card-content">
+        <div className="workspace-card-header">
+          <div className="workspace-card-icon">
+            <span className="material-symbols-outlined">folder</span>
+          </div>
+          <div className="workspace-card-actions">
+            <button 
+              className="workspace-card-action-btn view-btn" 
+              onClick={(e) => handleActionClick(e, onView)}
+              title="View"
+            >
+              <span className="material-symbols-outlined">visibility</span>
+            </button>
+            <button 
+              className="workspace-card-action-btn edit-btn" 
+              onClick={(e) => handleActionClick(e, () => onEdit(workspace))}
+              title="Edit"
+            >
+              <span className="material-symbols-outlined">edit</span>
+            </button>
+            <button 
+              className="workspace-card-action-btn delete-btn" 
+              onClick={(e) => handleActionClick(e, () => onDelete(workspace.workspace_id))}
+              title="Delete"
+            >
+              <span className="material-symbols-outlined">delete</span>
+            </button>
+          </div>
         </div>
-        <div className="workspace-card-info">
-          <span className="workspace-card-label">Status:</span>
-          <span className={`workspace-card-status ${workspace.status}`}>{workspace.status}</span>
-        </div>
-        {workspace.licenses && workspace.licenses.length > 0 && (
-          <div className="workspace-card-licenses">
-            <span className="workspace-card-label">Licenses:</span>
-            <div className="workspace-card-license-list">
-              {workspace.licenses.map((license, idx) => (
-                <span key={idx} className="workspace-card-license-tag">{license}</span>
-              ))}
+        
+        <div className="workspace-card-body">
+          <div className="workspace-card-title">{workspace.name}</div>
+          
+          <div className="workspace-card-info">
+            <div className="workspace-card-info-item">
+              <span className="workspace-card-label">Project Type:</span>
+              <span className="workspace-card-value">{workspace.project_type}</span>
+            </div>
+            <div className="workspace-card-info-item">
+              <span className="workspace-card-label">Status:</span>
+              <span className={`workspace-card-status ${workspace.status}`}>{workspace.status}</span>
             </div>
           </div>
-        )}
-      </div>
-      <div className="workspace-card-actions">
-        <Button onClick={onDashboard} variant="primary" size="medium" icon="arrow_forward">
-          Enter Workspace
-        </Button>
-        <div className="workspace-card-secondary-actions">
-          <Button onClick={onView} variant="secondary" size="small" icon="visibility">View</Button>
-          <Button onClick={() => onEdit(workspace)} variant="secondary" size="small" icon="edit">Edit</Button>
-          <Button onClick={() => onDelete(workspace.workspace_id)} variant="danger" size="small" icon="delete">
-            Delete
-          </Button>
+          
+          {workspace.licenses && workspace.licenses.length > 0 && (
+            <div className="workspace-card-licenses">
+              <span className="workspace-card-label">Licenses:</span>
+              <div className="workspace-card-license-list">
+                {workspace.licenses.map((license, idx) => (
+                  <span key={idx} className="workspace-card-license-tag">{license}</span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -33,124 +33,442 @@
 
 .workspace-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-right: -8px;
 }
 
 .workspace-card {
-  background-color: #1A1A1A;
-  border: 0.5px solid #A8A8A8;
-  border-radius: 8px;
-  padding: 20px;
+  background: linear-gradient(135deg, #1A1A1A 0%, #262626 100%);
+  border: 1px solid #333333;
+  border-radius: 16px;
+  padding: 5px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.workspace-card:hover {
-  transform: translateY(-2px);
-  border-color: #C82FFF;
+.workspace-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #C82FFF 0%, #00AAFF 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.workspace-card:hover::before {
+  opacity: 1;
+}
+
+.workspace-card:active {
+  transform: translateY(-4px) scale(1.01);
+  transition: all 0.2s ease;
+}
+
+.workspace-card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
 }
 
 .workspace-card-header {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 2;
 }
 
 .workspace-card-icon {
-  color: #C82FFF;
-  font-size: 28px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(200, 47, 255, 0.1) 0%, rgba(0, 170, 255, 0.1) 100%);
+  border: 2px solid rgba(200, 47, 255, 0.2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-.workspace-card-title {
-  font-size: 18px;
-  font-weight: 600;
+.workspace-card-icon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(200, 47, 255, 0.1) 0%, rgba(0, 170, 255, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.workspace-card-icon .material-symbols-outlined {
+  color: #C82FFF;
+  font-size: 28px;
+  font-weight: 200;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.workspace-card:hover .workspace-card-icon {
+  background: linear-gradient(135deg, rgba(200, 47, 255, 0.2) 0%, rgba(0, 170, 255, 0.2) 100%);
+  border-color: rgba(200, 47, 255, 0.4);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 8px 24px rgba(200, 47, 255, 0.2);
+}
+
+.workspace-card:hover .workspace-card-icon::before {
+  opacity: 1;
+}
+
+.workspace-card:hover .workspace-card-icon .material-symbols-outlined {
   color: #FFFFFF;
-  margin: 0;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  transform: scale(1.1);
 }
 
 .workspace-card-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  flex: 1;
+  gap: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.workspace-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  transition: all 0.3s ease;
+}
+
+.workspace-card:hover .workspace-card-title {
+  color: #FFFFFF;
+  transform: translateX(2px);
 }
 
 .workspace-card-info {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.workspace-card-info-item {
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(168, 168, 168, 0.1);
+  transition: all 0.3s ease;
+}
+
+.workspace-card-info-item:last-child {
+  border-bottom: none;
+}
+
+.workspace-card:hover .workspace-card-info-item {
+  border-bottom-color: rgba(200, 47, 255, 0.2);
 }
 
 .workspace-card-label {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: #A8A8A8;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.workspace-card:hover .workspace-card-label {
+  color: #C82FFF;
+  opacity: 1;
 }
 
 .workspace-card-value {
   font-size: 14px;
   color: #FFFFFF;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.workspace-card:hover .workspace-card-value {
+  color: #FFFFFF;
+  transform: translateX(2px);
 }
 
 .workspace-card-status {
-  font-size: 12px;
-  font-weight: 500;
-  padding: 4px 10px;
-  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
   text-transform: capitalize;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+
 .workspace-card-status.active {
-  background-color: rgba(76, 175, 80, 0.2);
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(76, 175, 80, 0.1) 100%);
   color: #81C784;
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
 }
 
 .workspace-card-status.archived {
-  background-color: rgba(158, 158, 158, 0.2);
+  background: linear-gradient(135deg, rgba(158, 158, 158, 0.2) 0%, rgba(158, 158, 158, 0.1) 100%);
   color: #A8A8A8;
+  border: 1px solid rgba(158, 158, 158, 0.4);
+  box-shadow: 0 2px 8px rgba(158, 158, 158, 0.2);
 }
+
+.workspace-card:hover .workspace-card-status {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 
 .workspace-card-licenses {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 4px;
 }
 
 .workspace-card-license-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .workspace-card-license-tag {
-  font-size: 11px;
-  padding: 4px 8px;
-  background-color: #262626;
-  color: #FFFFFF;
-  border-radius: 4px;
-  border: 0.5px solid #A8A8A8;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #262626 0%, #333333 100%);
+  color: #A8A8A8;
+  border-radius: 12px;
+  border: 1px solid rgba(168, 168, 168, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+
+.workspace-card:hover .workspace-card-license-tag {
+  background: linear-gradient(135deg, #333333 0%, #404040 100%);
+  border-color: rgba(200, 47, 255, 0.3);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 
 .workspace-card-actions {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-top: 12px;
-  border-top: 0.5px solid #A8A8A8;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
 }
 
-.workspace-card-secondary-actions {
+.workspace-card-action-btn {
+  width: 32px;
+  height: 32px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.workspace-card-action-btn .material-symbols-outlined {
+  color: #A8A8A8;
+  font-size: 16px;
+  font-weight: 200;
+  transition: all 0.3s ease;
+}
+
+.workspace-card-action-btn.view-btn:hover {
+  background: rgba(33, 150, 243, 0.1);
+  border-color: rgba(33, 150, 243, 0.3);
+}
+
+.workspace-card-action-btn.view-btn:hover .material-symbols-outlined {
+  color: #2196F3;
+}
+
+.workspace-card-action-btn.edit-btn:hover {
+  background: rgba(255, 193, 7, 0.1);
+  border-color: rgba(255, 193, 7, 0.3);
+}
+
+.workspace-card-action-btn.edit-btn:hover .material-symbols-outlined {
+  color: #FFC107;
+}
+
+.workspace-card-action-btn.delete-btn:hover {
+  background: rgba(244, 67, 54, 0.1);
+  border-color: rgba(244, 67, 54, 0.3);
+}
+
+.workspace-card-action-btn.delete-btn:hover .material-symbols-outlined {
+  color: #F44336;
+}
+
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .workspace-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .workspace-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    max-height: calc(100vh - 180px);
+  }
+  
+  .workspace-card {
+    padding: 20px;
+    min-height: 180px;
+  }
+  
+  .workspace-card-icon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .workspace-card-icon .material-symbols-outlined {
+    font-size: 24px;
+  }
+  
+  .workspace-card-title {
+    font-size: 16px;
+  }
+  
+  .workspace-card-label {
+    font-size: 10px;
+  }
+  
+  .workspace-card-value {
+    font-size: 13px;
+  }
+  
+  .workspace-card-status {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  
+  .workspace-card-actions {
+    gap: 6px;
+  }
+  
+  .workspace-card-action-btn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .workspace-card-action-btn .material-symbols-outlined {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspace-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .workspace-list-title {
+    font-size: 24px;
+  }
+  
+  .workspace-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  
+  .workspace-card {
+    padding: 16px;
+    min-height: 160px;
+  }
+  
+  .workspace-card-icon {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .workspace-card-icon .material-symbols-outlined {
+    font-size: 22px;
+  }
+  
+  .workspace-card-title {
+    font-size: 15px;
+  }
+  
+  .workspace-card-label {
+    font-size: 9px;
+  }
+  
+  .workspace-card-value {
+    font-size: 12px;
+  }
+  
+  .workspace-card-status {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+  
+  .workspace-card-license-tag {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+  
+  .workspace-card-actions {
+    gap: 4px;
+  }
+  
+  .workspace-card-action-btn {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .workspace-card-action-btn .material-symbols-outlined {
+    font-size: 12px;
+  }
 }
 
 .workspace-list-empty {
@@ -180,4 +498,5 @@
   color: #A8A8A8;
   margin: 0;
 }
+
 
