@@ -65,7 +65,7 @@ class MeetingExtractionServiceV2:
                 return {'status': 'no_text', 'message': 'No text extracted from files'}
 
             # Call LLM for extraction
-            extraction_result = self._call_llm_for_extraction(combined_text)
+            extraction_result = self._call_llm_for_extraction(combined_text, meeting_id, workspace_id, org_id)
 
             if not extraction_result:
                 return {'status': 'extraction_failed', 'message': 'LLM extraction failed'}
@@ -84,8 +84,9 @@ class MeetingExtractionServiceV2:
             traceback.print_exc()
             return {'status': 'error', 'message': str(e)}
 
-    def _call_llm_for_extraction(self, text):
-        """Call Azure OpenAI GPT-5 Mini for extraction"""
+    def _call_llm_for_extraction(self, text, meeting_id, workspace_id, org_id):
+        """Call Azure OpenAI GPT-5 Mini for extraction and store LLM stream data"""
+        stream_id = None
         try:
             start_time = time.time()
             
@@ -102,6 +103,21 @@ class MeetingExtractionServiceV2:
                     "content": prompt
                 }
             ]
+
+            # Prepare request payload for storage - store the full messages array
+            request_payload = json.dumps(messages)
+
+            # Store LLM stream request in database
+            stream_id = self.db_manager.insert_meeting_llm_stream(
+                meeting_id=meeting_id,
+                workspace_id=workspace_id,
+                org_id=org_id,
+                request_payload=request_payload,
+                model_name=self.deployment,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                created_by="system"
+            )
 
             # Call Azure OpenAI API
             response = openai.ChatCompletion.create(
@@ -121,12 +137,32 @@ class MeetingExtractionServiceV2:
 
             print(f"LLM Response received in {latency_ms}ms, tokens: {tokens_used}")
 
+            # Store LLM stream response in database - store only the response content
+            response_payload = response_content
+
+            self.db_manager.update_meeting_llm_stream_response(
+                stream_id=stream_id,
+                response_payload=response_payload,
+                tokens_used=tokens_used,
+                latency_ms=latency_ms,
+                processing_status='completed'
+            )
+
             # Parse JSON response
             try:
                 extraction_data = json.loads(response_content)
                 return extraction_data
             except json.JSONDecodeError as e:
                 print(f"Error parsing LLM response as JSON: {str(e)}")
+                # Update stream with error status
+                self.db_manager.update_meeting_llm_stream_response(
+                    stream_id=stream_id,
+                    response_payload=response_payload,
+                    tokens_used=tokens_used,
+                    latency_ms=latency_ms,
+                    processing_status='error',
+                    error_message=f"JSON parsing error: {str(e)}"
+                )
                 # Handle Unicode characters in response for Windows console
                 try:
                     print(f"Raw response (first 500 chars): {response_content[:500]}")
@@ -137,6 +173,14 @@ class MeetingExtractionServiceV2:
         except Exception as e:
             print(f"Error calling LLM: {str(e)}")
             traceback.print_exc()
+            # Update stream with error status if stream_id exists
+            if stream_id:
+                self.db_manager.update_meeting_llm_stream_response(
+                    stream_id=stream_id,
+                    response_payload=None,
+                    processing_status='error',
+                    error_message=str(e)
+                )
             return None
 
     def _build_extraction_prompt(self, text):

@@ -67,7 +67,7 @@ class MeetingExtractionService:
                 return {'status': 'no_text', 'message': 'No text extracted from files'}
 
             # Call LLM for extraction
-            extraction_result = self._call_llm_for_extraction(combined_text)
+            extraction_result = self._call_llm_for_extraction(combined_text, meeting_id, workspace_id, org_id)
 
             if not extraction_result:
                 return {'status': 'extraction_failed', 'message': 'LLM extraction failed'}
@@ -86,8 +86,9 @@ class MeetingExtractionService:
             traceback.print_exc()
             return {'status': 'error', 'message': str(e)}
 
-    def _call_llm_for_extraction(self, text):
-        """Call Azure OpenAI GPT-5 Mini for extraction"""
+    def _call_llm_for_extraction(self, text, meeting_id, workspace_id, org_id):
+        """Call Azure OpenAI GPT-5 Mini for extraction and store LLM stream data"""
+        stream_id = None
         try:
             start_time = time.time()
             
@@ -104,6 +105,21 @@ class MeetingExtractionService:
                     "content": prompt
                 }
             ]
+
+            # Prepare request payload for storage - store the full messages array as JSON
+            request_payload = json.dumps(messages)
+
+            # Store LLM stream request in database
+            stream_id = self.db_manager.insert_meeting_llm_stream(
+                meeting_id=meeting_id,
+                workspace_id=workspace_id,
+                org_id=org_id,
+                request_payload=request_payload,
+                model_name=self.deployment,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                created_by="system"
+            )
 
             # Call Azure OpenAI API
             response = openai.ChatCompletion.create(
@@ -125,6 +141,17 @@ class MeetingExtractionService:
 
             print(f"Azure OpenAI GPT-5 Mini call successful - Tokens: {tokens_used}, Latency: {latency_ms}ms")
 
+            # Store LLM stream response in database - store only the response content
+            response_payload = response_text
+
+            self.db_manager.update_meeting_llm_stream_response(
+                stream_id=stream_id,
+                response_payload=response_payload,
+                tokens_used=tokens_used,
+                latency_ms=latency_ms,
+                processing_status='completed'
+            )
+
             # Extract JSON from markdown code fence
             json_text = self._extract_json_from_markdown(response_text)
 
@@ -136,11 +163,27 @@ class MeetingExtractionService:
         except openai.error.InvalidRequestError as e:
             print(f"Invalid request to Azure OpenAI: {str(e)}")
             traceback.print_exc()
+            # Update stream with error status if stream_id exists
+            if stream_id:
+                self.db_manager.update_meeting_llm_stream_response(
+                    stream_id=stream_id,
+                    response_payload=None,
+                    processing_status='error',
+                    error_message=f"Invalid request: {str(e)}"
+                )
             return None
         
         except openai.error.AuthenticationError as e:
             print(f"Authentication error with Azure OpenAI: {str(e)}")
             traceback.print_exc()
+            # Update stream with error status if stream_id exists
+            if stream_id:
+                self.db_manager.update_meeting_llm_stream_response(
+                    stream_id=stream_id,
+                    response_payload=None,
+                    processing_status='error',
+                    error_message=f"Authentication error: {str(e)}"
+                )
             return None
         
         except json.JSONDecodeError as e:

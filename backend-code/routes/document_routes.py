@@ -175,17 +175,27 @@ def process_document_payload():
         llm_service = LLMService()
         start_time = datetime.utcnow()
         
+        # Get the messages array from LLM service (we need to modify LLM service to return this)
+        # For now, we'll construct it manually
+        prompt = llm_service._build_sow_extraction_prompt()
+        messages = [
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": extracted_text}
+        ]
+        
         response_data = llm_service.extract_sow_insights(extracted_text)
         
         end_time = datetime.utcnow()
         latency_ms = int((end_time - start_time).total_seconds() * 1000)
         
+        # Store messages array in request_payload and response content in response_payload
+        import json
         db.execute_query(
             '''INSERT INTO llm_streams 
                (document_id, request_payload, response_payload,
                 tokens_used, latency_ms, status, created_at, updated_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-            (document_id, extracted_text[:1000], 
+            (document_id, json.dumps(messages), 
              response_data, 0, latency_ms, 'success',
              datetime.utcnow(), datetime.utcnow())
         )
