@@ -28,14 +28,14 @@ const createProjectOverviewContent = (scopeSummary) => {
   if (scopeData.length === 0) {
     return (
       <div className="doc-details-content-section">
-        <h3 className="doc-details-content-title">Project Overview</h3>
-        <p className="doc-details-content-text">
+        {/* <h3 className="doc-details-content-title">Project Overview</h3> */}
+        {/* <p className="doc-details-content-text">
           This project involves implementing Salesforce CRM to manage all client relationships and 
           service workflows for Horizon Travel Group (HTG). The implementation will support customer 
           lifecycle management, automate manual processes, and provide data-driven insights to improve 
           client service quality and operational visibility.
         </p>
-        <p className="doc-details-content-text">No scope items defined.</p>
+        <p className="doc-details-content-text">No scope items defined.</p> */}
       </div>
     );
   }
@@ -57,13 +57,7 @@ const createProjectOverviewContent = (scopeSummary) => {
 
   return (
     <div className="doc-details-content-section">
-      <h3 className="doc-details-content-title">Project Overview</h3>
-      <p className="doc-details-content-text">
-        This project involves implementing Salesforce CRM to manage all client relationships and 
-        service workflows for Horizon Travel Group (HTG). The implementation will support customer 
-        lifecycle management, automate manual processes, and provide data-driven insights to improve 
-        client service quality and operational visibility.
-      </p>
+      {/* <h3 className="doc-details-content-title">Project Overview</h3> */}
       <GenericBRDTable
         data={scopeData}
         columns={scopeColumns}
@@ -75,41 +69,6 @@ const createProjectOverviewContent = (scopeSummary) => {
   );
 };
 
-const createPrimaryObjectiveContent = (scopeSummary) => {
-  const primaryObjective = scopeSummary?.primary_objective;
-  
-  if (!primaryObjective) {
-    return (
-      <div className="doc-details-content-section">
-        <p className="doc-details-content-text">Primary objective information not available.</p>
-      </div>
-    );
-  }
-
-  // Create a simple table for the primary objective
-  const objectiveData = [{
-    objective: primaryObjective
-  }];
-
-  const objectiveColumns = [
-    {
-      key: 'objective',
-      header: 'Primary Objective',
-      accessor: (item) => item.objective,
-      className: 'primary-column'
-    }
-  ];
-
-  return (
-    <GenericBRDTable
-      data={objectiveData}
-      columns={objectiveColumns}
-      title="Primary Objective"
-      icon="target"
-      showCreatedAt={false}
-    />
-  );
-};
 
 const createAssumptionsContent = (assumptions) => {
   if (!assumptions || assumptions.length === 0) {
@@ -371,12 +330,6 @@ const createOverviewSection = (sowData) => ({
       title: 'Project Overview',
       icon: 'description',
       content: createProjectOverviewContent(sowData.scope_summary)
-    },
-    {
-      id: 'primary-objective',
-      title: 'Primary Objective',
-      icon: 'target',
-      content: createPrimaryObjectiveContent(sowData.scope_summary)
     },
     {
       id: 'business-units',
