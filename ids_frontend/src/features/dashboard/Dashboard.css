@@ -72,11 +72,42 @@
   align-items: center;
   gap: 16px;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .summary-card:hover {
   background-color: #262626;
   border-color: #C82FFF;
+}
+
+.summary-card-clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.summary-card-clickable:hover {
+  background-color: #262626;
+  border-color: #C82FFF;
+  box-shadow: 0 4px 12px rgba(200, 47, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.summary-card-arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.summary-card-clickable:hover .summary-card-arrow {
+  opacity: 1;
+}
+
+.summary-card-arrow .material-symbols-outlined {
+  font-size: 20px;
+  color: #C82FFF;
 }
 
 .summary-card-icon {

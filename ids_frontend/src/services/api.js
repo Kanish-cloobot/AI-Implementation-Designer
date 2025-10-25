@@ -73,6 +73,24 @@ export const dashboardAPI = {
   getActivity: (payload) => {
     return api.post('/dashboard/get-activity', payload);
   },
+  getDecisions: (payload) => {
+    return api.post('/raid/get-section', { ...payload, section_name: 'decisions' });
+  },
+  getRequirements: (payload) => {
+    return api.post('/brd/get-section', { ...payload, section_name: 'requirements' });
+  },
+  getRisksIssues: (payload) => {
+    return api.post('/raid/get-section', { ...payload, section_name: 'risks_issues' });
+  },
+  getActionItems: (payload) => {
+    return api.post('/raid/get-section', { ...payload, section_name: 'action_items' });
+  },
+  getDependencies: (payload) => {
+    return api.post('/raid/get-section', { ...payload, section_name: 'dependencies' });
+  },
+  getMeetings: (payload) => {
+    return api.post('/meetings/get-all', payload);
+  },
 };
 
 export const brdAPI = {

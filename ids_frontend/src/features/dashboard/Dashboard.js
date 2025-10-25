@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { dashboardAPI, raidAPI } from '../../services/api';
 import Spinner from '../../components/common/Spinner';
 import Button from '../../components/common/Button';
+import RightPanel from '../../components/common/RightPanel';
 import DocumentationNavigation from '../viewer/components/DocumentationNavigation';
 import DocumentationDetails from '../viewer/components/DocumentationDetails';
 import { generateRAIDSections } from '../raid/utils/raidSections';
@@ -17,6 +18,13 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [activeRaidSection, setActiveRaidSection] = useState('risks-issues');
+  
+  // Right panel state
+  const [rightPanelOpen, setRightPanelOpen] = useState(false);
+  const [rightPanelData, setRightPanelData] = useState(null);
+  const [rightPanelLoading, setRightPanelLoading] = useState(false);
+  const [rightPanelError, setRightPanelError] = useState(null);
+  const [rightPanelConfig, setRightPanelConfig] = useState(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -58,6 +66,116 @@ const Dashboard = () => {
     }
   };
 
+  const handleSummaryCardClick = async (cardType) => {
+    const payload = { workspace_id: workspaceId };
+    
+    // Define configurations for different card types
+    const panelConfigs = {
+      meetings: {
+        title: 'Meetings',
+        icon: 'event',
+        apiCall: () => dashboardAPI.getMeetings(payload),
+        columns: [
+          { key: 'meeting_name', header: 'Meeting Name', className: 'primary-column' },
+          { key: 'meeting_datetime', header: 'Date & Time', className: 'date-column', accessor: (item) => item.meeting_datetime ? new Date(item.meeting_datetime).toLocaleString() : 'Not set' },
+          { key: 'status', header: 'Status', className: 'status-column' }
+        ]
+      },
+      requirements: {
+        title: 'Requirements',
+        icon: 'assignment',
+        apiCall: () => dashboardAPI.getRequirements(payload),
+        columns: [
+          { key: 'description_md', header: 'Requirement', className: 'primary-column' },
+          { key: 'requirement_type', header: 'Type', className: 'status-column' },
+          { key: 'acceptance_criteria', header: 'Acceptance Criteria', className: 'description-column', accessor: (item) => item.acceptance_criteria && Array.isArray(item.acceptance_criteria) ? item.acceptance_criteria.join(', ') : 'N/A' }
+        ]
+      },
+      'risks-issues': {
+        title: 'Risks & Issues',
+        icon: 'warning',
+        apiCall: () => dashboardAPI.getRisksIssues(payload),
+        columns: [
+          { key: 'type', header: 'Type', className: 'primary-column' },
+          { key: 'description_md', header: 'Description', className: 'description-column' },
+          { key: 'impact_md', header: 'Impact', className: 'impact-column' },
+          { key: 'owner_md', header: 'Owner', className: 'owner-column' }
+        ]
+      },
+      'action-items': {
+        title: 'Action Items',
+        icon: 'task_alt',
+        apiCall: () => dashboardAPI.getActionItems(payload),
+        columns: [
+          { key: 'task_md', header: 'Task', className: 'primary-column' },
+          { key: 'item_status', header: 'Status', className: 'status-column' },
+          { key: 'owner_md', header: 'Owner', className: 'owner-column' },
+          { key: 'due_date', header: 'Due Date', className: 'date-column' }
+        ]
+      },
+      decisions: {
+        title: 'Decisions',
+        icon: 'gavel',
+        apiCall: () => dashboardAPI.getDecisions(payload),
+        columns: [
+          { key: 'decision_md', header: 'Decision', className: 'primary-column' },
+          { key: 'rationale_md', header: 'Rationale', className: 'rationale-column' },
+          { key: 'approver_md', header: 'Approver', className: 'approver-column' },
+          { key: 'decided_on', header: 'Decided On', className: 'date-column' }
+        ]
+      },
+      dependencies: {
+        title: 'Dependencies',
+        icon: 'link',
+        apiCall: () => dashboardAPI.getDependencies(payload),
+        columns: [
+          { key: 'type', header: 'Type', className: 'primary-column' },
+          { key: 'description_md', header: 'Description', className: 'description-column' },
+          { key: 'depends_on_md', header: 'Depends On', className: 'depends-on-column' },
+          { key: 'owner_md', header: 'Owner', className: 'owner-column' }
+        ]
+      }
+    };
+
+    const config = panelConfigs[cardType];
+    if (!config) return;
+
+    try {
+      setRightPanelLoading(true);
+      setRightPanelError(null);
+      setRightPanelConfig(config);
+      setRightPanelOpen(true);
+      
+      const response = await config.apiCall();
+      console.log('API Response:', response.data);
+      
+      // Handle both direct array and nested data structure
+      const responseData = response.data;
+      if (responseData && responseData.data && Array.isArray(responseData.data)) {
+        console.log('Using nested data:', responseData.data);
+        setRightPanelData(responseData.data);
+      } else if (Array.isArray(responseData)) {
+        console.log('Using direct array:', responseData);
+        setRightPanelData(responseData);
+      } else {
+        console.log('No valid data found, using empty array');
+        setRightPanelData([]);
+      }
+    } catch (err) {
+      console.error(`Error fetching ${cardType} data:`, err);
+      setRightPanelError(`Failed to load ${config.title.toLowerCase()}`);
+    } finally {
+      setRightPanelLoading(false);
+    }
+  };
+
+  const closeRightPanel = () => {
+    setRightPanelOpen(false);
+    setRightPanelData(null);
+    setRightPanelError(null);
+    setRightPanelConfig(null);
+  };
+
   const formatDateTime = (dateTimeStr) => {
     if (!dateTimeStr) return 'Not set';
     const date = new Date(dateTimeStr);
@@ -70,8 +188,11 @@ const Dashboard = () => {
     });
   };
 
-  const renderSummaryCard = (title, count, icon, color = 'default') => (
-    <div className={`summary-card ${color}`}>
+  const renderSummaryCard = (title, count, icon, color = 'default', cardType = null) => (
+    <div 
+      className={`summary-card ${color} ${cardType ? 'summary-card-clickable' : ''}`}
+      onClick={cardType ? () => handleSummaryCardClick(cardType) : undefined}
+    >
       <div className="summary-card-icon">
         <span className="material-symbols-outlined">{icon}</span>
       </div>
@@ -79,6 +200,11 @@ const Dashboard = () => {
         <h3 className="summary-card-title">{title}</h3>
         <p className="summary-card-count">{count}</p>
       </div>
+      {cardType && (
+        <div className="summary-card-arrow">
+          <span className="material-symbols-outlined">chevron_right</span>
+        </div>
+      )}
     </div>
   );
 
@@ -161,12 +287,12 @@ const Dashboard = () => {
         >
           Overview
         </button>
-        <button 
+        {/* <button 
           className={`dashboard-tab ${activeTab === 'raidd' ? 'dashboard-tab-active' : ''}`}
           onClick={() => setActiveTab('raidd')}
         >
           RAIDD
-        </button>
+        </button> */}
       </div>
 
       {/* Tab Content */}
@@ -180,37 +306,43 @@ const Dashboard = () => {
                 'Meetings',
                 safeSummary.meeting_count || 0,
                 'event',
-                'blue'
+                'blue',
+                'meetings'
               )}
               {renderSummaryCard(
                 'Requirements',
                 safeSummary.requirements_count || 0,
                 'assignment',
-                'purple'
+                'purple',
+                'requirements'
               )}
               {renderSummaryCard(
                 'Risks & Issues',
                 safeSummary.risks_issues_count || 0,
                 'warning',
-                'red'
+                'red',
+                'risks-issues'
               )}
               {renderSummaryCard(
                 'Action Items',
                 safeSummary.action_items_count || 0,
                 'task_alt',
-                'orange'
+                'orange',
+                'action-items'
               )}
               {renderSummaryCard(
                 'Decisions',
                 safeSummary.decisions_count || 0,
                 'gavel',
-                'green'
+                'green',
+                'decisions'
               )}
               {renderSummaryCard(
                 'Dependencies',
                 safeSummary.dependencies_count || 0,
                 'link',
-                'blue'
+                'blue',
+                'dependencies'
               )}
             </div>
           </div>
@@ -285,6 +417,19 @@ const Dashboard = () => {
           )}
         </div>
       )}
+
+      {/* Right Panel */}
+      <RightPanel
+        isOpen={rightPanelOpen}
+        onClose={closeRightPanel}
+        title={rightPanelConfig?.title}
+        data={rightPanelData}
+        loading={rightPanelLoading}
+        error={rightPanelError}
+        columns={rightPanelConfig?.columns}
+        icon={rightPanelConfig?.icon}
+        emptyMessage={`No ${rightPanelConfig?.title?.toLowerCase() || 'data'} available`}
+      />
     </div>
   );
 };

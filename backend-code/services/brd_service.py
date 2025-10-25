@@ -80,3 +80,102 @@ class BRDService:
         except Exception as e:
             print(f"Error getting BRD summary: {str(e)}")
             return None
+
+    def _get_business_units_teams(self, workspace_id, org_id='default_org'):
+        """Get business units and teams section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'bu_teams')
+        except Exception as e:
+            print(f"Error getting business units teams: {str(e)}")
+            return []
+
+    def _get_modules_processes(self, workspace_id, org_id='default_org'):
+        """Get modules and processes section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'modules_processes')
+        except Exception as e:
+            print(f"Error getting modules processes: {str(e)}")
+            return []
+
+    def _get_license_list(self, workspace_id, org_id='default_org'):
+        """Get license list section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'licenses')
+        except Exception as e:
+            print(f"Error getting license list: {str(e)}")
+            return []
+
+    def _get_personas(self, workspace_id, org_id='default_org'):
+        """Get personas section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'personas')
+        except Exception as e:
+            print(f"Error getting personas: {str(e)}")
+            return []
+
+    def _get_requirements(self, workspace_id, org_id='default_org'):
+        """Get requirements section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'requirements')
+        except Exception as e:
+            print(f"Error getting requirements: {str(e)}")
+            return []
+
+    def _get_current_state(self, workspace_id, org_id='default_org'):
+        """Get current state section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'current_state')
+        except Exception as e:
+            print(f"Error getting current state: {str(e)}")
+            return []
+
+    def _get_target_state(self, workspace_id, org_id='default_org'):
+        """Get target state section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'target_state')
+        except Exception as e:
+            print(f"Error getting target state: {str(e)}")
+            return []
+
+    def _get_integrations(self, workspace_id, org_id='default_org'):
+        """Get applications to integrate section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'integrations')
+        except Exception as e:
+            print(f"Error getting integrations: {str(e)}")
+            return []
+
+    def _get_data_migration(self, workspace_id, org_id='default_org'):
+        """Get data migration section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'data_migration')
+        except Exception as e:
+            print(f"Error getting data migration: {str(e)}")
+            return []
+
+    def _get_data_model(self, workspace_id, org_id='default_org'):
+        """Get data model section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'data_model')
+        except Exception as e:
+            print(f"Error getting data model: {str(e)}")
+            return []
+
+    def _get_metadata_updates(self, workspace_id, org_id='default_org'):
+        """Get metadata updates section"""
+        try:
+            extractions = self._get_workspace_unified_extractions(workspace_id, org_id)
+            return self._consolidate_data(extractions, 'metadata_updates')
+        except Exception as e:
+            print(f"Error getting metadata updates: {str(e)}")
+            return []
