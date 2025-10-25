@@ -16,6 +16,7 @@ const Sidebar = () => {
   
   const menuItems = isInWorkspace ? [
     { icon: 'dashboard', label: 'Dashboard', path: `/workspace/${workspaceId}/dashboard` },
+    { icon: 'assignment', label: 'RAIDD', path: `/workspace/${workspaceId}/raid` },
     { icon: 'description', label: 'SOW', path: `/workspace/${workspaceId}/sow` },
     { icon: 'event', label: 'Meetings', path: `/workspace/${workspaceId}/meetings` },
     { icon: 'assignment', label: 'BRD', path: `/workspace/${workspaceId}/brd` },
