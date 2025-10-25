@@ -372,3 +372,53 @@ def get_meeting_files_by_workspace_payload():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
+
+@meeting_routes.route('/workspaces/<int:workspace_id>/stakeholders', methods=['GET'])
+def get_workspace_stakeholders(workspace_id):
+    """Get all stakeholders extracted from documents in a workspace"""
+    try:
+        org_id = request.args.get('org_id', 'default_org')
+        
+        # Query to get all stakeholders from llm_streams table for this workspace
+        query = '''
+            SELECT DISTINCT ls.extracted_stakeholders
+            FROM llm_streams ls
+            JOIN documents d ON ls.document_id = d.document_id
+            WHERE d.workspace_id = ? 
+            AND ls.extracted_stakeholders IS NOT NULL 
+            AND ls.extracted_stakeholders != 'null'
+            AND ls.extracted_stakeholders != '[]'
+            AND ls.status = 'success'
+        '''
+        
+        results = db_manager.fetch_all(query, (workspace_id,))
+        
+        # Combine all stakeholders from different documents
+        all_stakeholders = []
+        for result in results:
+            try:
+                import json
+                stakeholders = json.loads(result['extracted_stakeholders'])
+                if isinstance(stakeholders, list):
+                    all_stakeholders.extend(stakeholders)
+            except (json.JSONDecodeError, TypeError):
+                continue
+        
+        # Remove duplicates based on name and email
+        unique_stakeholders = []
+        seen = set()
+        for stakeholder in all_stakeholders:
+            key = f"{stakeholder.get('name', '')}_{stakeholder.get('email', '')}"
+            if key not in seen and stakeholder.get('name'):
+                seen.add(key)
+                unique_stakeholders.append(stakeholder)
+        
+        return jsonify({
+            'stakeholders': unique_stakeholders,
+            'count': len(unique_stakeholders)
+        })
+        
+    except Exception as e:
+        print(f"Error fetching stakeholders: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500

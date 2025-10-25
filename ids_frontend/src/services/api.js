@@ -61,6 +61,9 @@ export const meetingAPI = {
   delete: (payload) => {
     return api.delete('/meetings/delete', { data: payload });
   },
+  getStakeholders: (workspaceId, orgId = 'default_org') => {
+    return api.get(`/workspaces/${workspaceId}/stakeholders?org_id=${orgId}`);
+  },
 };
 
 export const dashboardAPI = {

@@ -18,6 +18,9 @@ const MeetingForm = ({ workspaceId, orgId = 'default_org', meeting, onClose, onS
   const [loading, setLoading] = useState(false);
   const [processingFiles, setProcessingFiles] = useState(false);
   const [errors, setErrors] = useState({});
+  const [availableStakeholders, setAvailableStakeholders] = useState([]);
+  const [loadingStakeholders, setLoadingStakeholders] = useState(false);
+  const [selectedStakeholders, setSelectedStakeholders] = useState([]);
 
   useEffect(() => {
     if (meeting) {
@@ -30,6 +33,26 @@ const MeetingForm = ({ workspaceId, orgId = 'default_org', meeting, onClose, onS
       });
     }
   }, [meeting]);
+
+  // Fetch available stakeholders from workspace
+  useEffect(() => {
+    const fetchStakeholders = async () => {
+      if (!workspaceId) return;
+      
+      try {
+        setLoadingStakeholders(true);
+        const response = await meetingAPI.getStakeholders(workspaceId, orgId);
+        setAvailableStakeholders(response.data.stakeholders || []);
+      } catch (error) {
+        console.error('Error fetching stakeholders:', error);
+        setAvailableStakeholders([]);
+      } finally {
+        setLoadingStakeholders(false);
+      }
+    };
+
+    fetchStakeholders();
+  }, [workspaceId, orgId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,6 +82,34 @@ const MeetingForm = ({ workspaceId, orgId = 'default_org', meeting, onClose, onS
   const handleRemoveFile = (index) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
+
+  const handleStakeholderToggle = (stakeholder) => {
+    setSelectedStakeholders((prev) => {
+      const isSelected = prev.some(s => s.name === stakeholder.name && s.email === stakeholder.email);
+      if (isSelected) {
+        return prev.filter(s => !(s.name === stakeholder.name && s.email === stakeholder.email));
+      } else {
+        return [...prev, stakeholder];
+      }
+    });
+  };
+
+  const handleStakeholderRemove = (stakeholder) => {
+    setSelectedStakeholders((prev) => 
+      prev.filter(s => !(s.name === stakeholder.name && s.email === stakeholder.email))
+    );
+  };
+
+  // Update formData.stakeholders when selectedStakeholders changes
+  useEffect(() => {
+    const stakeholdersText = selectedStakeholders
+      .map(s => s.name + (s.designation ? ` (${s.designation})` : ''))
+      .join(', ');
+    setFormData((prev) => ({
+      ...prev,
+      stakeholders: stakeholdersText
+    }));
+  }, [selectedStakeholders]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -194,14 +245,93 @@ const MeetingForm = ({ workspaceId, orgId = 'default_org', meeting, onClose, onS
             <label htmlFor="stakeholders" className="meeting-form-label">
               Stakeholders
             </label>
-            <Input
-              id="stakeholders"
-              name="stakeholders"
-              value={formData.stakeholders}
-              onChange={handleInputChange}
-              placeholder="e.g., Sarah Chen, Mike Johnson, Alex Kim"
-              disabled={loading}
-            />
+            
+            {/* Available Stakeholders Dropdown */}
+            {availableStakeholders.length > 0 && (
+              <div className="stakeholders-dropdown">
+                <div className="stakeholders-dropdown-header">
+                  <span className="material-symbols-outlined">person_add</span>
+                  <span>Select from available stakeholders:</span>
+                </div>
+                <div className="stakeholders-list">
+                  {availableStakeholders.map((stakeholder, index) => {
+                    const isSelected = selectedStakeholders.some(s => 
+                      s.name === stakeholder.name && s.email === stakeholder.email
+                    );
+                    return (
+                      <div 
+                        key={index}
+                        className={`stakeholder-item ${isSelected ? 'selected' : ''}`}
+                        onClick={() => handleStakeholderToggle(stakeholder)}
+                      >
+                        <div className="stakeholder-info">
+                          <div className="stakeholder-name">{stakeholder.name}</div>
+                          {stakeholder.designation && (
+                            <div className="stakeholder-designation">{stakeholder.designation}</div>
+                          )}
+                          {stakeholder.email && (
+                            <div className="stakeholder-email">{stakeholder.email}</div>
+                          )}
+                          {stakeholder.business_unit && (
+                            <div className="stakeholder-business-unit">{stakeholder.business_unit}</div>
+                          )}
+                        </div>
+                        <div className="stakeholder-checkbox">
+                          <span className="material-symbols-outlined">
+                            {isSelected ? 'check_box' : 'check_box_outline_blank'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Selected Stakeholders */}
+            {selectedStakeholders.length > 0 && (
+              <div className="selected-stakeholders">
+                <div className="selected-stakeholders-header">
+                  <span className="material-symbols-outlined">group</span>
+                  <span>Selected Stakeholders:</span>
+                </div>
+                <div className="selected-stakeholders-list">
+                  {selectedStakeholders.map((stakeholder, index) => (
+                    <div key={index} className="selected-stakeholder-item">
+                      <div className="selected-stakeholder-info">
+                        <span className="selected-stakeholder-name">{stakeholder.name}</span>
+                        {stakeholder.designation && (
+                          <span className="selected-stakeholder-designation">({stakeholder.designation})</span>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        className="remove-stakeholder-btn"
+                        onClick={() => handleStakeholderRemove(stakeholder)}
+                        disabled={loading}
+                      >
+                        <span className="material-symbols-outlined">close</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Manual Input (fallback) */}
+            <div className="stakeholders-manual-input">
+              <Input
+                id="stakeholders"
+                name="stakeholders"
+                value={formData.stakeholders}
+                onChange={handleInputChange}
+                placeholder="Or manually enter stakeholders: e.g., Sarah Chen, Mike Johnson, Alex Kim"
+                disabled={loading}
+              />
+              <div className="stakeholders-hint">
+                You can select from available stakeholders above or manually enter names
+              </div>
+            </div>
           </div>
 
           <div className="meeting-form-group">

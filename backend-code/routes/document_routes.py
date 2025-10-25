@@ -188,15 +188,42 @@ def process_document_payload():
         end_time = datetime.utcnow()
         latency_ms = int((end_time - start_time).total_seconds() * 1000)
         
+        # Extract stakeholders from the response data
+        extracted_stakeholders = None
+        try:
+            import json
+            response_json = json.loads(response_data)
+            stakeholders_list = []
+            
+            # Extract stakeholders from business_units
+            if 'business_units' in response_json:
+                for bu in response_json['business_units']:
+                    if 'stakeholders' in bu:
+                        for stakeholder in bu['stakeholders']:
+                            stakeholder_info = {
+                                'name': stakeholder.get('name', ''),
+                                'designation': stakeholder.get('designation', ''),
+                                'email': stakeholder.get('email', ''),
+                                'business_unit': bu.get('business_unit_name', '')
+                            }
+                            stakeholders_list.append(stakeholder_info)
+            
+            # Convert to JSON string for storage
+            if stakeholders_list:
+                extracted_stakeholders = json.dumps(stakeholders_list, indent=2)
+                
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            print(f"Error extracting stakeholders: {str(e)}")
+            extracted_stakeholders = None
+        
         # Store messages array in request_payload and response content in response_payload
-        import json
         db.execute_query(
             '''INSERT INTO llm_streams 
-               (document_id, request_payload, response_payload,
+               (document_id, request_payload, response_payload, extracted_stakeholders,
                 tokens_used, latency_ms, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
             (document_id, json.dumps(messages), 
-             response_data, 0, latency_ms, 'success',
+             response_data, extracted_stakeholders, 0, latency_ms, 'success',
              datetime.utcnow(), datetime.utcnow())
         )
         
