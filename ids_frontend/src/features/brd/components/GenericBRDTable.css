@@ -1,0 +1,161 @@
+/* Generic BRD Table Styles */
+.brd-table-container {
+  background-color: #1A1A1A;
+  border: 0.5px solid #A8A8A8;
+  border-radius: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.brd-generic-table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  background-color: #1A1A1A;
+}
+
+.brd-generic-table thead {
+  background-color: #262626;
+}
+
+.brd-table-header {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 14px;
+  color: #FFFFFF;
+  border-bottom: 0.5px solid #404040;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brd-table-header-date {
+  width: 18%;
+  min-width: 140px;
+  text-align: center;
+}
+
+.brd-table-row {
+  border-bottom: 0.5px solid #404040;
+  transition: background-color 0.3s ease;
+}
+
+.brd-table-row:hover {
+  background-color: #333333;
+}
+
+.brd-table-row:last-child {
+  border-bottom: none;
+}
+
+.brd-table-cell {
+  padding: 16px 20px;
+  vertical-align: top;
+  color: #FFFFFF;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.brd-table-cell-date {
+  text-align: center;
+  color: #A8A8A8;
+  font-size: 12px;
+}
+
+.brd-table-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #A8A8A8;
+}
+
+.brd-table-list li {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.brd-empty-section {
+  text-align: center;
+  color: #A8A8A8;
+  font-style: italic;
+  margin: 32px 0;
+  padding: 32px;
+  background-color: #1A1A1A;
+  border: 0.5px solid #404040;
+  border-radius: 8px;
+}
+
+.brd-empty-section p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Special styling for different column types */
+.brd-table-cell.primary {
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.brd-table-cell.secondary {
+  color: #A8A8A8;
+}
+
+.brd-table-cell.highlight {
+  background-color: #262626;
+  color: #C82FFF;
+  font-weight: 500;
+}
+
+.brd-table-cell.warning {
+  color: #F97316;
+  font-weight: 500;
+}
+
+.brd-table-cell.error {
+  color: #EF4444;
+  font-weight: 500;
+}
+
+.brd-table-cell.success {
+  color: #10B981;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .brd-generic-table {
+    min-width: 500px;
+  }
+  
+  .brd-table-header,
+  .brd-table-cell {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  
+  .brd-table-header-date {
+    min-width: 120px;
+  }
+}
+
+/* Custom scrollbar for table container */
+.brd-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.brd-table-container::-webkit-scrollbar-track {
+  background: #1A1A1A;
+  border-radius: 4px;
+}
+
+.brd-table-container::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 4px;
+}
+
+.brd-table-container::-webkit-scrollbar-thumb:hover {
+  background: #4D4D4D;
+}

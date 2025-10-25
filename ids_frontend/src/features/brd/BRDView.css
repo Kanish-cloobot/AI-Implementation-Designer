@@ -618,6 +618,76 @@
   font-size: 14px;
 }
 
+/* Generic Table Enhancements */
+.brd-generic-table .primary-column {
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.brd-generic-table .description-column {
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+.brd-generic-table .notes-column {
+  max-width: 250px;
+  word-wrap: break-word;
+}
+
+.brd-generic-table .teams-column,
+.brd-generic-table .processes-column,
+.brd-generic-table .responsibilities-column,
+.brd-generic-table .modules-column {
+  max-width: 200px;
+}
+
+.brd-generic-table .type-column {
+  text-align: center;
+  font-weight: 500;
+}
+
+.brd-generic-table .scope-column {
+  text-align: center;
+}
+
+.brd-generic-table .count-column {
+  text-align: center;
+  font-weight: 600;
+}
+
+.brd-generic-table .warning {
+  color: #F97316;
+  font-weight: 600;
+}
+
+.brd-generic-table .error {
+  color: #EF4444;
+  font-weight: 600;
+}
+
+.brd-generic-table .success {
+  color: #10B981;
+  font-weight: 600;
+}
+
+/* Pain Points Table Special Styling */
+.pain-points-table .brd-table-row {
+  border-left: 4px solid #EF4444;
+}
+
+.pain-points-table .brd-table-row:hover {
+  border-left-color: #F97316;
+}
+
+/* Requirements Table Special Styling */
+.requirements-table .brd-table-row {
+  border-left: 4px solid #C82FFF;
+}
+
+.requirements-table .brd-table-row:hover {
+  border-left-color: #00AAFF;
+}
+
 /* Custom Scrollbar for BRD Viewer */
 .brd-viewer-navigation::-webkit-scrollbar {
   width: 8px;

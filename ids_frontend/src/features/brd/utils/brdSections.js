@@ -1,3 +1,28 @@
+import GenericBRDTable from '../components/GenericBRDTable';
+
+// Helper function to format values
+const formatValue = (value, column) => {
+  if (value === null || value === undefined || value === '') {
+    return '-';
+  }
+  
+  if (Array.isArray(value)) {
+    return (
+      <ul className="brd-table-list">
+        {value.map((item, idx) => (
+          <li key={idx}>{item}</li>
+        ))}
+      </ul>
+    );
+  }
+  
+  if (typeof value === 'object') {
+    return JSON.stringify(value, null, 2);
+  }
+  
+  return value;
+};
+
 export const generateBRDSections = (brdData, requirementStatuses = {}, handleRequirementAction = () => {}) => {
   if (!brdData) return [];
 
@@ -5,602 +30,550 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
 
   // Business Units & Teams Section
   if (brdData.business_units_teams && brdData.business_units_teams.length > 0) {
+    const businessUnitsColumns = [
+      {
+        key: 'business_unit',
+        header: 'Business Unit',
+        accessor: (item) => item.business_unit,
+        className: 'primary-column'
+      },
+      {
+        key: 'teams',
+        header: 'Teams',
+        accessor: (item) => item.teams,
+        className: 'teams-column'
+      },
+      {
+        key: 'notes_md',
+        header: 'Notes',
+        accessor: (item) => item.notes_md,
+        className: 'notes-column'
+      }
+    ];
+
     sections.push({
       id: 'business-units-teams',
       title: 'Business Units & Teams',
       icon: 'corporate_fare',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">corporate_fare</span>
-            Business Units & Teams
-          </h2>
-          <div className="brd-items">
-            {brdData.business_units_teams.map((item, index) => (
-              <div key={index} className="brd-item">
-                <div className="brd-field">
-                  <strong>Business Unit:</strong>
-                  <span>{item.business_unit}</span>
-                </div>
-                {item.teams && (
-                  <div className="brd-field">
-                    <strong>Teams:</strong>
-                    {Array.isArray(item.teams) ? (
-                      <ul>
-                        {item.teams.map((team, idx) => (
-                          <li key={idx}>{team}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <span>{item.teams}</span>
-                    )}
-                  </div>
-                )}
-                {item.notes_md && (
-                  <div className="brd-field">
-                    <strong>Notes:</strong>
-                    <span>{item.notes_md}</span>
-                  </div>
-                )}
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.business_units_teams}
+          columns={businessUnitsColumns}
+          title="Business Units & Teams"
+          icon="corporate_fare"
+        />
       )
     });
   }
 
   // Modules & Processes Section
   if (brdData.modules_processes && brdData.modules_processes.length > 0) {
+    const modulesColumns = [
+      {
+        key: 'module_name',
+        header: 'Module',
+        accessor: (item) => item.module_name,
+        className: 'primary-column'
+      },
+      {
+        key: 'processes',
+        header: 'Processes',
+        accessor: (item) => item.processes,
+        className: 'processes-column'
+      },
+      {
+        key: 'scope_tag',
+        header: 'Scope',
+        accessor: (item) => item.scope_tag,
+        className: 'scope-column'
+      },
+      {
+        key: 'notes_md',
+        header: 'Notes',
+        accessor: (item) => item.notes_md,
+        className: 'notes-column'
+      }
+    ];
+
     sections.push({
       id: 'modules-processes',
       title: 'Modules & Processes',
       icon: 'widgets',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">widgets</span>
-            Modules & Processes
-          </h2>
-          <div className="brd-items">
-            {brdData.modules_processes.map((item, index) => (
-              <div key={index} className="brd-item">
-                <div className="brd-field">
-                  <strong>Module:</strong>
-                  <span>{item.module_name}</span>
-                </div>
-                {item.processes && (
-                  <div className="brd-field">
-                    <strong>Processes:</strong>
-                    {Array.isArray(item.processes) ? (
-                      <ul>
-                        {item.processes.map((process, idx) => (
-                          <li key={idx}>{process}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <span>{item.processes}</span>
-                    )}
-                  </div>
-                )}
-                {item.scope_tag && (
-                  <div className="brd-field">
-                    <strong>Scope:</strong>
-                    <span>{item.scope_tag}</span>
-                  </div>
-                )}
-                {item.notes_md && (
-                  <div className="brd-field">
-                    <strong>Notes:</strong>
-                    <span>{item.notes_md}</span>
-                  </div>
-                )}
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.modules_processes}
+          columns={modulesColumns}
+          title="Modules & Processes"
+          icon="widgets"
+        />
       )
     });
   }
 
   // License List Section
   if (brdData.license_list && brdData.license_list.length > 0) {
+    const licenseColumns = [
+      {
+        key: 'license_type',
+        header: 'License Type',
+        accessor: (item) => item.license_type,
+        className: 'primary-column'
+      },
+      {
+        key: 'count',
+        header: 'Count',
+        accessor: (item) => item.count,
+        className: 'count-column'
+      },
+      {
+        key: 'allocation_md',
+        header: 'Allocation',
+        accessor: (item) => item.allocation_md,
+        className: 'allocation-column'
+      },
+      {
+        key: 'notes_md',
+        header: 'Notes',
+        accessor: (item) => item.notes_md,
+        className: 'notes-column'
+      }
+    ];
+
     sections.push({
       id: 'license-list',
       title: 'License List',
       icon: 'license',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">license</span>
-            License List
-          </h2>
-          <div className="brd-items">
-            {brdData.license_list.map((item, index) => (
-              <div key={index} className="brd-item">
-                <div className="brd-field">
-                  <strong>License Type:</strong>
-                  <span>{item.license_type}</span>
-                </div>
-                {item.count && (
-                  <div className="brd-field">
-                    <strong>Count:</strong>
-                    <span>{item.count}</span>
-                  </div>
-                )}
-                {item.allocation_md && (
-                  <div className="brd-field">
-                    <strong>Allocation:</strong>
-                    <span>{item.allocation_md}</span>
-                  </div>
-                )}
-                {item.notes_md && (
-                  <div className="brd-field">
-                    <strong>Notes:</strong>
-                    <span>{item.notes_md}</span>
-                  </div>
-                )}
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.license_list}
+          columns={licenseColumns}
+          title="License List"
+          icon="license"
+        />
       )
     });
   }
 
   // Personas Section
   if (brdData.personas && brdData.personas.length > 0) {
+    const personasColumns = [
+      {
+        key: 'persona_name',
+        header: 'Persona',
+        accessor: (item) => item.persona_name,
+        className: 'primary-column'
+      },
+      {
+        key: 'responsibilities',
+        header: 'Responsibilities',
+        accessor: (item) => item.responsibilities,
+        className: 'responsibilities-column'
+      },
+      {
+        key: 'primary_modules',
+        header: 'Primary Modules',
+        accessor: (item) => item.primary_modules,
+        className: 'modules-column'
+      }
+    ];
+
     sections.push({
       id: 'personas',
       title: 'Personas',
       icon: 'account_circle',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">account_circle</span>
-            Personas
-          </h2>
-          <div className="brd-items">
-            {brdData.personas.map((item, index) => (
-              <div key={index} className="brd-item persona-item">
-                <h4 className="persona-name">{item.persona_name}</h4>
-                {item.responsibilities && (
-                  <div className="persona-responsibilities">
-                    <strong>Responsibilities:</strong>
-                    <ul>
-                      {Array.isArray(item.responsibilities) 
-                        ? item.responsibilities.map((resp, idx) => (
-                            <li key={idx}>{resp}</li>
-                          ))
-                        : <li>{item.responsibilities}</li>
-                      }
-                    </ul>
-                  </div>
-                )}
-                {item.primary_modules && (
-                  <div className="persona-modules">
-                    <strong>Primary Modules:</strong>
-                    <ul>
-                      {Array.isArray(item.primary_modules)
-                        ? item.primary_modules.map((module, idx) => (
-                            <li key={idx}>{module}</li>
-                          ))
-                        : <li>{item.primary_modules}</li>
-                      }
-                    </ul>
-                  </div>
-                )}
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.personas}
+          columns={personasColumns}
+          title="Personas"
+          icon="account_circle"
+        />
       )
     });
   }
 
   // Requirements Section
   if (brdData.requirements && brdData.requirements.length > 0) {
+    const requirementsColumns = [
+      {
+        key: 'requirement_type',
+        header: 'Type',
+        accessor: (item) => item.requirement_type,
+        className: 'type-column'
+      },
+      {
+        key: 'description_md',
+        header: 'Description',
+        accessor: (item) => item.description_md,
+        className: 'description-column'
+      },
+      {
+        key: 'status',
+        header: 'Status',
+        accessor: (item, index) => {
+          const currentStatus = requirementStatuses[index] || 'pending';
+          return currentStatus;
+        },
+        className: 'status-column'
+      },
+      {
+        key: 'actions',
+        header: 'Actions',
+        accessor: (item, index) => {
+          const currentStatus = requirementStatuses[index] || 'pending';
+          return { status: currentStatus, index };
+        },
+        className: 'actions-column'
+      }
+    ];
+
+    const customRowRenderer = (item, column, index) => {
+      if (column.key === 'requirement_type') {
+        return <span className="requirement-type-badge">{item.requirement_type}</span>;
+      }
+      
+      if (column.key === 'status') {
+        const currentStatus = requirementStatuses[index] || 'pending';
+        return (
+          <span className={`requirement-status ${currentStatus}`}>
+            {currentStatus === 'approved' ? 'Approved' : 
+             currentStatus === 'rejected' ? 'Rejected' : 
+             currentStatus === 'review' ? 'Under Review' : 'Pending'}
+          </span>
+        );
+      }
+      
+      if (column.key === 'actions') {
+        const currentStatus = requirementStatuses[index] || 'pending';
+        return (
+          <div className="requirement-actions">
+            {currentStatus === 'pending' && (
+              <>
+                <button 
+                  className="requirement-action-btn approve-btn"
+                  onClick={() => handleRequirementAction(index, 'approved')}
+                >
+                  <span className="material-symbols-outlined">check</span>
+                  Approve
+                </button>
+                <button 
+                  className="requirement-action-btn review-btn"
+                  onClick={() => handleRequirementAction(index, 'review')}
+                >
+                  <span className="material-symbols-outlined">visibility</span>
+                  Review
+                </button>
+                <button 
+                  className="requirement-action-btn reject-btn"
+                  onClick={() => handleRequirementAction(index, 'rejected')}
+                >
+                  <span className="material-symbols-outlined">close</span>
+                  Reject
+                </button>
+              </>
+            )}
+            {currentStatus === 'approved' && (
+              <span className="requirement-status-text approved">✓ Approved</span>
+            )}
+            {currentStatus === 'rejected' && (
+              <span className="requirement-status-text rejected">✗ Rejected</span>
+            )}
+            {currentStatus === 'review' && (
+              <span className="requirement-status-text review">👁 Under Review</span>
+            )}
+          </div>
+        );
+      }
+      
+      return formatValue(column.accessor ? column.accessor(item, index) : item[column.key], column);
+    };
+
     sections.push({
       id: 'requirements',
       title: 'Requirements',
       icon: 'assignment',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">assignment</span>
-            Requirements
-          </h2>
-          <div className="requirements-table-container">
-            <table className="requirements-table">
-              <thead>
-                <tr>
-                  <th>Type</th>
-                  <th>Description</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {brdData.requirements.map((item, index) => {
-                  const currentStatus = requirementStatuses[index] || 'pending';
-                  return (
-                    <tr key={index} className="requirement-row">
-                      <td className="requirement-type-cell">
-                        <span className="requirement-type-badge">{item.requirement_type}</span>
-                      </td>
-                      <td className="requirement-description-cell">
-                        <div className="requirement-description-text">{item.description_md}</div>
-                      </td>
-                      <td className="requirement-status-cell">
-                        <span className={`requirement-status ${currentStatus}`}>
-                          {currentStatus === 'approved' ? 'Approved' : 
-                           currentStatus === 'rejected' ? 'Rejected' : 
-                           currentStatus === 'review' ? 'Under Review' : 'Pending'}
-                        </span>
-                      </td>
-                      <td className="requirement-created-cell">
-                        <span className="requirement-created">{formatDateTime(item.created_at)}</span>
-                      </td>
-                      <td className="requirement-actions-cell">
-                        <div className="requirement-actions">
-                          {currentStatus === 'pending' && (
-                            <>
-                              <button 
-                                className="requirement-action-btn approve-btn"
-                                onClick={() => handleRequirementAction(index, 'approved')}
-                              >
-                                <span className="material-symbols-outlined">check</span>
-                                Approve
-                              </button>
-                              <button 
-                                className="requirement-action-btn review-btn"
-                                onClick={() => handleRequirementAction(index, 'review')}
-                              >
-                                <span className="material-symbols-outlined">visibility</span>
-                                Review
-                              </button>
-                              <button 
-                                className="requirement-action-btn reject-btn"
-                                onClick={() => handleRequirementAction(index, 'rejected')}
-                              >
-                                <span className="material-symbols-outlined">close</span>
-                                Reject
-                              </button>
-                            </>
-                          )}
-                          {currentStatus === 'approved' && (
-                            <span className="requirement-status-text approved">✓ Approved</span>
-                          )}
-                          {currentStatus === 'rejected' && (
-                            <span className="requirement-status-text rejected">✗ Rejected</span>
-                          )}
-                          {currentStatus === 'review' && (
-                            <span className="requirement-status-text review">👁 Under Review</span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.requirements}
+          columns={requirementsColumns}
+          title="Requirements"
+          icon="assignment"
+          className="requirements-table"
+          customRowRenderer={customRowRenderer}
+        />
       )
     });
   }
 
   // Current State Section
   if (brdData.current_state && brdData.current_state.length > 0) {
+    const currentStateColumns = [
+      {
+        key: 'description_md',
+        header: 'Description',
+        accessor: (item) => item.description_md,
+        className: 'description-column'
+      }
+    ];
+
     sections.push({
       id: 'current-state',
       title: 'Current State (As-Is)',
       icon: 'history',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">history</span>
-            Current State (As-Is)
-          </h2>
-          <div className="brd-items">
-            {brdData.current_state.map((item, index) => (
-              <div key={index} className="brd-item">
-                <div className="brd-field">
-                  <strong>Description:</strong>
-                  <span>{item.description_md}</span>
-                </div>
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.current_state}
+          columns={currentStateColumns}
+          title="Current State (As-Is)"
+          icon="history"
+        />
       )
     });
   }
 
   // Target State Section
   if (brdData.target_state && brdData.target_state.length > 0) {
+    const targetStateColumns = [
+      {
+        key: 'description_md',
+        header: 'Description',
+        accessor: (item) => item.description_md,
+        className: 'description-column'
+      }
+    ];
+
     sections.push({
       id: 'target-state',
       title: 'Target State (To-Be)',
       icon: 'flag',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">flag</span>
-            Target State (To-Be)
-          </h2>
-          <div className="brd-items">
-            {brdData.target_state.map((item, index) => (
-              <div key={index} className="brd-item">
-                <div className="brd-field">
-                  <strong>Description:</strong>
-                  <span>{item.description_md}</span>
-                </div>
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.target_state}
+          columns={targetStateColumns}
+          title="Target State (To-Be)"
+          icon="flag"
+        />
       )
     });
   }
 
   // Applications to Integrate Section
   if (brdData.applications_to_integrate && brdData.applications_to_integrate.length > 0) {
+    const applicationsColumns = [
+      {
+        key: 'application_name',
+        header: 'Application',
+        accessor: (item) => item.application_name,
+        className: 'primary-column'
+      },
+      {
+        key: 'purpose_md',
+        header: 'Purpose',
+        accessor: (item) => item.purpose_md,
+        className: 'purpose-column'
+      },
+      {
+        key: 'integration_type',
+        header: 'Type',
+        accessor: (item) => item.integration_type,
+        className: 'type-column'
+      },
+      {
+        key: 'directionality',
+        header: 'Directionality',
+        accessor: (item) => item.directionality,
+        className: 'directionality-column'
+      },
+      {
+        key: 'notes_md',
+        header: 'Notes',
+        accessor: (item) => item.notes_md,
+        className: 'notes-column'
+      }
+    ];
+
     sections.push({
       id: 'applications-integrate',
       title: 'Applications to Integrate',
       icon: 'hub',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">hub</span>
-            Applications to Integrate
-          </h2>
-          <div className="brd-items">
-            {brdData.applications_to_integrate.map((item, index) => (
-              <div key={index} className="brd-item">
-                <div className="brd-field">
-                  <strong>Application:</strong>
-                  <span>{item.application_name}</span>
-                </div>
-                {item.purpose_md && (
-                  <div className="brd-field">
-                    <strong>Purpose:</strong>
-                    <span>{item.purpose_md}</span>
-                  </div>
-                )}
-                {item.integration_type && (
-                  <div className="brd-field">
-                    <strong>Type:</strong>
-                    <span>{item.integration_type}</span>
-                  </div>
-                )}
-                {item.directionality && (
-                  <div className="brd-field">
-                    <strong>Directionality:</strong>
-                    <span>{item.directionality}</span>
-                  </div>
-                )}
-                {item.notes_md && (
-                  <div className="brd-field">
-                    <strong>Notes:</strong>
-                    <span>{item.notes_md}</span>
-                  </div>
-                )}
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.applications_to_integrate}
+          columns={applicationsColumns}
+          title="Applications to Integrate"
+          icon="hub"
+        />
       )
     });
   }
 
   // Data Migration Section
   if (brdData.data_migration && brdData.data_migration.length > 0) {
+    const dataMigrationColumns = [
+      {
+        key: 'source_md',
+        header: 'Source',
+        accessor: (item) => item.source_md,
+        className: 'source-column'
+      },
+      {
+        key: 'mapping_notes_md',
+        header: 'Mapping Notes',
+        accessor: (item) => item.mapping_notes_md,
+        className: 'mapping-column'
+      },
+      {
+        key: 'cleansing_rules_md',
+        header: 'Cleansing Rules',
+        accessor: (item) => item.cleansing_rules_md,
+        className: 'cleansing-column'
+      },
+      {
+        key: 'tools_md',
+        header: 'Tools',
+        accessor: (item) => item.tools_md,
+        className: 'tools-column'
+      }
+    ];
+
     sections.push({
       id: 'data-migration',
       title: 'Data Migration',
       icon: 'cloud_sync',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">cloud_sync</span>
-            Data Migration
-          </h2>
-          <div className="brd-items">
-            {brdData.data_migration.map((item, index) => (
-              <div key={index} className="brd-item">
-                {item.source_md && (
-                  <div className="brd-field">
-                    <strong>Source:</strong>
-                    <span>{item.source_md}</span>
-                  </div>
-                )}
-                {item.mapping_notes_md && (
-                  <div className="brd-field">
-                    <strong>Mapping Notes:</strong>
-                    <span>{item.mapping_notes_md}</span>
-                  </div>
-                )}
-                {item.cleansing_rules_md && (
-                  <div className="brd-field">
-                    <strong>Cleansing Rules:</strong>
-                    <span>{item.cleansing_rules_md}</span>
-                  </div>
-                )}
-                {item.tools_md && (
-                  <div className="brd-field">
-                    <strong>Tools:</strong>
-                    <span>{item.tools_md}</span>
-                  </div>
-                )}
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.data_migration}
+          columns={dataMigrationColumns}
+          title="Data Migration"
+          icon="cloud_sync"
+        />
       )
     });
   }
 
   // Data Model Section
   if (brdData.data_model && brdData.data_model.length > 0) {
+    const dataModelColumns = [
+      {
+        key: 'entity_name',
+        header: 'Entity',
+        accessor: (item) => item.entity_name,
+        className: 'primary-column'
+      },
+      {
+        key: 'entity_type',
+        header: 'Type',
+        accessor: (item) => item.entity_type,
+        className: 'type-column'
+      },
+      {
+        key: 'key_fields',
+        header: 'Key Fields',
+        accessor: (item) => item.key_fields,
+        className: 'fields-column'
+      },
+      {
+        key: 'relationships_md',
+        header: 'Relationships',
+        accessor: (item) => item.relationships_md,
+        className: 'relationships-column'
+      }
+    ];
+
     sections.push({
       id: 'data-model',
       title: 'Data Model',
       icon: 'table_chart',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">table_chart</span>
-            Data Model
-          </h2>
-          <div className="brd-items">
-            {brdData.data_model.map((item, index) => (
-              <div key={index} className="brd-item">
-                <div className="brd-field">
-                  <strong>Entity:</strong>
-                  <span>{item.entity_name}</span>
-                </div>
-                {item.entity_type && (
-                  <div className="brd-field">
-                    <strong>Type:</strong>
-                    <span>{item.entity_type}</span>
-                  </div>
-                )}
-                {item.key_fields && (
-                  <div className="brd-field">
-                    <strong>Key Fields:</strong>
-                    <span>{item.key_fields}</span>
-                  </div>
-                )}
-                {item.relationships_md && (
-                  <div className="brd-field">
-                    <strong>Relationships:</strong>
-                    <span>{item.relationships_md}</span>
-                  </div>
-                )}
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.data_model}
+          columns={dataModelColumns}
+          title="Data Model"
+          icon="table_chart"
+        />
       )
     });
   }
 
   // Pain Points Section
   if (brdData.pain_points && brdData.pain_points.length > 0) {
+    const painPointsColumns = [
+      {
+        key: 'pain_point_md',
+        header: 'Pain Point',
+        accessor: (item) => item.pain_point_md,
+        className: 'primary-column warning'
+      },
+      {
+        key: 'affected_bu_md',
+        header: 'Affected Business Unit',
+        accessor: (item) => item.affected_bu_md,
+        className: 'business-unit-column'
+      },
+      {
+        key: 'impact_md',
+        header: 'Impact',
+        accessor: (item) => item.impact_md,
+        className: 'impact-column'
+      }
+    ];
+
     sections.push({
       id: 'pain-points',
       title: 'Pain Points',
       icon: 'warning',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">warning</span>
-            Pain Points
-          </h2>
-          <div className="brd-items">
-            {brdData.pain_points.map((item, index) => (
-              <div key={index} className="brd-item pain-point-item">
-                <div className="brd-field">
-                  <strong>Pain Point:</strong>
-                  <span>{item.pain_point_md}</span>
-                </div>
-                {item.affected_bu_md && (
-                  <div className="brd-field">
-                    <strong>Affected Business Unit:</strong>
-                    <span>{item.affected_bu_md}</span>
-                  </div>
-                )}
-                {item.impact_md && (
-                  <div className="brd-field">
-                    <strong>Impact:</strong>
-                    <span>{item.impact_md}</span>
-                  </div>
-                )}
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.pain_points}
+          columns={painPointsColumns}
+          title="Pain Points"
+          icon="warning"
+          className="pain-points-table"
+        />
       )
     });
   }
 
   // Metadata Updates Section
   if (brdData.metadata_updates && brdData.metadata_updates.length > 0) {
+    const metadataColumns = [
+      {
+        key: 'component_type',
+        header: 'Component Type',
+        accessor: (item) => item.component_type,
+        className: 'type-column'
+      },
+      {
+        key: 'api_name_md',
+        header: 'API Name',
+        accessor: (item) => item.api_name_md,
+        className: 'api-column'
+      },
+      {
+        key: 'change_type',
+        header: 'Change Type',
+        accessor: (item) => item.change_type,
+        className: 'change-column'
+      },
+      {
+        key: 'scope_md',
+        header: 'Scope',
+        accessor: (item) => item.scope_md,
+        className: 'scope-column'
+      }
+    ];
+
     sections.push({
       id: 'metadata-updates',
       title: 'Metadata Updates',
       icon: 'code',
       content: (
-        <div className="brd-content-section">
-          <h2 className="brd-section-title">
-            <span className="material-symbols-outlined">code</span>
-            Metadata Updates
-          </h2>
-          <div className="brd-items">
-            {brdData.metadata_updates.map((item, index) => (
-              <div key={index} className="brd-item">
-                <div className="brd-field">
-                  <strong>Component Type:</strong>
-                  <span>{item.component_type}</span>
-                </div>
-                {item.api_name_md && (
-                  <div className="brd-field">
-                    <strong>API Name:</strong>
-                    <span>{item.api_name_md}</span>
-                  </div>
-                )}
-                {item.change_type && (
-                  <div className="brd-field">
-                    <strong>Change Type:</strong>
-                    <span>{item.change_type}</span>
-                  </div>
-                )}
-                {item.scope_md && (
-                  <div className="brd-field">
-                    <strong>Scope:</strong>
-                    <span>{item.scope_md}</span>
-                  </div>
-                )}
-                <div className="brd-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={brdData.metadata_updates}
+          columns={metadataColumns}
+          title="Metadata Updates"
+          icon="code"
+        />
       )
     });
   }
