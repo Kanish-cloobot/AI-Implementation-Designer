@@ -220,6 +220,41 @@ def process_document_payload():
              datetime.utcnow(), datetime.utcnow())
         )
         
+        # Store the response data in unified_file_extractions table
+        try:
+            from services.unified_file_extraction_service import UnifiedFileExtractionService
+            unified_service = UnifiedFileExtractionService(db)
+            
+            # Parse the response data to get the extraction data
+            response_json = json.loads(response_data)
+            
+            # Get the file_id from the document
+            file_record = db.fetch_one(
+                '''SELECT file_id FROM files 
+                   WHERE workspace_id = ? AND file_name = ? AND status != ? 
+                   AND storage_path = ?''',
+                (document['workspace_id'], document['file_name'], 'deleted', 'database_stored')
+            )
+            
+            if file_record and file_record['file_id']:
+                # Store in unified file extractions
+                unified_service.store_unified_file_extraction(
+                    file_id=file_record['file_id'],
+                    workspace_id=document['workspace_id'],
+                    org_id='default_org',  # You may need to get this from request or document
+                    extraction_data=response_json,
+                    created_by='system'
+                )
+                print(f"✅ Successfully stored unified file extraction for file {file_record['file_id']}")
+            else:
+                print("⚠️ Could not find file_id for unified file extraction storage")
+                
+        except Exception as e:
+            print(f"❌ Error storing unified file extraction: {str(e)}")
+            # Don't fail the entire process if unified extraction fails
+            import traceback
+            traceback.print_exc()
+        
         db.execute_query(
             'UPDATE documents SET status = ?, updated_at = ? WHERE document_id = ?',
             ('completed', datetime.utcnow(), document_id)
