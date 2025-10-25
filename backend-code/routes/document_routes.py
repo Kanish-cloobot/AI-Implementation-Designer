@@ -175,15 +175,8 @@ def process_document_payload():
         llm_service = LLMService()
         start_time = datetime.utcnow()
         
-        # Get the messages array from LLM service (we need to modify LLM service to return this)
-        # For now, we'll construct it manually
-        prompt = llm_service._build_sow_extraction_prompt()
-        messages = [
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": extracted_text}
-        ]
-        
-        response_data = llm_service.extract_sow_insights(extracted_text)
+        # Get both response data and messages array from LLM service
+        response_data, messages = llm_service.extract_sow_insights(extracted_text)
         
         end_time = datetime.utcnow()
         latency_ms = int((end_time - start_time).total_seconds() * 1000)

@@ -28,7 +28,7 @@ class LLMService:
             document_text (str): Extracted text from document
             
         Returns:
-            str: JSON string with extracted data
+            tuple: (json_string, messages_array) - JSON string with extracted data and messages array for logging
         """
         prompt = self._build_sow_extraction_prompt()
         
@@ -74,33 +74,33 @@ class LLMService:
             json_str = self._extract_json_from_response(content)
             parsed_data = json.loads(json_str)
             
-            return json.dumps(parsed_data, indent=2)
+            return json.dumps(parsed_data, indent=2), messages
         
         except openai.error.InvalidRequestError as e:
             print(f"Invalid request to Azure OpenAI: {str(e)}")
             traceback.print_exc()
             return json.dumps(self._get_default_response(
                 f"Invalid request: {str(e)}"
-            ))
+            )), messages
         
         except openai.error.AuthenticationError as e:
             print(f"Authentication error with Azure OpenAI: {str(e)}")
             traceback.print_exc()
             return json.dumps(self._get_default_response(
                 f"Authentication error: {str(e)}"
-            ))
+            )), messages
         
         except json.JSONDecodeError as e:
             print(f"Error parsing JSON from LLM response: {str(e)}")
             traceback.print_exc()
             return json.dumps(self._get_default_response(
                 f"JSON parsing error: {str(e)}"
-            ))
+            )), messages
         
         except Exception as e:
             print(f"Error in LLM extraction: {str(e)}")
             traceback.print_exc()
-            return json.dumps(self._get_default_response(str(e)))
+            return json.dumps(self._get_default_response(str(e))), messages
 
     def _build_sow_extraction_prompt(self):
         return """## **Prompt Instruction: Implementation Scope Extractor**
