@@ -61,6 +61,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           columns={businessUnitsColumns}
           title="Business Units & Teams"
           icon="corporate_fare"
+          showTitle={false}
         />
       )
     });
@@ -105,6 +106,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           columns={modulesColumns}
           title="Modules & Processes"
           icon="widgets"
+          showTitle={false}
         />
       )
     });
@@ -149,6 +151,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           columns={licenseColumns}
           title="License List"
           icon="license"
+          showTitle={false}
         />
       )
     });
@@ -187,6 +190,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           columns={personasColumns}
           title="Personas"
           icon="account_circle"
+          showTitle={false}
         />
       )
     });
@@ -300,6 +304,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           icon="assignment"
           className="requirements-table"
           customRowRenderer={customRowRenderer}
+          showTitle={false}
         />
       )
     });
@@ -326,6 +331,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           columns={currentStateColumns}
           title="Current State (As-Is)"
           icon="history"
+          showTitle={false}
         />
       )
     });
@@ -352,6 +358,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           columns={targetStateColumns}
           title="Target State (To-Be)"
           icon="flag"
+          showTitle={false}
         />
       )
     });
@@ -402,6 +409,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           columns={applicationsColumns}
           title="Applications to Integrate"
           icon="hub"
+          showTitle={false}
         />
       )
     });
@@ -446,6 +454,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           columns={dataMigrationColumns}
           title="Data Migration"
           icon="cloud_sync"
+          showTitle={false}
         />
       )
     });
@@ -490,6 +499,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           columns={dataModelColumns}
           title="Data Model"
           icon="table_chart"
+          showTitle={false}
         />
       )
     });
@@ -529,6 +539,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="Pain Points"
           icon="warning"
           className="pain-points-table"
+          showTitle={false}
         />
       )
     });
@@ -573,6 +584,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           columns={metadataColumns}
           title="Metadata Updates"
           icon="code"
+          showTitle={false}
         />
       )
     });

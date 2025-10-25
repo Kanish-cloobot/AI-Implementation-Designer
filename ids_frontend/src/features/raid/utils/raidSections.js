@@ -1,3 +1,5 @@
+import GenericBRDTable from '../../brd/components/GenericBRDTable';
+
 export const generateRAIDSections = (raidData, riskIssueStatuses = {}, handleRiskIssueAction = () => {}) => {
   if (!raidData) return [];
 
@@ -5,256 +7,234 @@ export const generateRAIDSections = (raidData, riskIssueStatuses = {}, handleRis
 
   // Risks & Issues Section
   if (raidData.risks_issues && raidData.risks_issues.length > 0) {
+    const risksColumns = [
+      {
+        key: 'type',
+        header: 'Type',
+        accessor: (item) => item.type,
+        className: 'primary-column'
+      },
+      {
+        key: 'description_md',
+        header: 'Description',
+        accessor: (item) => item.description_md,
+        className: 'description-column'
+      },
+      {
+        key: 'impact_md',
+        header: 'Impact',
+        accessor: (item) => item.impact_md,
+        className: 'impact-column'
+      },
+      {
+        key: 'mitigation_md',
+        header: 'Mitigation',
+        accessor: (item) => item.mitigation_md,
+        className: 'mitigation-column'
+      },
+      {
+        key: 'owner_md',
+        header: 'Owner',
+        accessor: (item) => item.owner_md,
+        className: 'owner-column'
+      },
+      {
+        key: 'due_date',
+        header: 'Due Date',
+        accessor: (item) => item.due_date,
+        className: 'date-column'
+      }
+    ];
+
     sections.push({
       id: 'risks-issues',
       title: 'Risks & Issues',
       icon: 'warning',
       content: (
-        <div className="raid-content-section">
-          <h2 className="raid-section-title">
-            <span className="material-symbols-outlined">warning</span>
-            Risks & Issues
-          </h2>
-          <div className="raid-items">
-            {raidData.risks_issues.map((item, index) => {
-              const currentStatus = riskIssueStatuses[index] || 'pending';
-              return (
-                <div key={index} className="raid-item risk-item">
-                  <div className="risk-header">
-                    <div className="risk-header-left">
-                      <span className={`risk-type ${item.type}`}>{item.type}</span>
-                      {item.due_date && <span className="risk-date">{item.due_date}</span>}
-                    </div>
-                    <div className="risk-header-right">
-                      <div className="risk-actions">
-                        {currentStatus === 'pending' && (
-                          <>
-                            <button 
-                              className="risk-action-btn resolve-btn"
-                              onClick={() => handleRiskIssueAction(index, 'resolved')}
-                              title="Resolve"
-                            >
-                              <span className="material-symbols-outlined">check_circle</span>
-                            </button>
-                            <button 
-                              className="risk-action-btn review-btn"
-                              onClick={() => handleRiskIssueAction(index, 'review')}
-                              title="Under Review"
-                            >
-                              <span className="material-symbols-outlined">visibility</span>
-                            </button>
-                            <button 
-                              className="risk-action-btn ignore-btn"
-                              onClick={() => handleRiskIssueAction(index, 'ignored')}
-                              title="Ignore"
-                            >
-                              <span className="material-symbols-outlined">block</span>
-                            </button>
-                          </>
-                        )}
-                        {currentStatus === 'resolved' && (
-                          <span className="risk-status-indicator resolved">✓ Resolved</span>
-                        )}
-                        {currentStatus === 'ignored' && (
-                          <span className="risk-status-indicator ignored">⊘ Ignored</span>
-                        )}
-                        {currentStatus === 'review' && (
-                          <span className="risk-status-indicator review">👁 Under Review</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <p className="risk-description">{item.description_md}</p>
-                  {item.impact_md && (
-                    <div className="risk-detail">
-                      <strong>Impact:</strong> {item.impact_md}
-                    </div>
-                  )}
-                  {item.mitigation_md && (
-                    <div className="risk-detail">
-                      <strong>Mitigation:</strong> {item.mitigation_md}
-                    </div>
-                  )}
-                  {item.owner_md && (
-                    <div className="risk-owner">
-                      <span className="material-symbols-outlined">person</span>
-                      {item.owner_md}
-                    </div>
-                  )}
-                  <div className="raid-item-meta">
-                    <span className="created-at">{formatDateTime(item.created_at)}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={raidData.risks_issues}
+          columns={risksColumns}
+          title="Risks & Issues"
+          icon="warning"
+          showTitle={false}
+        />
       )
     });
   }
 
   // Action Items Section
   if (raidData.action_items && raidData.action_items.length > 0) {
+    const actionItemsColumns = [
+      {
+        key: 'item_status',
+        header: 'Status',
+        accessor: (item) => item.item_status,
+        className: 'status-column'
+      },
+      {
+        key: 'task_md',
+        header: 'Task',
+        accessor: (item) => item.task_md,
+        className: 'primary-column'
+      },
+      {
+        key: 'owner_md',
+        header: 'Owner',
+        accessor: (item) => item.owner_md,
+        className: 'owner-column'
+      },
+      {
+        key: 'due_date',
+        header: 'Due Date',
+        accessor: (item) => item.due_date,
+        className: 'date-column'
+      }
+    ];
+
     sections.push({
       id: 'action-items',
       title: 'Action Items',
       icon: 'task_alt',
       content: (
-        <div className="raid-content-section">
-          <h2 className="raid-section-title">
-            <span className="material-symbols-outlined">task_alt</span>
-            Action Items
-          </h2>
-          <div className="raid-items">
-            {raidData.action_items.map((item, index) => (
-              <div key={index} className="raid-item action-item">
-                <div className="action-header">
-                  <span className={`action-status ${item.item_status}`}>{item.item_status}</span>
-                  {item.due_date && <span className="action-date">{item.due_date}</span>}
-                </div>
-                <p className="action-description">{item.task_md}</p>
-                {item.owner_md && (
-                  <div className="action-owner">
-                    <span className="material-symbols-outlined">person</span>
-                    {item.owner_md}
-                  </div>
-                )}
-                <div className="raid-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={raidData.action_items}
+          columns={actionItemsColumns}
+          title="Action Items"
+          icon="task_alt"
+          showTitle={false}
+        />
       )
     });
   }
 
   // Decisions Section
   if (raidData.decisions && raidData.decisions.length > 0) {
+    const decisionsColumns = [
+      {
+        key: 'decision_md',
+        header: 'Decision',
+        accessor: (item) => item.decision_md,
+        className: 'primary-column'
+      },
+      {
+        key: 'rationale_md',
+        header: 'Rationale',
+        accessor: (item) => item.rationale_md,
+        className: 'rationale-column'
+      },
+      {
+        key: 'approver_md',
+        header: 'Approver',
+        accessor: (item) => item.approver_md,
+        className: 'approver-column'
+      },
+      {
+        key: 'decided_on',
+        header: 'Decided On',
+        accessor: (item) => item.decided_on,
+        className: 'date-column'
+      }
+    ];
+
     sections.push({
       id: 'decisions',
       title: 'Decisions',
       icon: 'gavel',
       content: (
-        <div className="raid-content-section">
-          <h2 className="raid-section-title">
-            <span className="material-symbols-outlined">gavel</span>
-            Decisions
-          </h2>
-          <div className="raid-items">
-            {raidData.decisions.map((item, index) => (
-              <div key={index} className="raid-item decision-item">
-                <p className="decision-description">{item.decision_md}</p>
-                {item.rationale_md && (
-                  <div className="decision-rationale">
-                    <strong>Rationale:</strong> {item.rationale_md}
-                  </div>
-                )}
-                <div className="decision-meta">
-                  {item.decided_on && <span>Decided on: {item.decided_on}</span>}
-                  {item.approver_md && <span>Approver: {item.approver_md}</span>}
-                </div>
-                <div className="raid-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={raidData.decisions}
+          columns={decisionsColumns}
+          title="Decisions"
+          icon="gavel"
+          showTitle={false}
+        />
       )
     });
   }
 
   // Dependencies Section
   if (raidData.dependencies && raidData.dependencies.length > 0) {
+    const dependenciesColumns = [
+      {
+        key: 'type',
+        header: 'Type',
+        accessor: (item) => item.type,
+        className: 'primary-column'
+      },
+      {
+        key: 'description_md',
+        header: 'Description',
+        accessor: (item) => item.description_md,
+        className: 'description-column'
+      },
+      {
+        key: 'depends_on_md',
+        header: 'Depends On',
+        accessor: (item) => item.depends_on_md,
+        className: 'depends-on-column'
+      },
+      {
+        key: 'owner_md',
+        header: 'Owner',
+        accessor: (item) => item.owner_md,
+        className: 'owner-column'
+      }
+    ];
+
     sections.push({
       id: 'dependencies',
       title: 'Dependencies',
       icon: 'link',
       content: (
-        <div className="raid-content-section">
-          <h2 className="raid-section-title">
-            <span className="material-symbols-outlined">link</span>
-            Dependencies
-          </h2>
-          <div className="raid-items">
-            {raidData.dependencies.map((item, index) => (
-              <div key={index} className="raid-item dependency-item">
-                <div className="dependency-header">
-                  <span className="dependency-type">{item.type}</span>
-                </div>
-                <p className="dependency-description">{item.description_md}</p>
-                {item.depends_on_md && (
-                  <div className="dependency-detail">
-                    <strong>Depends On:</strong> {item.depends_on_md}
-                  </div>
-                )}
-                {item.owner_md && (
-                  <div className="dependency-owner">
-                    <span className="material-symbols-outlined">person</span>
-                    {item.owner_md}
-                  </div>
-                )}
-                <div className="raid-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={raidData.dependencies}
+          columns={dependenciesColumns}
+          title="Dependencies"
+          icon="link"
+          showTitle={false}
+        />
       )
     });
   }
 
   // Pain Points Section
   if (raidData.pain_points && raidData.pain_points.length > 0) {
+    const painPointsColumns = [
+      {
+        key: 'pain_point_md',
+        header: 'Pain Point',
+        accessor: (item) => item.pain_point_md,
+        className: 'primary-column'
+      },
+      {
+        key: 'affected_bu_md',
+        header: 'Affected BU',
+        accessor: (item) => item.affected_bu_md,
+        className: 'affected-bu-column'
+      },
+      {
+        key: 'impact_md',
+        header: 'Impact',
+        accessor: (item) => item.impact_md,
+        className: 'impact-column'
+      }
+    ];
+
     sections.push({
       id: 'pain-points',
       title: 'Pain Points',
       icon: 'error',
       content: (
-        <div className="raid-content-section">
-          <h2 className="raid-section-title">
-            <span className="material-symbols-outlined">error</span>
-            Pain Points
-          </h2>
-          <div className="raid-items">
-            {raidData.pain_points.map((item, index) => (
-              <div key={index} className="raid-item pain-point-item">
-                <p className="pain-point-description">{item.pain_point_md}</p>
-                {item.affected_bu_md && (
-                  <div className="pain-point-detail">
-                    <strong>Affected BU:</strong> {item.affected_bu_md}
-                  </div>
-                )}
-                {item.impact_md && (
-                  <div className="pain-point-detail">
-                    <strong>Impact:</strong> {item.impact_md}
-                  </div>
-                )}
-                <div className="raid-item-meta">
-                  <span className="created-at">{formatDateTime(item.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GenericBRDTable
+          data={raidData.pain_points}
+          columns={painPointsColumns}
+          title="Pain Points"
+          icon="error"
+          showTitle={false}
+        />
       )
     });
   }
 
   return sections;
-};
-
-const formatDateTime = (dateTimeStr) => {
-  if (!dateTimeStr) return 'Not set';
-  const date = new Date(dateTimeStr);
-  return date.toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 };

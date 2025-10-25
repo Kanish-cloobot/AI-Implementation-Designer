@@ -8,15 +8,18 @@ const GenericBRDTable = ({
   icon, 
   className = '',
   showCreatedAt = true,
-  customRowRenderer = null 
+  customRowRenderer = null,
+  showTitle = true
 }) => {
   if (!data || data.length === 0) {
     return (
       <div className="brd-content-section">
-        <h2 className="brd-section-title">
-          <span className="material-symbols-outlined">{icon}</span>
-          {title}
-        </h2>
+        {showTitle && (
+          <h2 className="brd-section-title">
+            <span className="material-symbols-outlined">{icon}</span>
+            {title}
+          </h2>
+        )}
         <div className="brd-empty-section">
           <p>No {title.toLowerCase()} data available</p>
         </div>
@@ -63,10 +66,12 @@ const GenericBRDTable = ({
 
   return (
     <div className={`brd-content-section ${className}`}>
-      <h2 className="brd-section-title">
-        <span className="material-symbols-outlined">{icon}</span>
-        {title}
-      </h2>
+      {showTitle && (
+        <h2 className="brd-section-title">
+          <span className="material-symbols-outlined">{icon}</span>
+          {title}
+        </h2>
+      )}
       <div className="brd-table-container">
         <table className="brd-generic-table">
           <thead>
