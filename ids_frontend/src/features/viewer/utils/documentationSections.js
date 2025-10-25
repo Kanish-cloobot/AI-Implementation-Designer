@@ -202,7 +202,7 @@ const createLicensesContent = (licenses) => {
   if (!licenses || licenses.length === 0) {
     return (
       <div className="doc-details-content-section">
-        <p className="doc-details-content-text">No Salesforce licenses defined.</p>
+        <p className="doc-details-content-text">No licenses defined.</p>
       </div>
     );
   }
@@ -255,7 +255,7 @@ const createLicensesContent = (licenses) => {
     <GenericBRDTable
       data={tableData}
       columns={licensesColumns}
-      title="Salesforce Licenses"
+      title="Licenses"
       icon="verified_user"
       showCreatedAt={false}
     />
@@ -422,7 +422,7 @@ const createModulesSection = (sowData) => ({
 
 const createLicensesSection = (sowData) => ({
   id: 'licenses',
-  title: 'Salesforce Licenses',
+  title: 'Licenses',
   icon: 'verified_user',
   content: createLicensesContent(sowData.salesforce_licenses)
 });

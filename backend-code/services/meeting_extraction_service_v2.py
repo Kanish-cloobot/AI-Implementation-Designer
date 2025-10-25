@@ -142,7 +142,7 @@ class MeetingExtractionServiceV2:
     def _build_extraction_prompt(self, text):
         """Build the extraction prompt for LLM"""
         prompt = f"""
-        Analyze the following meeting transcript and extract structured information for Salesforce implementation discovery.
+        Analyze the following meeting transcript and extract structured information for implementation discovery.
 
         Meeting Content:
         {text}
@@ -167,7 +167,7 @@ class MeetingExtractionServiceV2:
         - notes_md: Additional notes in markdown
 
         4. License List (V3):
-        - license_type: Type of Salesforce license
+        - license_type: Type of license
         - count: Number of licenses
         - allocation_md: Allocation details in markdown
         - notes_md: Additional notes in markdown

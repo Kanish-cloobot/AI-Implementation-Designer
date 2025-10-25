@@ -103,11 +103,11 @@ class LLMService:
             return json.dumps(self._get_default_response(str(e)))
 
     def _build_sow_extraction_prompt(self):
-        return """## **Prompt Instruction: Salesforce Implementation Scope Extractor**
+        return """## **Prompt Instruction: Implementation Scope Extractor**
 
 ### **Objective**
 
-You are an AI assistant specialized in **Salesforce Implementation Consulting**.
+You are an AI assistant specialized in **Implementation Consulting**.
 Your goal is to **analyze uploaded documents** such as the *Sales Hand-off Package* or *Statement of Work (SoW)* and extract all information needed to define **Project Scope, Modules, Processes, Stakeholders, and License Inventory**.
 
 The final output **must be a single valid JSON block**, wrapped in **Markdown format**, with all content written inside each key's value (not as external commentary).
@@ -117,7 +117,7 @@ The final output **must be a single valid JSON block**, wrapped in **Markdown fo
 ### **Input**
 
 * User will upload one or more documents (SoW, Sales hand-off package, BRD, etc.)
-* Each may contain business unit details, module descriptions, in-scope and out-of-scope items, stakeholders, and Salesforce licensing information.
+* Each may contain business unit details, module descriptions, in-scope and out-of-scope items, stakeholders, and licensing information.
 
 ---
 
@@ -142,9 +142,9 @@ The final output **must be a single valid JSON block**, wrapped in **Markdown fo
        * Stakeholder Name
        * Designation/Role
        * Email (if available)
-   * **Salesforce Licenses**
+   * **Licenses**
 
-     * Identify all Salesforce license types (Sales Cloud, Service Cloud, FSL, Platform, etc.)
+     * Identify all license types (Sales Cloud, Service Cloud, FSL, Platform, etc.)
      * Include quantity or allocation if mentioned.
 
 ---
@@ -227,7 +227,7 @@ Produce the output **as a single JSON object inside Markdown code fences**:
   * `"name": "Not Provided"`
   * `"designation": "Inferred based on context"`
   * `"email": "unknown@example.com"`
-* If Salesforce license type is unclear, infer `"Platform"` as a default placeholder but note it under `"assumptions"`.
+* If license type is unclear, infer `"Platform"` as a default placeholder but note it under `"assumptions"`.
 * Maintain logical consistency (e.g., do not assign Service Cloud features to a client with only Sales Cloud licenses).
 
 ---

@@ -7,7 +7,7 @@ const LicenseList = ({ data }) => {
       <div className="license-list-card">
         <h2 className="license-list-title">
           <span className="material-symbols-outlined">badge</span>
-          Salesforce Licenses
+          Licenses
         </h2>
         <p className="license-list-empty">No licenses specified</p>
       </div>
@@ -18,7 +18,7 @@ const LicenseList = ({ data }) => {
     <div className="license-list-card">
       <h2 className="license-list-title">
         <span className="material-symbols-outlined">badge</span>
-        Salesforce Licenses
+        Licenses
       </h2>
       
       <div className="license-list">

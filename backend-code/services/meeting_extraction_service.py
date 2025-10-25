@@ -290,12 +290,12 @@ JSON Structure Required:
 
 Validation Checklist
 - One JSON object only, wrapped in json code fences.
-- Each key (V1–V16) is an array of objects, even if empty.
+- Each key (V1-V16) is an array of objects, even if empty.
 - All strings are properly escaped, all keys double-quoted.
 - No trailing commas or null values.
 - Markdown formatting lives inside string values.
 - Dates follow YYYY-MM-DD.
-- Denoising applied – only Salesforce-relevant content extracted.
+- Denoising applied - only Salesforce-relevant content extracted.
 
 Assumptions Policy
 - Infer carefully; log all assumptions under assumptions_and_gaps.

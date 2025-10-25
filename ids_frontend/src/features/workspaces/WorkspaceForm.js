@@ -85,7 +85,7 @@ const WorkspaceForm = ({ isOpen, onClose, onSuccess, workspace }) => {
         <Select label="Project Type" name="project_type" value={formData.project_type}
           onChange={handleChange} options={PROJECT_TYPES} placeholder="Select project type"
           error={errors.project_type} required disabled={loading} />
-        <Select label="Salesforce Licenses" name="licenses" value={formData.licenses}
+        <Select label="Licenses" name="licenses" value={formData.licenses}
           onChange={handleChange} options={SALESFORCE_LICENSES} error={errors.licenses}
           required multiple disabled={loading} />
       </form>
