@@ -1,6 +1,8 @@
 import GenericBRDTable from '../../brd/components/GenericBRDTable';
+import { renderSourceReferences } from '../../../utils/sourceReferenceUtils';
+import '../../../utils/sourceReferenceUtils.css';
 
-export const generateRAIDSections = (raidData, riskIssueStatuses = {}, handleRiskIssueAction = () => {}) => {
+export const generateRAIDSections = (raidData, riskIssueStatuses = {}, handleRiskIssueAction = () => {}, onSourceClick = () => {}) => {
   if (!raidData) return [];
 
   const sections = [];
@@ -57,6 +59,7 @@ export const generateRAIDSections = (raidData, riskIssueStatuses = {}, handleRis
           title="Risks & Issues"
           icon="warning"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -102,6 +105,7 @@ export const generateRAIDSections = (raidData, riskIssueStatuses = {}, handleRis
           title="Action Items"
           icon="task_alt"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -147,6 +151,7 @@ export const generateRAIDSections = (raidData, riskIssueStatuses = {}, handleRis
           title="Decisions"
           icon="gavel"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -192,6 +197,7 @@ export const generateRAIDSections = (raidData, riskIssueStatuses = {}, handleRis
           title="Dependencies"
           icon="link"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -231,6 +237,7 @@ export const generateRAIDSections = (raidData, riskIssueStatuses = {}, handleRis
           title="Pain Points"
           icon="error"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });

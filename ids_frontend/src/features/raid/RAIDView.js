@@ -5,6 +5,7 @@ import Spinner from '../../components/common/Spinner';
 import Button from '../../components/common/Button';
 import DocumentationNavigation from '../viewer/components/DocumentationNavigation';
 import DocumentationDetails from '../viewer/components/DocumentationDetails';
+import SourceViewer from '../../components/common/SourceViewer';
 import { generateRAIDSections } from './utils/raidSections';
 import './RAIDView.css';
 
@@ -15,6 +16,8 @@ const RAIDView = () => {
   const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState('risks-issues');
   const [riskIssueStatuses, setRiskIssueStatuses] = useState({});
+  const [showSourceViewer, setShowSourceViewer] = useState(false);
+  const [currentSourceReferences, setCurrentSourceReferences] = useState([]);
 
   useEffect(() => {
     fetchRAIDData();
@@ -45,6 +48,16 @@ const RAIDView = () => {
     console.log(`Risk/Issue ${riskIssueIndex} ${action}ed`);
   };
 
+  const handleSourceClick = (sourceReferences) => {
+    setCurrentSourceReferences(sourceReferences);
+    setShowSourceViewer(true);
+  };
+
+  const handleCloseSourceViewer = () => {
+    setShowSourceViewer(false);
+    setCurrentSourceReferences([]);
+  };
+
 
   if (loading) {
     return (
@@ -73,7 +86,7 @@ const RAIDView = () => {
     );
   }
 
-  const sections = generateRAIDSections(raidData, riskIssueStatuses, handleRiskIssueAction);
+  const sections = generateRAIDSections(raidData, riskIssueStatuses, handleRiskIssueAction, handleSourceClick);
 
   return (
     <div className="raid-viewer-container">
@@ -108,6 +121,13 @@ const RAIDView = () => {
           />
         </div>
       </div>
+      
+      {showSourceViewer && (
+        <SourceViewer 
+          sourceReferences={currentSourceReferences}
+          onClose={handleCloseSourceViewer}
+        />
+      )}
     </div>
   );
 };

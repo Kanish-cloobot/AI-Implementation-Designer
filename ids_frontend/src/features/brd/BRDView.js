@@ -5,6 +5,7 @@ import Spinner from '../../components/common/Spinner';
 import Button from '../../components/common/Button';
 import DocumentationNavigation from '../viewer/components/DocumentationNavigation';
 import DocumentationDetails from '../viewer/components/DocumentationDetails';
+import SourceViewer from '../../components/common/SourceViewer';
 import { generateBRDSections } from './utils/brdSections';
 import './BRDView.css';
 
@@ -15,6 +16,8 @@ const BRDView = () => {
   const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState('business-units-teams');
   const [requirementStatuses, setRequirementStatuses] = useState({});
+  const [showSourceViewer, setShowSourceViewer] = useState(false);
+  const [currentSourceReferences, setCurrentSourceReferences] = useState([]);
 
   useEffect(() => {
     fetchBRDData();
@@ -45,6 +48,16 @@ const BRDView = () => {
     console.log(`Requirement ${requirementIndex} ${action}ed`);
   };
 
+  const handleSourceClick = (sourceReferences) => {
+    setCurrentSourceReferences(sourceReferences);
+    setShowSourceViewer(true);
+  };
+
+  const handleCloseSourceViewer = () => {
+    setShowSourceViewer(false);
+    setCurrentSourceReferences([]);
+  };
+
 
   if (loading) {
     return (
@@ -73,7 +86,7 @@ const BRDView = () => {
     );
   }
 
-  const sections = generateBRDSections(brdData, requirementStatuses, handleRequirementAction);
+  const sections = generateBRDSections(brdData, requirementStatuses, handleRequirementAction, handleSourceClick);
 
   return (
     <div className="brd-viewer-container">
@@ -108,6 +121,13 @@ const BRDView = () => {
           />
         </div>
       </div>
+      
+      {showSourceViewer && (
+        <SourceViewer 
+          sourceReferences={currentSourceReferences}
+          onClose={handleCloseSourceViewer}
+        />
+      )}
     </div>
   );
 };

@@ -1,4 +1,6 @@
 import GenericBRDTable from '../components/GenericBRDTable';
+import { renderSourceReferences } from '../../../utils/sourceReferenceUtils';
+import '../../../utils/sourceReferenceUtils.css';
 
 // Helper function to format values
 const formatValue = (value, column) => {
@@ -23,7 +25,7 @@ const formatValue = (value, column) => {
   return value;
 };
 
-export const generateBRDSections = (brdData, requirementStatuses = {}, handleRequirementAction = () => {}) => {
+export const generateBRDSections = (brdData, requirementStatuses = {}, handleRequirementAction = () => {}, onSourceClick = () => {}) => {
   if (!brdData) return [];
 
   const sections = [];
@@ -62,6 +64,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="Business Units & Teams"
           icon="corporate_fare"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -107,6 +110,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="Modules & Processes"
           icon="widgets"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -152,6 +156,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="License List"
           icon="license"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -191,6 +196,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="Personas"
           icon="account_circle"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -305,6 +311,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           className="requirements-table"
           customRowRenderer={customRowRenderer}
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -332,6 +339,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="Current State (As-Is)"
           icon="history"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -359,6 +367,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="Target State (To-Be)"
           icon="flag"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -410,6 +419,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="Applications to Integrate"
           icon="hub"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -455,6 +465,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="Data Migration"
           icon="cloud_sync"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -500,6 +511,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="Data Model"
           icon="table_chart"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -540,6 +552,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           icon="warning"
           className="pain-points-table"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });
@@ -585,6 +598,7 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
           title="Metadata Updates"
           icon="code"
           showTitle={false}
+          onSourceClick={onSourceClick}
         />
       )
     });

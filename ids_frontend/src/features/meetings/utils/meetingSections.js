@@ -1,7 +1,9 @@
 import React from 'react';
+import { createTableCellWithSource, renderSourceReferences } from '../../../utils/sourceReferenceUtils';
+import '../../../utils/sourceReferenceUtils.css';
 
 // Helper function to create table content for meeting data
-const createTableContent = (data, columns) => {
+const createTableContent = (data, columns, onSourceClick) => {
   if (!data || data.length === 0) {
     return (
       <div className="meeting-table-empty">
@@ -20,6 +22,7 @@ const createTableContent = (data, columns) => {
                 {column.label}
               </th>
             ))}
+            <th className="meeting-table-header">Sources</th>
           </tr>
         </thead>
         <tbody>
@@ -30,6 +33,9 @@ const createTableContent = (data, columns) => {
                   {column.render ? column.render(item[column.key], item) : item[column.key] || '-'}
                 </td>
               ))}
+              <td className="meeting-table-cell">
+                {renderSourceReferences(item, onSourceClick)}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -309,7 +315,7 @@ const createDataSystemsContent = (extractions) => {
 };
 
 // Main function to generate meeting sections
-export const generateMeetingSections = (meetingData) => {
+export const generateMeetingSections = (meetingData, onSourceClick) => {
   const { meeting, extractions } = meetingData || {};
   
   return [
@@ -332,7 +338,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'business_unit', label: 'Business Unit' },
             { key: 'teams', label: 'Teams', render: (value) => Array.isArray(value) ? value.join(', ') : value },
             { key: 'notes_md', label: 'Notes' }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'personas',
@@ -342,7 +348,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'persona_name', label: 'Persona' },
             { key: 'responsibilities', label: 'Responsibilities', render: (value) => Array.isArray(value) ? value.join(', ') : value },
             { key: 'primary_modules', label: 'Primary Modules', render: (value) => Array.isArray(value) ? value.join(', ') : value }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'modules-processes',
@@ -353,7 +359,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'processes', label: 'Processes', render: (value) => Array.isArray(value) ? value.join(', ') : value },
             { key: 'scope_tag', label: 'Scope' },
             { key: 'notes_md', label: 'Notes' }
-          ])
+          ], onSourceClick)
         }
       ]
     },
@@ -370,7 +376,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'requirement_type', label: 'Type' },
             { key: 'description_md', label: 'Description' },
             { key: 'acceptance_criteria', label: 'Acceptance Criteria', render: (value) => Array.isArray(value) ? value.join('; ') : value }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'pain-points',
@@ -380,7 +386,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'pain_point_md', label: 'Pain Point' },
             { key: 'affected_bu_md', label: 'Affected BU' },
             { key: 'impact_md', label: 'Impact' }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'current-state',
@@ -388,7 +394,7 @@ export const generateMeetingSections = (meetingData) => {
           icon: 'history',
           content: createTableContent(extractions?.current_state || [], [
             { key: 'description_md', label: 'Description' }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'target-state',
@@ -396,7 +402,7 @@ export const generateMeetingSections = (meetingData) => {
           icon: 'flag',
           content: createTableContent(extractions?.target_state || [], [
             { key: 'description_md', label: 'Description' }
-          ])
+          ], onSourceClick)
         }
       ]
     },
@@ -416,7 +422,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'mitigation_md', label: 'Mitigation' },
             { key: 'owner_md', label: 'Owner' },
             { key: 'due_date', label: 'Due Date' }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'action-items',
@@ -427,7 +433,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'item_status', label: 'Status' },
             { key: 'owner_md', label: 'Owner' },
             { key: 'due_date', label: 'Due Date' }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'decisions',
@@ -438,7 +444,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'rationale_md', label: 'Rationale' },
             { key: 'decided_on', label: 'Decided On' },
             { key: 'approver_md', label: 'Approver' }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'dependencies',
@@ -449,7 +455,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'type', label: 'Type' },
             { key: 'depends_on_md', label: 'Depends On' },
             { key: 'owner_md', label: 'Owner' }
-          ])
+          ], onSourceClick)
         }
       ]
     },
@@ -468,7 +474,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'integration_type', label: 'Type' },
             { key: 'directionality', label: 'Directionality' },
             { key: 'notes_md', label: 'Notes' }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'data-migration',
@@ -479,7 +485,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'mapping_notes_md', label: 'Mapping Notes' },
             { key: 'cleansing_rules_md', label: 'Cleansing Rules' },
             { key: 'tools_md', label: 'Tools' }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'data-model',
@@ -490,7 +496,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'entity_type', label: 'Type' },
             { key: 'key_fields', label: 'Key Fields', render: (value) => Array.isArray(value) ? value.join(', ') : value },
             { key: 'relationships_md', label: 'Relationships' }
-          ])
+          ], onSourceClick)
         },
         {
           id: 'metadata-updates',
@@ -501,7 +507,7 @@ export const generateMeetingSections = (meetingData) => {
             { key: 'api_name_md', label: 'API Name' },
             { key: 'change_type', label: 'Change Type' },
             { key: 'scope_md', label: 'Scope' }
-          ])
+          ], onSourceClick)
         }
       ]
     }

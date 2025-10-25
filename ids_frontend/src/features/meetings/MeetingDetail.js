@@ -5,7 +5,9 @@ import Button from '../../components/common/Button';
 import Spinner from '../../components/common/Spinner';
 import DocumentationNavigation from '../viewer/components/DocumentationNavigation';
 import DocumentationDetails from '../viewer/components/DocumentationDetails';
+import SourceViewer from '../../components/common/SourceViewer';
 import { generateMeetingSections } from './utils/meetingSections';
+import { extractSourceReferences } from '../../utils/sourceReferenceUtils';
 import './MeetingDetail.css';
 
 const MeetingDetail = () => {
@@ -15,6 +17,8 @@ const MeetingDetail = () => {
   const [meetingData, setMeetingData] = useState(null);
   const [activeTab, setActiveTab] = useState('outline');
   const [activeSection, setActiveSection] = useState('meeting-overview');
+  const [showSourceViewer, setShowSourceViewer] = useState(false);
+  const [currentSourceReferences, setCurrentSourceReferences] = useState([]);
 
   useEffect(() => {
     fetchMeetingDetail();
@@ -31,6 +35,16 @@ const MeetingDetail = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSourceClick = (sourceReferences) => {
+    setCurrentSourceReferences(sourceReferences);
+    setShowSourceViewer(true);
+  };
+
+  const handleCloseSourceViewer = () => {
+    setShowSourceViewer(false);
+    setCurrentSourceReferences([]);
   };
 
 
@@ -138,7 +152,7 @@ const MeetingDetail = () => {
 
   const { meeting, extractions } = meetingData;
 
-  const sections = generateMeetingSections(meetingData);
+  const sections = generateMeetingSections(meetingData, handleSourceClick);
 
   return (
     <div className="meeting-detail-container">
@@ -188,6 +202,13 @@ const MeetingDetail = () => {
         )}
 
       </div>
+      
+      {showSourceViewer && (
+        <SourceViewer 
+          sourceReferences={currentSourceReferences}
+          onClose={handleCloseSourceViewer}
+        />
+      )}
     </div>
   );
 };

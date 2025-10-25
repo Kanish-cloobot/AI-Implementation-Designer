@@ -1,4 +1,6 @@
 import React from 'react';
+import { renderSourceReferences } from '../../../utils/sourceReferenceUtils';
+import '../../../utils/sourceReferenceUtils.css';
 import './GenericBRDTable.css';
 
 const GenericBRDTable = ({ 
@@ -9,7 +11,8 @@ const GenericBRDTable = ({
   className = '',
   showCreatedAt = true,
   customRowRenderer = null,
-  showTitle = true
+  showTitle = true,
+  onSourceClick = () => {}
 }) => {
   if (!data || data.length === 0) {
     return (
@@ -81,6 +84,7 @@ const GenericBRDTable = ({
                   {column.header}
                 </th>
               ))}
+              <th className="brd-table-header">Sources</th>
               {showCreatedAt && (
                 <th className="brd-table-header brd-table-header-date">Created</th>
               )}
@@ -94,6 +98,9 @@ const GenericBRDTable = ({
                     {renderCell(item, column, rowIndex)}
                   </td>
                 ))}
+                <td className="brd-table-cell">
+                  {renderSourceReferences(item, onSourceClick)}
+                </td>
                 {showCreatedAt && (
                   <td className="brd-table-cell brd-table-cell-date">
                     {formatDateTime(item.created_at)}

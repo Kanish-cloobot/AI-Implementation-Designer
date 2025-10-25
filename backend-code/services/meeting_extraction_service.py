@@ -6,6 +6,7 @@ from datetime import datetime
 from services.document_processor import DocumentProcessor
 from services.unified_extraction_service import UnifiedExtractionService
 from config import OPENAI_CONFIG
+from constants.guidelines_constants import METADATA_PROMPT_EXTRACTOR
 
 # Configure OpenAI for Azure GPT-4
 openai.api_type = "azure"
@@ -92,13 +93,11 @@ class MeetingExtractionService:
         try:
             start_time = time.time()
             
-            prompt = self._build_extraction_prompt()
-
             # Prepare messages for API call
             messages = [
                 {
                     "role": "system",
-                    "content": prompt
+                    "content": METADATA_PROMPT_EXTRACTOR
                 },
                 {
                     "role": "user",
@@ -195,160 +194,6 @@ class MeetingExtractionService:
             print(f"Error calling LLM: {str(e)}")
             traceback.print_exc()
             return None
-
-    def _build_extraction_prompt(self):
-        """Build the extraction prompt"""
-        prompt = f"""Objective
-You are an expert analyst for Salesforce implementation discovery, design, and build.
-Given an input (meeting transcript, SoW, contract, notes), extract exactly the 16 value groups (V1–V16) listed below.
-Your output must be one valid JSON object only, wrapped in Markdown code fences.
-Each value must be a list of JSON objects, and all related attributes must be encapsulated within those objects.
-
-Denoising & Relevance Rules
-- Only extract content relevant to Salesforce discovery/design/build (scope, modules, roles, licenses, integrations, data, metadata, risks/issues, decisions, etc.).
-- Ignore unrelated details such as greetings, small talk, boilerplate, pricing, or legal terms.
-- If multiple domains are present, focus on Salesforce CRM context and ignore unrelated project areas.
-- If a value is missing, leave the array empty and describe the gap in assumptions_and_gaps.
-
-Output Requirements
-- Output must be a single JSON object, enclosed in triple backticks (```json ... ```).
-- Each V1–V16 key must contain a list of JSON objects.
-- All text content should be written as Markdown within string values.
-- Use double-quoted keys, properly escaped strings, and no trailing commas.
-- Each array must exist even if empty.
-
-JSON Structure Required:
-{{
-  "document_metadata": [{{
-    "source_type": "transcript | SoW | contract",
-    "doc_title": "document title if known",
-    "extraction_timestamp": "YYYY-MM-DD",
-    "confidence": 0.0,
-  }}],
-  "V1_list_of_bu_teams": [{{
-    "business_unit": "business unit name",
-    "teams": ["team name 1", "team name 2"],
-    "notes_md": "additional notes"
-  }}],
-  "V2_modules_and_processes": [{{
-    "module_name": "module name",
-    "processes": ["process 1", "process 2"],
-    "scope_tag": "in-scope | out-of-scope | future-phase",
-    "notes_md": "short description"
-  }}],
-  "V3_license_list": [{{
-    "license_type": "Sales Cloud, Service Cloud, Platform, etc.",
-    "count": 0,
-    "allocation_md": "allocation details",
-    "notes_md": "notes"
-  }}],
-  "V4_personas": [{{
-    "persona_name": "e.g., Sales Manager",
-    "responsibilities": ["task 1", "task 2"],
-    "primary_modules": ["module 1", "module 2"]
-  }}],
-  "V5_requirements": [{{
-    "requirement_type": "functional | non-functional",
-    "description_md": "short description",
-    "acceptance_criteria": ["criterion 1", "criterion 2"]
-  }}],
-  "V6_risks_and_issues": [{{
-    "type": "risk | issue",
-    "description_md": "description",
-    "impact_md": "impact details",
-    "mitigation_md": "mitigation plan",
-    "owner_md": "owner or team",
-    "due_date": "YYYY-MM-DD or empty string"
-  }}],
-  "V7_action_items": [{{
-    "task_md": "action task",
-    "owner_md": "responsible person",
-    "due_date": "YYYY-MM-DD or empty string",
-    "status": "open | in-progress | done"
-  }}],
-  "V8_decisions": [{{
-    "decision_md": "what was decided",
-    "rationale_md": "reasoning",
-    "decided_on": "YYYY-MM-DD or empty string",
-    "approver_md": "approver"
-  }}],
-  "V9_dependencies": [{{
-    "description_md": "dependency details",
-    "type": "internal | external",
-    "depends_on_md": "related system/team",
-    "owner_md": "responsible entity"
-  }}],
-  "V10_pain_points": [{{
-    "pain_point_md": "problem statement",
-    "affected_bu_md": "affected business unit",
-    "impact_md": "business or process impact"
-  }}],
-  "V11_current_state_as_is": [{{
-    "description_md": "paragraph(s) describing current processes and tools"
-  }}],
-  "V12_target_state_to_be": [{{
-    "description_md": "paragraph(s) describing desired Salesforce-enabled future state"
-  }}],
-  "V13_applications_to_be_integrated": [{{
-    "application_name": "app name (QuickBooks, DocuSign, etc.)",
-    "purpose_md": "purpose of integration",
-    "integration_type": "native | OOTB | third-party | custom",
-    "directionality": "unidirectional | bidirectional",
-    "notes_md": "notes"
-  }}],
-  "V14_data_migration": [{{
-    "source_md": "data sources (Excel, legacy CRM)",
-    "mapping_notes_md": "key field mapping details",
-    "cleansing_rules_md": "cleansing rules",
-    "tools_md": ["tool name"]
-  }}],
-  "V15_data_model": [{{
-    "entity_name": "object/entity name",
-    "entity_type": "standard | custom",
-    "key_fields": ["key field 1", "key field 2"],
-    "relationships_md": "relationships between entities"
-  }}],
-  "V16_metadata_to_update": [{{
-    "component_type": "Object | Field | Flow | Apex | Layout | Profile | Report | Dashboard | LWC | Other",
-    "api_name_md": "API name or short identifier",
-    "change_type": "create | update | deprecate",
-    "scope_md": "reason or context for change"
-  }}],
-  "scope_summary": [{{
-    "in_scope_md": ["in-scope item"],
-    "out_of_scope_md": ["out-of-scope item"],
-    "future_phase_md": ["deferred or future-phase item"]
-  }}],
-  "assumptions_and_gaps": [{{
-    "note_md": "any inferred assumption or missing information description"
-  }}],
-  "source_references": [{{
-    "reference_md": "source section or quote reference"
-  }}],
-  "validation_summary": [{{
-    "json_validity": true,
-    "issues_detected": ["issue 1", "issue 2"]
-  }}]
-}}
-
-Validation Checklist
-- One JSON object only, wrapped in json code fences.
-- Each key (V1-V16) is an array of objects, even if empty.
-- All strings are properly escaped, all keys double-quoted.
-- No trailing commas or null values.
-- Markdown formatting lives inside string values.
-- Dates follow YYYY-MM-DD.
-- Denoising applied - only Salesforce-relevant content extracted.
-
-Assumptions Policy
-- Infer carefully; log all assumptions under assumptions_and_gaps.
-- Never fabricate personal data; use generic role placeholders.
-- Leave arrays empty for missing data and record the gap.
-
-Final Instruction
-Perform extraction now and return only the JSON object above, enclosed within json code fences.
-"""
-        return prompt
 
     def _extract_json_from_markdown(self, response_text):
         """Extract JSON from markdown code fence"""

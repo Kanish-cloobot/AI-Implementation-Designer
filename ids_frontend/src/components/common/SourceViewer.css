@@ -1,0 +1,330 @@
+/* Source Viewer Overlay */
+.source-viewer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+.source-viewer-container {
+  width: 350px;
+  background-color: #1A1A1A;
+  border-left: 1px solid #A8A8A8;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-shadow: -4px 0px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Header */
+.source-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #A8A8A8;
+  background-color: #262626;
+}
+
+.source-viewer-header h2 {
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0;
+}
+
+.close-viewer-btn {
+  background: none;
+  border: none;
+  color: #A8A8A8;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-viewer-btn:hover {
+  background-color: #333333;
+  color: #FFFFFF;
+}
+
+/* Content */
+.source-viewer-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.source-references-list {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.source-references-list h3 {
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  margin: 0 0 16px 0;
+}
+
+.references-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Source Reference Items */
+.source-reference-item {
+  background-color: #262626;
+  border: 1px solid #A8A8A8;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.source-reference-item:hover {
+  background-color: #333333;
+  border-color: #C82FFF;
+}
+
+.source-reference-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.source-reference-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.source-reference-file .material-symbols-outlined {
+  font-size: 18px;
+  color: #A8A8A8;
+}
+
+.file-name {
+  color: #FFFFFF;
+}
+
+.source-reference-confidence {
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  min-width: 40px;
+  text-align: center;
+}
+
+.source-reference-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #A8A8A8;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+}
+
+.source-reference-section .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.section-name {
+  color: #A8A8A8;
+}
+
+.source-reference-quote {
+  background-color: #0D0D0D;
+  border-left: 3px solid #C82FFF;
+  padding: 12px;
+  border-radius: 4px;
+}
+
+.quote-text {
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Detail Panel */
+.source-reference-detail-panel {
+  border-top: 1px solid #A8A8A8;
+  background-color: #0D0D0D;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.source-reference-detail {
+  padding: 20px;
+}
+
+.source-reference-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #A8A8A8;
+}
+
+.source-reference-detail-header h3 {
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+.close-detail-btn {
+  background: none;
+  border: none;
+  color: #A8A8A8;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-detail-btn:hover {
+  background-color: #333333;
+  color: #FFFFFF;
+}
+
+.source-reference-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-section h4 {
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  margin: 0 0 12px 0;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #262626;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: #A8A8A8;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+}
+
+.confidence-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.quote-detail {
+  background-color: #1A1A1A;
+  border: 1px solid #A8A8A8;
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+}
+
+.quote-mark {
+  color: #C82FFF;
+  font-size: 24px;
+  font-weight: bold;
+  position: absolute;
+  top: -8px;
+  left: 8px;
+}
+
+.quote-mark:last-child {
+  bottom: -8px;
+  right: 8px;
+  top: auto;
+  left: auto;
+}
+
+.quote-text-detail {
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  font-style: italic;
+  display: block;
+  padding: 8px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .source-viewer-container {
+    width: 100%;
+  }
+  
+  .source-viewer-content {
+    flex-direction: column;
+  }
+  
+  .source-reference-detail-panel {
+    max-height: 40vh;
+  }
+}
+
+/* Scrollbar Styling */
+.source-references-list::-webkit-scrollbar,
+.source-reference-detail-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.source-references-list::-webkit-scrollbar-track,
+.source-reference-detail-panel::-webkit-scrollbar-track {
+  background: #0D0D0D;
+}
+
+.source-references-list::-webkit-scrollbar-thumb,
+.source-reference-detail-panel::-webkit-scrollbar-thumb {
+  background: #A8A8A8;
+  border-radius: 3px;
+}
+
+.source-references-list::-webkit-scrollbar-thumb:hover,
+.source-reference-detail-panel::-webkit-scrollbar-thumb:hover {
+  background: #C82FFF;
+}
