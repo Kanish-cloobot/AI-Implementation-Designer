@@ -6,7 +6,6 @@ import Button from '../../components/common/Button';
 import Spinner from '../../components/common/Spinner';
 import WorkspaceForm from './WorkspaceForm';
 import DocumentUploadModal from '../documents/DocumentUploadModal';
-import SoWViewer from '../viewer/SoWViewer';
 import WorkspaceCard from './WorkspaceCard';
 import ConfirmationPopup from '../../components/common/ConfirmationPopup';
 
@@ -24,7 +23,6 @@ const useWorkspaceHandlers = (workspaces, loading, error, fetchWorkspaces, delet
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState(null);
-  const [showSoWViewer, setShowSoWViewer] = useState(false);
   const [confirmationPopup, setConfirmationPopup] = useState({
     isOpen: false,
     workspaceId: null,
@@ -64,7 +62,13 @@ const useWorkspaceHandlers = (workspaces, loading, error, fetchWorkspaces, delet
     if (!editingWorkspace) setIsUploadModalOpen(true);
   };
 
-  const handleUploadSuccess = () => { setIsUploadModalOpen(false); setShowSoWViewer(true); };
+  const handleUploadSuccess = () => { 
+    setIsUploadModalOpen(false); 
+    if (currentWorkspace) {
+      navigate(`/workspace/${currentWorkspace.workspace_id}/view`);
+      collapseSidebar();
+    }
+  };
   
   const handleViewSoW = async (workspace) => {
     try {
@@ -82,7 +86,6 @@ const useWorkspaceHandlers = (workspaces, loading, error, fetchWorkspaces, delet
     isFormOpen, setIsFormOpen,
     isUploadModalOpen, setIsUploadModalOpen,
     editingWorkspace, setEditingWorkspace,
-    showSoWViewer, setShowSoWViewer,
     confirmationPopup, setConfirmationPopup,
     handleCreateNew, handleEdit, handleDelete,
     handleConfirmDelete, handleCancelDelete,
@@ -99,7 +102,6 @@ const WorkspaceList = () => {
     isFormOpen, setIsFormOpen,
     isUploadModalOpen, setIsUploadModalOpen,
     editingWorkspace,
-    showSoWViewer, setShowSoWViewer,
     confirmationPopup,
     handleCreateNew, handleEdit, handleDelete,
     handleConfirmDelete, handleCancelDelete,
@@ -119,9 +121,6 @@ const WorkspaceList = () => {
     }
   };
 
-  if (showSoWViewer && sowData) {
-    return <SoWViewer onBack={() => setShowSoWViewer(false)} />;
-  }
 
   return (
     <div className="workspace-list-container">
