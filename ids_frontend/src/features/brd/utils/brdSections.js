@@ -515,6 +515,48 @@ export const generateBRDSections = (brdData, requirementStatuses = {}, handleReq
     });
   }
 
+  // Pain Points Section
+  if (brdData.pain_points && brdData.pain_points.length > 0) {
+    sections.push({
+      id: 'pain-points',
+      title: 'Pain Points',
+      icon: 'warning',
+      content: (
+        <div className="brd-content-section">
+          <h2 className="brd-section-title">
+            <span className="material-symbols-outlined">warning</span>
+            Pain Points
+          </h2>
+          <div className="brd-items">
+            {brdData.pain_points.map((item, index) => (
+              <div key={index} className="brd-item pain-point-item">
+                <div className="brd-field">
+                  <strong>Pain Point:</strong>
+                  <span>{item.pain_point_md}</span>
+                </div>
+                {item.affected_bu_md && (
+                  <div className="brd-field">
+                    <strong>Affected Business Unit:</strong>
+                    <span>{item.affected_bu_md}</span>
+                  </div>
+                )}
+                {item.impact_md && (
+                  <div className="brd-field">
+                    <strong>Impact:</strong>
+                    <span>{item.impact_md}</span>
+                  </div>
+                )}
+                <div className="brd-item-meta">
+                  <span className="created-at">{formatDateTime(item.created_at)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+    });
+  }
+
   // Metadata Updates Section
   if (brdData.metadata_updates && brdData.metadata_updates.length > 0) {
     sections.push({
